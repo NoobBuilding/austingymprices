@@ -48,6 +48,11 @@ jobs:
       - name: Check build output against the CSP
         run: npm run check:csp
 
+      # Search regression tests, run against the built HTML so they exercise
+      # the attributes that actually ship.
+      - name: Check search behaviour
+        run: npm run check:search
+
       # §8: build fails on high-severity vulnerabilities.
       - name: npm audit
         run: npm audit --audit-level=high

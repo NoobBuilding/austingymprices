@@ -8,6 +8,7 @@
  * renders the "call for pricing" state — never a number, never a guess.
  */
 import { getRegion } from '../lib/gyms.js';
+import { compactSearch, gymSearchText, normalizeSearch } from '../lib/search.js';
 
 const { gym } = Astro.props;
 
@@ -60,7 +61,12 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
   data-daypass={gym.day_pass ?? ''}
   data-nocontract={gym.is_no_contract === true ? 'true' : 'false'}
   data-name={gym.name}
-  data-search={`${gym.name} ${placeLabel} ${region?.name ?? ''} ${CATEGORY_LABELS[gym.category] ?? ''}`.toLowerCase()}
+  data-search={normalizeSearch(
+    `${gymSearchText(gym, region?.name)} ${CATEGORY_LABELS[gym.category] ?? ''}`,
+  )}
+  data-search-compact={compactSearch(
+    `${gymSearchText(gym, region?.name)} ${CATEGORY_LABELS[gym.category] ?? ''}`,
+  )}
 >
   <details class="card-details">
     <summary class="card-top">

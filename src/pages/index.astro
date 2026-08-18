@@ -90,7 +90,10 @@ const description =
     <div id="cards">
       {sorted.map((gym) => <GymCard gym={gym} />)}
     </div>
-    <p class="empty" id="empty" hidden>No gyms match those filters.</p>
+    <div class="empty" id="empty" hidden>
+      <p>No gyms match those filters.</p>
+      <button type="button" id="clear-filters" class="clear-btn">Clear filters</button>
+    </div>
   </div>
 </Base>
 
@@ -250,7 +253,26 @@ const description =
   .empty {
     font-size: 0.9rem;
     color: var(--ink-soft);
-    padding: 24px 0;
+    padding: 28px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .clear-btn {
+    border: 1.5px solid var(--orange);
+    background: var(--orange-tint);
+    color: var(--orange-dark);
+    border-radius: var(--r-sm);
+    padding: 9px 16px;
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+
+  .clear-btn:hover {
+    background: var(--orange);
+    color: #fff;
   }
 
   @media (max-width: 560px) {
@@ -273,6 +295,8 @@ const description =
   // is still fully usable — all 41 cards are server-rendered, sorted
   // cheapest-first, and every accordion is a native <details>. A broken filter
   // must never take the content down with it.
+  import { matchesQuery } from '../lib/search.js';
+
   try {
   const container = document.getElementById('cards');
   if (container) {
@@ -300,7 +324,7 @@ const description =
           (state.tier === 'all' || card.dataset.tier === state.tier) &&
           (!state.noContract || card.dataset.nocontract === 'true') &&
           (state.activity === 'all' || card.dataset.category === state.activity) &&
-          (state.q === '' || (card.dataset.search || '').includes(state.q)) &&
+          matchesQuery(card.dataset.search || '', card.dataset.searchCompact || '', state.q) &&
           (state.mode !== 'daypass' || price !== null);
         card.hidden = !matches;
         if (matches) shown += 1;
@@ -349,7 +373,7 @@ const description =
     });
 
     search?.addEventListener('input', () => {
-      state.q = search.value.trim().toLowerCase();
+      state.q = search.value;
       apply();
     });
 
@@ -361,6 +385,26 @@ const description =
     sortEl?.addEventListener('change', () => {
       state.sort = sortEl.value;
       apply();
+    });
+
+    document.getElementById('clear-filters')?.addEventListener('click', () => {
+      state.region = 'all';
+      state.tier = 'all';
+      state.noContract = false;
+      state.q = '';
+      state.activity = 'all';
+      document.querySelectorAll('#regions .chip').forEach((c) => {
+        c.classList.toggle('active', c.dataset.region === 'all');
+      });
+      document.querySelectorAll('.tier').forEach((b) => {
+        b.classList.toggle('active', b.dataset.tier === 'all');
+      });
+      noContractBtn?.classList.remove('active');
+      noContractBtn?.setAttribute('aria-pressed', 'false');
+      if (search) search.value = '';
+      if (activity) activity.value = 'all';
+      apply();
+      search?.focus();
     });
 
     document.querySelectorAll('.tab').forEach((tab) => {
