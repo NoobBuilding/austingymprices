@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Austin Gym Prices — Compare gym membership costs in Austin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#BF5700;
+    --orange-dark:#9E4800;
+    --orange-tint:#FBF1E9;
+    --ink:#211D19;
+    --ink-soft:#6B635B;
+    --line:#ECE7E1;
+    --bg:#FFFFFF;
+    --green:#1E7A46;
+    --r:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+
+  header{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--line)}
+  .logo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.45rem;letter-spacing:.05em;text-transform:uppercase}
+  .logo span{color:var(--orange)}
+  .hdr-links{display:flex;gap:26px;align-items:center;font-size:.88rem;font-weight:500;color:var(--ink-soft)}
+  .hdr-links a{color:inherit;text-decoration:none}
+  .hdr-links a:hover{color:var(--orange)}
+
+  /* hero — airy, minimal */
+  .hero{padding:72px 32px 0;max-width:1140px;margin:0 auto}
+  .hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(2.6rem,5.6vw,4.2rem);line-height:.96;text-transform:uppercase}
+  .hero h1 em{font-style:normal;color:var(--orange)}
+  .hero .sub{margin-top:16px;color:var(--ink-soft);font-size:1.08rem}
+
+  .tabs{display:flex;gap:28px;margin:38px 0 16px;border-bottom:1px solid var(--line)}
+  .tab{background:none;border:none;font-size:.95rem;font-weight:600;color:var(--ink-soft);padding:0 2px 12px;border-bottom:3px solid transparent}
+  .tab.active{color:var(--ink);border-color:var(--orange)}
+
+  .search{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:var(--r);padding:16px 18px;background:var(--bg);box-shadow:0 1px 2px rgba(33,29,25,.03)}
+  .search:focus-within{border-color:var(--orange)}
+  .search svg{flex:none;stroke:var(--ink-soft)}
+  .search input{border:none;outline:none;font-size:1rem;width:100%;font-family:inherit;background:transparent}
+
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{border:1.5px solid var(--line);background:var(--bg);border-radius:999px;padding:9px 18px;font-size:.86rem;font-weight:600;color:var(--ink-soft);transition:.12s}
+  .chip:hover{border-color:var(--orange);color:var(--orange-dark)}
+  .chip.active{background:var(--orange);border-color:var(--orange);color:#fff}
+
+  /* filters: one quiet row */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:20px}
+  .pill{border:1.5px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 14px;font-size:.84rem;font-weight:600;color:var(--ink-soft)}
+  .pill.active{background:var(--orange-tint);border-color:var(--orange);color:var(--orange-dark)}
+  select.pill{appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B635B' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+
+  /* split */
+  .split{display:grid;grid-template-columns:minmax(0,1fr) 46%;max-width:1400px;margin:34px auto 0}
+  .list{padding:8px 26px 80px 32px;max-width:640px;justify-self:end;width:100%}
+  .count{font-size:.82rem;color:var(--ink-soft);margin-bottom:14px}
+
+  /* card — quiet by default */
+  .card{border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;background:var(--bg);transition:border-color .12s, box-shadow .12s;overflow:hidden}
+  .card:hover,.card.hl{border-color:var(--orange);box-shadow:0 2px 14px rgba(191,87,0,.09)}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;cursor:pointer}
+  .card-name{font-weight:700;font-size:1rem}
+  .card-meta{font-size:.8rem;color:var(--ink-soft);margin-top:3px}
+  .card-meta .sep{margin:0 6px;color:var(--line)}
+  .tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.03em;border-radius:5px;padding:2px 7px;margin-left:8px;vertical-align:1px}
+  .tag.free{background:#E9F5EE;color:var(--green)}
+  .tag.commit{background:var(--orange-tint);color:var(--orange-dark)}
+  .price{text-align:right;flex:none}
+  .price .n{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.8rem;line-height:1}
+  .price .u{font-size:.72rem;color:var(--ink-soft);font-weight:500}
+  .chev{flex:none;transition:transform .18s;color:var(--ink-soft)}
+  .card.open .chev{transform:rotate(180deg)}
+
+  /* expanded detail */
+  .detail{display:none;border-top:1px solid var(--line);padding:16px 18px;background:#FCFAF8}
+  .card.open .detail{display:block}
+  .drow{display:flex;justify-content:space-between;font-size:.86rem;padding:5px 0}
+  .drow .k{color:var(--ink-soft)}
+  .drow .v{font-weight:600}
+  .drow.total{border-top:1px dashed var(--line);margin-top:6px;padding-top:10px}
+  .drow.total .v{color:var(--orange-dark)}
+  .amen{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:.78rem;color:var(--ink-soft)}
+  .amen span{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 9px}
+  .dfoot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:.72rem;color:#A79D92}
+  .dfoot a{color:#A79D92}
+  .note{font-size:.8rem;color:var(--orange-dark);background:var(--orange-tint);border-radius:7px;padding:8px 11px;margin-top:12px}
+
+  /* map — cleaner */
+  .mapwrap{position:sticky;top:0;height:100vh;min-height:620px;background:#F5F2ED;overflow:hidden}
+  .mapsvg{width:100%;height:100%;display:block}
+  .pin{cursor:pointer}
+  .pin .bub{fill:#fff;stroke:#E4DDD4;stroke-width:1}
+  .pin text{font:700 12px 'Inter',sans-serif;fill:var(--ink)}
+  .pin:hover .bub{stroke:var(--orange)}
+  .pin.active .bub{fill:var(--ink);stroke:var(--ink)}
+  .pin.active text{fill:#fff}
+  .pin.dim{opacity:.18;pointer-events:none}
+  .maplabel{font:600 10.5px 'Inter',sans-serif;fill:#C4BAAD;letter-spacing:.16em;text-transform:uppercase}
+  .map-note{position:absolute;bottom:16px;left:16px;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:.72rem;color:var(--ink-soft);padding:7px 12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+
+  @media(max-width:920px){
+    .split{grid-template-columns:1fr}
+    .mapwrap{display:none}
+    .list{justify-self:stretch;max-width:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Austin<span>Gym</span>Prices</div>
+  <nav class="hdr-links">
+    <a href="#">Browse gyms</a>
+    <a href="#">For gym owners</a>
+    <a href="#">FAQ</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Every Austin gym. <em>The real price.</em></h1>
+  <p class="sub">Membership prices and fees for gyms across Austin, from each gym's own website. Updated daily.</p>
+
+  <div class="tabs">
+    <button class="tab active">Memberships</button>
+    <button class="tab">Day passes</button>
+  </div>
+
+  <div class="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input type="text" placeholder="Search by gym name, neighborhood, or zip" />
+  </div>
+
+  <div class="chip-row" id="regions">
+    <button class="chip active" data-region="all">All of Austin</button>
+    <button class="chip" data-region="dt">Downtown</button>
+    <button class="chip" data-region="east">East Austin</button>
+    <button class="chip" data-region="soco">South / SoCo</button>
+    <button class="chip" data-region="hyde">Hyde Park</button>
+    <button class="chip" data-region="mueller">Mueller</button>
+    <button class="chip" data-region="domain">The Domain</button>
+  </div>
+
+  <div class="filters">
+    <button class="pill tier active" data-tier="all">Any price</button>
+    <button class="pill tier" data-tier="1">Under $40</button>
+    <button class="pill tier" data-tier="2">$40–100</button>
+    <button class="pill tier" data-tier="3">$100+</button>
+    <button class="pill" id="nocommit">No contract</button>
+    <select class="pill">
+      <option>All activities</option><option>Gym / weights</option><option>Pilates</option><option>Boxing</option><option>BJJ / MMA</option><option>Yoga</option><option>Climbing</option><option>CrossFit / HIIT</option>
+    </select>
+    <select class="pill">
+      <option>Cheapest first</option><option>Closest to me</option>
+    </select>
+  </div>
+</section>
+
+<div class="split">
+  <div class="list">
+    <div class="count"><span id="n">8</span> gyms — tap a gym for the full cost breakdown</div>
+    <div id="cards"></div>
+  </div>
+
+  <div class="mapwrap">
+    <svg class="mapsvg" viewBox="0 0 560 760" id="map">
+      <defs>
+        <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#211D19" flood-opacity=".14"/>
+        </filter>
+      </defs>
+      <!-- ground -->
+      <rect width="560" height="760" fill="#F5F2ED"/>
+      <!-- park blocks -->
+      <rect x="60" y="330" width="90" height="60" rx="14" fill="#E7EDE2"/>
+      <rect x="380" y="90" width="110" height="80" rx="16" fill="#E7EDE2"/>
+      <rect x="120" y="600" width="130" height="80" rx="16" fill="#E7EDE2"/>
+      <!-- minor street grid -->
+      <g stroke="#EBE6DF" stroke-width="2">
+        <line x1="0" y1="120" x2="560" y2="120"/><line x1="0" y1="220" x2="560" y2="220"/>
+        <line x1="0" y1="480" x2="560" y2="480"/><line x1="0" y1="580" x2="560" y2="580"/>
+        <line x1="60" y1="0" x2="60" y2="760"/><line x1="200" y1="0" x2="200" y2="760"/>
+        <line x1="340" y1="0" x2="340" y2="760"/><line x1="480" y1="0" x2="480" y2="760"/>
+      </g>
+      <!-- highways -->
+      <line x1="272" y1="0" x2="272" y2="760" stroke="#E3DBD0" stroke-width="9" stroke-linecap="round"/>
+      <line x1="128" y1="0" x2="128" y2="760" stroke="#E9E2D8" stroke-width="6" stroke-linecap="round"/>
+      <!-- river -->
+      <path d="M-10 388 C 90 350 150 430 250 396 C 350 362 400 442 480 408 C 520 392 545 402 570 396"
+            fill="none" stroke="#D8E6EE" stroke-width="22" stroke-linecap="round"/>
+      <!-- labels -->
+      <text class="maplabel" x="30" y="376">Lady Bird Lake</text>
+      <text class="maplabel" x="176" y="452">Downtown</text>
+      <text class="maplabel" x="392" y="300">East Austin</text>
+      <text class="maplabel" x="160" y="140">Hyde Park</text>
+      <text class="maplabel" x="404" y="140">Mueller</text>
+      <text class="maplabel" x="170" y="660">South / SoCo</text>
+      <text class="maplabel" x="30" y="40">↑ The Domain · 9 mi</text>
+      <g id="pins"></g>
+    </svg>
+    <div class="map-note">Prototype map — production uses live Mapbox tiles</div>
+  </div>
+</div>
+
+<script>
+const GYMS = [
+  {id:1, name:"Planet Fitness", region:"east", rname:"E. Riverside", type:"Gym / weights",
+   sticker:15, enroll:1, annual:49, commit:null, tier:1, x:352, y:470,
+   amen:["24/7","Showers","Parking"], verified:"Aug 14"},
+  {id:2, name:"Big Tex Gym", region:"hyde", rname:"North Loop", type:"Gym / weights",
+   sticker:55, enroll:0, annual:45, commit:null, tier:2, x:236, y:170,
+   amen:["24/7","Infrared sauna","Parking"], verified:"Aug 16",
+   note:"A $45/yr maintenance fee is charged 75 days after signup, then annually."},
+  {id:3, name:"Hyde Park Gym", region:"hyde", rname:"Hyde Park", type:"Gym / weights",
+   sticker:49, enroll:0, annual:0, commit:null, tier:1, x:170, y:120,
+   amen:["Free weights","Punchcards"], verified:"Aug 12"},
+  {id:4, name:"Gold's Gym Downtown", region:"dt", rname:"Downtown", type:"Gym / weights",
+   sticker:45, enroll:49, annual:49, commit:12, tier:2, x:214, y:420,
+   amen:["Classes","Showers","Validated parking"], verified:"Aug 15"},
+  {id:5, name:"Castle Hill Fitness", region:"dt", rname:"12th & Lamar", type:"Gym + classes",
+   sticker:129, enroll:149, annual:0, commit:null, tier:3, x:158, y:352,
+   amen:["Pool","Sauna","Pilates","Spa"], verified:"Aug 15",
+   note:"$149 enrollment fee is currently waived for new members."},
+  {id:6, name:"Los Campeones North", region:"mueller", rname:"Near Mueller", type:"Gym / weights",
+   sticker:89, enroll:0, annual:0, commit:null, tier:2, x:390, y:180,
+   amen:["Opens 4am","Free weights","Parking"], verified:"Aug 13"},
+  {id:7, name:"East Austin Athletic Club", region:"east", rname:"East Austin", type:"Classes + boxing",
+   sticker:159, enroll:0, annual:0, commit:null, tier:3, x:410, y:352,
+   amen:["Boxing","Towels","Recovery room"], verified:"Aug 11"},
+  {id:8, name:"Life Time South", region:"soco", rname:"South Lamar", type:"Luxury club",
+   sticker:259, enroll:0, annual:0, commit:null, tier:3, x:180, y:590,
+   amen:["Pool","Spa","Childcare","Café"], verified:"Aug 16"},
+];
+
+const fmt = n => "$" + n.toLocaleString();
+const eff = g => Math.round((g.sticker*12 + g.enroll + g.annual)/12);
+
+let region="all", tier="all", noCommit=false, active=null, openId=null;
+
+function render(){
+  const list = GYMS.filter(g =>
+    (region==="all"||g.region===region) &&
+    (tier==="all"||g.tier==+tier) &&
+    (!noCommit||g.commit===null)
+  ).sort((a,b)=>eff(a)-eff(b));
+
+  document.getElementById("n").textContent = list.length;
+  document.getElementById("cards").innerHTML = list.map(g=>{
+    const e = eff(g);
+    return `<div class="card ${active===g.id?'hl':''} ${openId===g.id?'open':''}" data-id="${g.id}">
+      <div class="card-top" onclick="toggle(${g.id})">
+        <div>
+          <div class="card-name">${g.name}${g.commit===null?'<span class="tag free">No contract</span>':`<span class="tag commit">${g.commit}-mo commit</span>`}</div>
+          <div class="card-meta">${g.rname}<span class="sep">•</span>${g.type}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="price"><div class="n">${fmt(g.sticker)}</div><div class="u">/month</div></div>
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="drow"><span class="k">Monthly rate</span><span class="v">${fmt(g.sticker)}/mo</span></div>
+        <div class="drow"><span class="k">Enrollment fee</span><span class="v">${g.enroll?fmt(g.enroll):"None"}</span></div>
+        <div class="drow"><span class="k">Annual fee</span><span class="v">${g.annual?fmt(g.annual)+"/yr":"None"}</span></div>
+        <div class="drow"><span class="k">Commitment</span><span class="v">${g.commit?g.commit+" months":"Month-to-month"}</span></div>
+        <div class="drow total"><span class="k">First-year total</span><span class="v">${fmt(g.sticker*12+g.enroll+g.annual)} · ${fmt(e)}/mo effective</span></div>
+        ${g.note?`<div class="note">${g.note}</div>`:''}
+        <div class="amen">${g.amen.map(a=>`<span>✓ ${a}</span>`).join("")}</div>
+        <div class="dfoot"><span>Prices checked ${g.verified}, 2026</span><a href="#">Report a wrong price</a></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  const shown = new Set(list.map(g=>g.id));
+  document.getElementById("pins").innerHTML = GYMS.map(g=>{
+    const label = fmt(g.sticker);
+    const w = label.length*8+22;
+    return `<g class="pin ${active===g.id?'active':''} ${shown.has(g.id)?'':'dim'}" onclick="focusPin(${g.id})" filter="url(#soft)">
+      <rect class="bub" x="${g.x-w/2}" y="${g.y-14}" width="${w}" height="28" rx="14"/>
+      <text x="${g.x}" y="${g.y+4}" text-anchor="middle">${label}</text>
+    </g>`;
+  }).join("");
+}
+
+function toggle(id){
+  openId = openId===id ? null : id;
+  active = id;
+  render();
+}
+function focusPin(id){
+  active = id; openId = id;
+  render();
+  const el = document.querySelector(`.card[data-id="${id}"]`);
+  if(el) el.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+document.getElementById("regions").addEventListener("click", e=>{
+  const c = e.target.closest(".chip"); if(!c) return;
+  document.querySelectorAll("#regions .chip").forEach(x=>x.classList.remove("active"));
+  c.classList.add("active"); region=c.dataset.region; active=null; openId=null; render();
+});
+document.querySelectorAll(".tier").forEach(b=>b.addEventListener("click", ()=>{
+  document.querySelectorAll(".tier").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); tier=b.dataset.tier; render();
+}));
+document.getElementById("nocommit").addEventListener("click", function(){
+  noCommit=!noCommit; this.classList.toggle("active",noCommit); render();
+});
+render();
+</script>
+</body>
+</html>

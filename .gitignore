@@ -1,0 +1,61 @@
+# ── Secrets ───────────────────────────────────────────────────────────
+# Never commit real credentials. See .env.example for required vars.
+# Real values live in GitHub Actions secrets (CI) and a local .env (dev).
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# ── Node / Astro ──────────────────────────────────────────────────────
+node_modules/
+dist/
+.astro/
+.output/
+.vercel/
+.netlify/
+.wrangler/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+
+# ── Python (scrapers) ─────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+pip-wheel-metadata/
+
+# ── Scraper working files ─────────────────────────────────────────────
+# Raw Firecrawl responses are cached locally for debugging; never committed.
+scrapers/.cache/
+scrapers/out/
+*.raw.html
+*.raw.json
+
+# ── Editors / OS junk ─────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
