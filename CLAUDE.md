@@ -88,6 +88,11 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "sub_locality": "North Loop",       // display-only neighbourhood, shown after the region
   "billing_period": "monthly",        // "monthly" (default) | "4-week" | "weekly"
   "day_pass": 15,                     // null if unknown/none
+  "day_pass_terms": [                 // structural, not prose — the Day passes tab
+    "Single use",                     // renders these directly
+    "Expires 24 hours after purchase",
+    "No sauna access"
+  ],
   "price_history": [                  // append-only; never overwritten, never hand-edited
     {
       "date": "2026-08-18",           // date the change was observed
@@ -99,6 +104,16 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   ]
 }
 ```
+
+**Card content is tab-aware.** The active tab defines the question the user is asking,
+and every element on the card answers *that* question. On the **Memberships** tab the card
+shows the all-in monthly price, the commitment badge and the membership cost receipt. On
+the **Day passes** tab it shows the day-pass price and `day_pass_terms`, and membership
+appears only as one secondary line ("Membership from $X/mo all-in — Full details →").
+**Commitment badges never render on the Day passes tab** — commitment is a membership
+concept, and a "2-mo minimum" badge above a $10 headline reads as a contradiction.
+Day-pass restrictions live in `day_pass_terms` as structured data so they render from the
+data rather than being buried in prose.
 
 **`restricted` rules:** a nullable string marking a plan that a solo walk-in adult
 cannot simply buy. `"scope"` is reserved for partial-access plans (EAAC's Strike Club is

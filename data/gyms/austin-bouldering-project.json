@@ -67,6 +67,12 @@
     }
   ],
   "day_pass": 25,
+  "day_pass_terms": [
+    "Open-to-close access for one day",
+    "Includes climbing, fitness, yoga and all amenities",
+    "Does not include rental gear",
+    "$22 young adult (14–20), $18 youth (13 & under)"
+  ],
   "pricing_note": "Day passes: $25 adult, $22 young adult, $18 youth. Rental gear is not included in a day pass.",
   "stale": false,
   "price_history": []

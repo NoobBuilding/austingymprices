@@ -17,6 +17,7 @@
   "billing_period": "monthly",
   "plans": [],
   "day_pass": null,
+  "day_pass_terms": [],
   "pricing_note": "Pricing not published — call the gym. Class-pack model; rates vary by studio.",
   "stale": false,
   "price_history": []

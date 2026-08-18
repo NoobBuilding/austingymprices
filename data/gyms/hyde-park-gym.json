@@ -58,6 +58,12 @@
     }
   ],
   "day_pass": 15,
+  "day_pass_terms": [
+    "Single visit",
+    "Plus sales tax",
+    "10-visit punchcard $90 (valid 6 months)",
+    "1-week pass $39"
+  ],
   "pricing_note": "Also offers a 10-visit punchcard for $90 (valid 6 months) and a 1-week pass for $39. All prices exclude sales tax.",
   "stale": false,
   "price_history": []

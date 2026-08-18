@@ -373,8 +373,17 @@ const description =
         tab.setAttribute('aria-selected', 'true');
         state.mode = tab.dataset.mode;
         const daypass = state.mode === 'daypass';
-        document.querySelectorAll('.price-membership').forEach((el) => { el.hidden = daypass; });
-        document.querySelectorAll('.price-daypass').forEach((el) => { el.hidden = !daypass; });
+        // The whole card is tab-aware, not just the price: on the day-pass
+        // tab the accordion leads with pass terms and the commitment badge is
+        // withheld, because commitment is a membership concept (§3).
+        const swap = (selector, hide) => {
+          document.querySelectorAll(selector).forEach((el) => { el.hidden = hide; });
+        };
+        swap('.price-membership', daypass);
+        swap('.price-daypass', !daypass);
+        swap('.detail-membership', daypass);
+        swap('.detail-daypass', !daypass);
+        swap('.membership-only', daypass);
         apply();
       });
     });

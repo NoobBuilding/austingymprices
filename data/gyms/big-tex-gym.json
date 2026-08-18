@@ -72,6 +72,12 @@
     }
   ],
   "day_pass": 10,
+  "day_pass_terms": [
+    "Single use",
+    "Expires 24 hours after purchase",
+    "No sauna access",
+    "Week pass $35 — 7 days, 24/7 key tag and sauna included"
+  ],
   "pricing_note": "Also offers a $35 week pass, a $45/mo service discount (military, police, fire, first responders) and a $135 3-month student plan, both in-person signup only. Day pass excludes sauna access.",
   "stale": false,
   "price_history": []

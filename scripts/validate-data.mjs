@@ -70,6 +70,18 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
     }
   }
 
+  if (!Array.isArray(gym.day_pass_terms)) {
+    fail('day_pass_terms must be an array (empty when there is no day pass)');
+  } else {
+    if (gym.day_pass_terms.some((t) => typeof t !== 'string' || !t.trim())) {
+      fail('day_pass_terms must contain only non-empty strings');
+    }
+    // Terms describing a pass that does not exist would render under a blank price.
+    if (gym.day_pass === null && gym.day_pass_terms.length > 0) {
+      fail('has day_pass_terms but no day_pass price');
+    }
+  }
+
   // A lat without a lng (or vice versa) would place a pin in the ocean.
   if ((gym.lat === null) !== (gym.lng === null)) fail('lat and lng must both be set or both null');
 

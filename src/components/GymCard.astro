@@ -67,7 +67,12 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
       <div class="card-id">
         <h3 class="card-name">
           {gym.name}
-          {badge && <span class={`tag ${badge.tone}`}>{badge.label}</span>}
+          {/* Commitment is a MEMBERSHIP concept — never shown on the Day
+              passes tab, where a "2-mo minimum" above a $10 headline reads
+              as a contradiction (CLAUDE.md §3, tab-aware cards). */}
+          {badge && (
+            <span class={`tag ${badge.tone} membership-only`}>{badge.label}</span>
+          )}
         </h3>
         <p class="card-meta">
           {placeLabel}<span class="sep">•</span>{CATEGORY_LABELS[gym.category] ?? gym.category}
@@ -110,7 +115,7 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
       </div>
     </summary>
 
-    <div class="detail">
+    <div class="detail detail-membership">
       {plan ? (
         <>
           <p class="plan-label">{plan.name}</p>
@@ -179,6 +184,48 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
         </span>
         <span class="dfoot-links">
           <a href={gym.url}>Full details →</a>
+          <a href={reportHref}>Report a wrong price</a>
+        </span>
+      </div>
+    </div>
+
+    {/* Day passes tab. Leads with the pass itself; membership is demoted to a
+        single secondary line. Hidden by default so the no-JS view shows the
+        membership receipt, which matches the default tab. */}
+    <div class="detail detail-daypass" hidden>
+      {gym.day_pass !== null && gym.day_pass !== undefined ? (
+        <>
+          <p class="plan-label">Day pass</p>
+          <div class="drow">
+            <span class="k">Single visit</span>
+            <span class="v">{money(gym.day_pass)}</span>
+          </div>
+          {gym.day_pass_terms.length > 0 && (
+            <ul class="terms">
+              {gym.day_pass_terms.map((t) => (
+                <li>{t}</li>
+              ))}
+            </ul>
+          )}
+          <p class="secondary">
+            {gym.has_price
+              ? `Membership from ${money(gym.all_in_monthly)}/mo all-in`
+              : 'Membership pricing not published'}
+            {' — '}
+            <a href={gym.url}>Full details →</a>
+          </p>
+        </>
+      ) : (
+        <p class="note">No day pass price published for this gym.</p>
+      )}
+
+      <div class="dfoot">
+        <span>
+          {verified
+            ? `Prices checked ${verified}${sourceDomain ? ` · from ${sourceDomain}` : ''}`
+            : 'Price not yet confirmed'}
+        </span>
+        <span class="dfoot-links">
           <a href={reportHref}>Report a wrong price</a>
         </span>
       </div>
@@ -399,6 +446,38 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
 
   .dfoot a {
     color: var(--ink-faint);
+  }
+
+  .terms {
+    list-style: none;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  .terms li {
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.45;
+  }
+
+  .terms li::before {
+    content: '·';
+    position: absolute;
+    left: 5px;
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  .secondary {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
   }
 
   @media (max-width: 520px) {

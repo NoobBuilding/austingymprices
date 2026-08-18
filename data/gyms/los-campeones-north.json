@@ -70,6 +70,11 @@
     }
   ],
   "day_pass": 19,
+  "day_pass_terms": [
+    "Single day (“Day Blast Pass”)",
+    "Week pass $29",
+    "Month pass $99"
+  ],
   "pricing_note": "Also offers a $29 week pass and a couples add-on at $49/mo ($490/yr). Enrollment and annual fees are not mentioned on the site; treated as none but unconfirmed.",
   "stale": false,
   "price_history": []

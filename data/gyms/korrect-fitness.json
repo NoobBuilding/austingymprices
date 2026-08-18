@@ -17,6 +17,7 @@
   "billing_period": "monthly",
   "plans": [],
   "day_pass": null,
+  "day_pass_terms": [],
   "pricing_note": "Pricing not published — call the gym. Rebranded from Onnit Gym in 2025 — confirm the current name and rates.",
   "stale": false,
   "price_history": []

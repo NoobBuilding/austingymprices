@@ -17,6 +17,7 @@
   "billing_period": "monthly",
   "plans": [],
   "day_pass": null,
+  "day_pass_terms": [],
   "pricing_note": "A ~$40/mo rate appears in local coverage but is unconfirmed against the gym's own site, so no number is shown. Call to confirm.",
   "stale": false,
   "price_history": []
