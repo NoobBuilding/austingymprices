@@ -10,8 +10,12 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const html = readFileSync('dist/index.html', 'utf8');
-const cssFile = readdirSync('dist/_astro').find((f) => f.endsWith('.css'));
-const css = readFileSync(join('dist/_astro', cssFile), 'utf8');
+// Astro splits CSS per page, so concatenate every emitted stylesheet rather
+// than guessing which chunk holds the pin rules.
+const css = readdirSync('dist/_astro')
+  .filter((f) => f.endsWith('.css'))
+  .map((f) => readFileSync(join('dist/_astro', f), 'utf8'))
+  .join('\n');
 const headers = readFileSync('dist/_headers', 'utf8');
 
 const failures = [];
@@ -80,6 +84,70 @@ check(!/unsafe-inline/.test(headers), "CSP still forbids 'unsafe-inline'");
 check(
   /\/vendor\/leaflet\.css/.test(readFileSync(join('dist/_astro', mapChunk), 'utf8')),
   'Leaflet CSS is attached from our own origin at runtime',
+);
+
+// ── Clustering maths (pure, no DOM needed) ───────────────────────────────
+console.log('\nClustering');
+const { clusterPoints, clusterLabel } = await import('../src/lib/cluster.js');
+const mk = (slug, x, y, price) => ({ pin: { slug, tier: 2 }, price, point: { x, y } });
+
+const far = clusterPoints([mk('a', 0, 0, 10), mk('b', 500, 500, 99)], 44);
+check(far.length === 2, 'distant pins stay separate', `${far.length} groups`);
+
+const near = clusterPoints([mk('a', 0, 0, 15), mk('b', 10, 10, 259), mk('c', 5, 5, 40)], 44);
+check(near.length === 1, 'nearby pins merge into one group', `${near.length} groups`);
+const prices = near[0].members.map((m) => m.price);
+check(
+  Math.min(...prices) === 15 && Math.max(...prices) === 259,
+  'cluster spans the price RANGE of its members, not a count',
+  `$${Math.min(...prices)}–${Math.max(...prices)}`,
+);
+check(
+  near[0].members.some((m) => m.pin.slug === 'b'),
+  'a selected gym inside a cluster is findable, so the cluster can wear the active state',
+);
+const fmt = (n) => `$${n}`;
+check(
+  clusterLabel(near[0].members, fmt) === '$15–259',
+  'cluster label is the price range',
+  clusterLabel(near[0].members, fmt),
+);
+check(
+  !/\b\d+\s*(gyms?|pins?)\b/i.test(clusterLabel(near[0].members, fmt)),
+  'cluster label is never a count',
+);
+
+// ── Selection is one piece of state, rendered by both views ──────────────
+console.log('\nPin <-> card selection sync');
+const mapSrc = readFileSync(join('dist/_astro', mapChunk), 'utf8');
+const mainSrc = readFileSync(join('dist', mainScript.replace(/^\//, '')), 'utf8');
+
+check(!/activeSlug/.test(mapSrc), 'the map keeps no private copy of the selection');
+check(
+  /holdsSelection|cluster active/.test(readFileSync('src/lib/map-island.js', 'utf8')),
+  'a cluster containing the selected gym wears the active state',
+);
+check(
+  /gym:select/.test(mapSrc) && /gym:select/.test(mainSrc),
+  'pin -> card: the map announces selection and the page listens',
+);
+check(
+  /addEventListener\(`toggle`|addEventListener\('toggle'/.test(mainSrc),
+  'card -> pin: opening a card is observed',
+);
+check(
+  /selected/.test(mainSrc) && /selected/.test(mapSrc),
+  'both views read `selected` from the shared state',
+);
+
+const srcIndex = readFileSync('src/pages/index.astro', 'utf8');
+check(
+  /function setSelected/.test(srcIndex),
+  'both directions funnel through a single setSelected()',
+);
+check(
+  !/gym:highlight/.test(mainSrc) && !/gym:highlight/.test(mapSrc),
+  'the old two-handler mirroring is gone',
 );
 
 console.log(

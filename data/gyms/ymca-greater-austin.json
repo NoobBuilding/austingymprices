@@ -105,6 +105,7 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
+  "day_pass_detail": [],
   "pricing_note": "Memberships range from $25 to $114/month. Financial assistance is available. A 30-day notice is required to cancel.",
   "stale": false,
   "price_history": []

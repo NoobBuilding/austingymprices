@@ -20,6 +20,7 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
+  "day_pass_detail": [],
   "pricing_note": "Membership rates are not present in the page source we can read; they load dynamically. Collected by hand instead. A back-to-school promo on 3- and 6-month Premier Gym memberships was running when last checked.",
   "stale": false,
   "price_history": []

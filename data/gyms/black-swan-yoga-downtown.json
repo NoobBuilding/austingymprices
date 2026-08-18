@@ -20,6 +20,7 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
+  "day_pass_detail": [],
   "pricing_note": "Donation-based — there is no fixed membership price. A $12–18 donation is suggested per class.",
   "stale": false,
   "price_history": []

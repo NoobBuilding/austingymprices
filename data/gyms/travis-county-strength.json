@@ -20,6 +20,7 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
+  "day_pass_detail": [],
   "pricing_note": "Visit-pack rates circulating from 2023 ($80/4 visits, $160/8, $240 unlimited) are too old to ship. Call to confirm current rates.",
   "stale": false,
   "price_history": []

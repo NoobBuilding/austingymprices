@@ -1,0 +1,292 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getAllGyms, getGym, getRegion, compareToRegionMedian } from '../../lib/gyms.js';
+
+export function getStaticPaths() {
+  return getAllGyms().map((g) => ({ params: { slug: g.slug } }));
+}
+
+const gym = getGym(Astro.params.slug);
+const region = getRegion(gym.region);
+const comparison = compareToRegionMedian(gym);
+const plan = gym.default_plan;
+
+const money = (n) =>
+  n === null || n === undefined
+    ? null
+    : `$${Number.isInteger(n) ? n.toLocaleString() : n.toFixed(2)}`;
+
+const periodLabel =
+  gym.billing_period === '4-week' ? 'per 4 weeks' : gym.billing_period === 'weekly' ? 'per week' : '/mo';
+const periodsPerYear = gym.billing_period === '4-week' ? 13 : gym.billing_period === 'weekly' ? 52 : 12;
+
+const verified = gym.verified_date
+  ? new Date(`${gym.verified_date}T00:00:00Z`).toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+    })
+  : null;
+const sourceDomain = gym.pricing_url ? new URL(gym.pricing_url).hostname.replace(/^www\./, '') : null;
+const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURIComponent(`Price correction: ${gym.name}`)}`;
+const addHref = `mailto:reports@austingymprices.com?subject=${encodeURIComponent(`Equipment info: ${gym.name}`)}`;
+const placeLabel = gym.sub_locality ?? region?.name ?? '';
+
+const title = `${gym.name} Membership Cost — Austin Gym Prices`;
+const description = gym.has_price
+  ? `${gym.name} costs ${money(gym.all_in_monthly)}/mo all-in, including fees. Full price breakdown, contract terms and day pass rates.`
+  : `${gym.name} membership pricing in ${region?.name ?? 'Austin'}. What we know, and how to find out the rest.`;
+
+// JSON-LD asserts only what we actually have: no offer block without a price,
+// no address block without an address (CLAUDE.md §3).
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['LocalBusiness', 'ExerciseGym'],
+  name: gym.name,
+  url: new URL(`/gyms/${gym.slug}`, Astro.site).href,
+  ...(gym.website ? { sameAs: [gym.website] } : {}),
+  ...(gym.address
+    ? { address: { '@type': 'PostalAddress', streetAddress: gym.address, addressLocality: 'Austin', addressRegion: 'TX', addressCountry: 'US' } }
+    : {}),
+  ...(gym.lat !== null ? { geo: { '@type': 'GeoCoordinates', latitude: gym.lat, longitude: gym.lng } } : {}),
+  ...(gym.has_price
+    ? {
+        makesOffer: gym.plans
+          .filter((p) => p.monthly !== null)
+          .map((p) => ({
+            '@type': 'Offer', name: p.name, price: p.monthly, priceCurrency: 'USD',
+            category: 'Membership',
+          })),
+      }
+    : {}),
+};
+---
+
+<Base title={title} description={description} canonicalPath={`/gyms/${gym.slug}`}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/">All gyms</a> / <a href={`/regions/${gym.region}`}>{region?.name}{gym.sub_locality ? ` · ${gym.sub_locality}` : ''}</a> / {gym.name}
+    </nav>
+
+    <div class="title-row">
+      <h1>{gym.name}</h1>
+      {gym.website && (
+        <a class="visit" href={gym.website} target="_blank" rel="noopener noreferrer">Visit gym website ↗</a>
+      )}
+    </div>
+
+    {gym.has_price && comparison && (
+      <p class="headline">
+        <b>{money(gym.all_in_monthly)}/mo all-in</b>{', '}
+        {comparison.direction === 'at' ? (
+          <>level with the {region?.name} median (<b>{money(comparison.median)}</b>)</>
+        ) : (
+          <>
+            <b class={comparison.direction === 'below' ? 'below' : 'above'}>
+              {money(comparison.delta)} {comparison.direction}
+            </b>{' '}the {region?.name} median (<b>{money(comparison.median)}</b>)
+          </>
+        )}
+      </p>
+    )}
+    {!gym.has_price && <p class="headline callfor">Pricing not published — see below</p>}
+
+    {gym.known_for && (
+      <div class="known">
+        <span class="k">Known for</span>
+        <span>{gym.known_for}</span>
+      </div>
+    )}
+
+    <h2>Membership Cost</h2>
+    <p class="h2sub">
+      {verified
+        ? `Prices from the gym's own website, as of ${verified}`
+        : 'No confirmed price yet'}
+    </p>
+
+    {gym.plans.length > 0 ? (
+      <div class="plans">
+        {gym.plans.map((p) => (
+          <div class="plan">
+            <div class="plan-l">
+              <span class="plan-name">{p.name}</span>
+              {p.commitment_badge && (
+                <span class={`mo ${p.commitment_badge.tone}`}>{p.commitment_badge.label}</span>
+              )}
+              {p.restricted_label && <span class="mo restricted">{p.restricted_label}</span>}
+              {p.note && (
+                <span class="info">
+                  <button type="button" aria-label={`Details for ${p.name}`}>i</button>
+                  <span class="tip">{p.note}</span>
+                </span>
+              )}
+            </div>
+            <div class="plan-price">
+              {p.monthly !== null ? (
+                <><span class="n">{money(p.all_in_monthly)}</span>{' '}<span class="u">/mo all-in</span></>
+              ) : (
+                <span class="u">Not published</span>
+              )}
+            </div>
+          </div>
+        ))}
+        {gym.day_pass !== null && (
+          <div class="plan">
+            <div class="plan-l"><span class="plan-name">Day Pass</span></div>
+            <div class="plan-price">
+              <span class="n">{money(gym.day_pass)}</span>{' '}
+              <span class="u">/visit{gym.day_pass_qualifier ? ` ${gym.day_pass_qualifier}` : ''}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    ) : (
+      <p class="note">{gym.pricing_note}</p>
+    )}
+
+    {plan && (
+      <div class="receipt">
+        <p class="receipt-plan">{plan.name}</p>
+        <div class="drow"><span class="k">Advertised rate</span><span class="v">{money(plan.monthly)}{periodLabel === '/mo' ? '/mo' : ` ${periodLabel}`}</span></div>
+        {gym.billing_period !== 'monthly' && (
+          <div class="drow"><span class="k">Billed</span><span class="v">{periodsPerYear}× a year</span></div>
+        )}
+        <div class="drow"><span class="k">Enrollment fee</span><span class="v">{plan.enroll_fee ? money(plan.enroll_fee) : 'None'}</span></div>
+        <div class="drow"><span class="k">Annual fee</span><span class="v">{plan.annual_fee ? `${money(plan.annual_fee)}/yr` : 'None'}</span></div>
+        <div class="drow"><span class="k">Commitment</span><span class="v">{plan.commit_months === null ? 'Not published' : plan.commit_months === 0 ? 'Month-to-month' : plan.commitment_badge?.label}</span></div>
+        <div class="drow total">
+          <span class="k">First-year total</span>
+          <span class="v">{money(plan.first_year_total)} · {money(gym.all_in_monthly)}/mo all-in</span>
+        </div>
+        {gym.billing_period !== 'monthly' && (
+          <p class="note">
+            This gym bills {money(plan.monthly)} {periodLabel}, which is {periodsPerYear} payments a
+            year rather than 12 — so the true monthly cost is {money(gym.all_in_monthly)}, not {money(plan.monthly)}.
+          </p>
+        )}
+        {plan.note && <p class="note">{plan.note}</p>}
+        {plan.promo?.note && <p class="note">{plan.promo.note}</p>}
+      </div>
+    )}
+
+    {gym.day_pass_detail.length > 0 && (
+      <>
+        <h2>Other ways in</h2>
+        <p class="h2sub">Passes and add-ons, and how they compare to a single day pass</p>
+        <ul class="terms">
+          {gym.day_pass_detail.map((t) => <li>{t}</li>)}
+        </ul>
+      </>
+    )}
+
+    {gym.pricing_note && gym.plans.length > 0 && <p class="note wide">{gym.pricing_note}</p>}
+
+    <h2>Equipment &amp; Amenities</h2>
+    <p class="eq-note">Crowdsourced from people who train here. Spot something missing? Add it.</p>
+    <div class="eq">
+      {gym.amenities.map((a) => (
+        <div class="eq-card filled"><div class="name">{a}</div><div class="val">Yes</div></div>
+      ))}
+      {['Squat racks', 'Heaviest dumbbell', 'Sauna'].map((slot) => (
+        <div class="eq-card">
+          <div class="name">{slot}</div>
+          <a class="add" href={addHref}>+ Add</a>
+        </div>
+      ))}
+    </div>
+
+    {gym.lat !== null && (
+      <>
+        <h2>Location</h2>
+        <div class="minimap" id="minimap" data-lat={gym.lat} data-lng={gym.lng}></div>
+        <p class="addr">
+          <span>{gym.address ?? placeLabel}</span>
+          <a href={`https://www.openstreetmap.org/?mlat=${gym.lat}&mlon=${gym.lng}#map=17/${gym.lat}/${gym.lng}`} target="_blank" rel="noopener noreferrer">Get directions ↗</a>
+        </p>
+      </>
+    )}
+
+    <div class="foot-meta">
+      <span>
+        {verified ? `Prices checked ${verified}${sourceDomain ? ` · pulled from ${sourceDomain}` : ''}` : 'Price not yet confirmed'}
+      </span>
+      <a href={reportHref}>Report a wrong price</a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .wrap { max-width: var(--wrap-narrow); margin: 0 auto; padding: 34px 28px 90px; }
+  .crumb { font-size: .8rem; color: var(--ink-soft); margin-bottom: 22px; }
+  .crumb a { color: var(--ink-soft); text-decoration: none; }
+  .crumb a:hover { color: var(--orange); }
+  .title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.1rem, 4.5vw, 3rem); text-transform: uppercase; line-height: 1; }
+  .visit { flex: none; background: var(--ink); color: #fff; border-radius: var(--r-pill); padding: 12px 22px; font-weight: 600; font-size: .9rem; text-decoration: none; }
+  .visit:hover { background: #000; }
+  .headline { margin-top: 10px; font-size: 1.05rem; }
+  .headline b.below { color: var(--green); }
+  .headline b.above { color: var(--orange-dark); }
+  .headline.callfor { color: var(--ink-soft); }
+  .known { margin-top: 14px; font-size: .92rem; color: var(--ink-soft); background: var(--surface-sunk); border: 1px solid var(--line); border-radius: 10px; padding: 11px 15px; display: flex; gap: 9px; align-items: baseline; }
+  .known .k { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--orange-dark); flex: none; }
+  h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; text-transform: uppercase; letter-spacing: .02em; margin: 44px 0 6px; }
+  .h2sub { font-size: .8rem; color: var(--ink-soft); margin-bottom: 14px; }
+  .plans { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .plan { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 17px 18px; border-bottom: 1px solid var(--line); }
+  .plan:last-child { border-bottom: none; }
+  .plan-l { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+  .plan-name { font-weight: 600; font-size: .95rem; }
+  .mo { font-size: .66rem; font-weight: 700; letter-spacing: .04em; background: var(--neutral-badge-bg); color: var(--ink-soft); border-radius: 5px; padding: 3px 7px; }
+  .mo.green { background: var(--green-tint); color: var(--green); }
+  .mo.restricted { background: var(--orange-tint); color: var(--orange-dark); }
+  .info { position: relative; display: inline-flex; }
+  .info button { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #C9C1B8; background: none; color: #9B9288; font-size: .62rem; font-weight: 700; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .info button:hover { border-color: var(--orange); color: var(--orange-dark); }
+  .tip { display: none; position: absolute; left: 24px; top: -8px; background: #fff; border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: var(--shadow-tip); padding: 9px 13px; font-size: .8rem; color: var(--ink); width: max-content; max-width: 260px; z-index: 5; }
+  .info:hover .tip, .info:focus-within .tip { display: block; }
+  .plan-price { text-align: right; flex: none; }
+  .plan-price .n { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; line-height: 1; }
+  .plan-price .u { font-size: .7rem; color: var(--ink-soft); }
+  .receipt { background: var(--surface-sunk); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; margin-top: 14px; }
+  .receipt-plan { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
+  .drow { display: flex; justify-content: space-between; gap: 12px; font-size: .88rem; padding: 5px 0; }
+  .drow .k { color: var(--ink-soft); }
+  .drow .v { font-weight: 600; text-align: right; }
+  .drow.total { border-top: 1px dashed var(--line); margin-top: 7px; padding-top: 11px; }
+  .drow.total .v { color: var(--orange-dark); }
+  .note { font-size: .82rem; color: var(--orange-dark); background: var(--orange-tint); border-radius: 8px; padding: 9px 12px; margin-top: 12px; }
+  .terms { list-style: none; display: flex; flex-direction: column; gap: 7px; font-size: .88rem; color: var(--ink-soft); }
+  .terms li { padding-left: 16px; position: relative; }
+  .terms li::before { content: '·'; position: absolute; left: 5px; color: var(--orange); font-weight: 700; }
+  .eq-note { font-size: .8rem; color: var(--ink-soft); margin-bottom: 12px; }
+  .eq { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 10px; }
+  .eq-card { border: 1.5px dashed var(--dash); border-radius: 10px; padding: 13px 15px; background: #FCFCFB; }
+  .eq-card.filled { border-style: solid; border-color: var(--line); }
+  .eq-card .name { font-size: .85rem; font-weight: 600; }
+  .eq-card .val { font-size: .92rem; margin-top: 5px; font-weight: 600; }
+  .eq-card .add { font-size: .82rem; color: var(--orange-dark); margin-top: 5px; display: inline-block; font-weight: 600; }
+  .minimap { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--map-ground); height: 230px; }
+  .addr { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: .85rem; color: var(--ink-soft); }
+  .foot-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); font-size: .75rem; color: var(--ink-faint); }
+  .foot-meta a { color: var(--ink-faint); }
+  @media (max-width: 640px) { .plan-price .n { font-size: 1.35rem; } }
+</style>
+
+<script>
+  try {
+    const el = document.getElementById('minimap');
+    if (el && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(async (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        const { initMiniMap } = await import('../../lib/mini-map.js');
+        initMiniMap(el, Number(el.dataset.lat), Number(el.dataset.lng));
+      }, { rootMargin: '200px' });
+      io.observe(el);
+    }
+  } catch (err) {
+    console.error('[austingymprices] mini map failed; page unaffected', err);
+  }
+</script>

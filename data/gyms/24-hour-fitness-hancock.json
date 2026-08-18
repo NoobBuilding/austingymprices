@@ -20,6 +20,7 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
+  "day_pass_detail": [],
   "pricing_note": "Rates are not shown on the public club listing — they sit behind a point-of-sale redirect. Collect by hand or via the club's SEE PRICES flow (clubId 00372).",
   "stale": false,
   "price_history": []

@@ -57,6 +57,7 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
+  "day_pass_detail": [],
   "pricing_note": "No initial term — all plans auto-renew with no commitment. Prices exclude tax. LA Fitness states prices may vary by location or change without notice.",
   "stale": false,
   "price_history": []

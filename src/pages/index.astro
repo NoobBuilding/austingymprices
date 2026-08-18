@@ -360,7 +360,9 @@ const description =
     const sortEl = document.getElementById('sort');
     const noContractBtn = document.getElementById('nocontract');
 
-    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership' };
+    // ONE piece of selection state. Both the list and the map render from it;
+    // neither keeps its own copy.
+    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', selected: null };
 
     const num = (card, attr) => {
       const raw = card.dataset[attr];
@@ -385,8 +387,15 @@ const description =
       swap('.membership-only', daypass);
     }
 
+    function applySelection() {
+      for (const card of cards) {
+        card.classList.toggle('hl', card.dataset.slug === state.selected);
+      }
+    }
+
     function apply() {
       applyTabVisibility();
+      applySelection();
       let shown = 0;
       for (const card of cards) {
         const price = state.mode === 'daypass' ? num(card, 'daypass') : num(card, 'allin');
@@ -424,6 +433,7 @@ const description =
           detail: {
             visible: new Set(visible.map((c) => c.dataset.slug)),
             mode: state.mode,
+            selected: state.selected,
           },
         }),
       );
@@ -518,6 +528,7 @@ const description =
     const currentState = () => ({
       visible: new Set(cards.filter((c) => !c.hidden).map((c) => c.dataset.slug)),
       mode: state.mode,
+      selected: state.selected,
     });
 
     async function loadMap() {
@@ -559,16 +570,26 @@ const description =
       }
     });
 
-    // Pin click -> open and scroll to the matching card.
+    /**
+     * The one place selection changes. Both directions funnel through here, so
+     * the list and the map can never hold different ideas of what is selected.
+     */
+    function setSelected(slug, { scroll = false, openCard = false } = {}) {
+      state.selected = slug;
+      const card = slug ? cards.find((c) => c.dataset.slug === slug) : null;
+      if (card && openCard) {
+        const details = card.querySelector('details');
+        if (details && !details.open) details.open = true;
+      }
+      apply();
+      if (card && scroll) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Pin -> card. The map only announces intent; state changes here.
     document.addEventListener('gym:select', (e) => {
       const slug = e.detail?.slug;
-      const card = cards.find((c) => c.dataset.slug === slug);
-      if (!card) return;
-      cards.forEach((c) => c.classList.remove('hl'));
-      card.classList.add('hl');
-      const details = card.querySelector('details');
-      if (details) details.open = true;
-      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (!slug) return;
+      setSelected(slug, { scroll: true, openCard: true });
       if (mapWrap?.classList.contains('open')) {
         mapWrap.classList.remove('open');
         mapToggle?.setAttribute('aria-expanded', 'false');
@@ -577,18 +598,20 @@ const description =
       }
     });
 
-    // Card open -> highlight its pin.
-    container.addEventListener('toggle', (e) => {
-      const details = e.target;
-      if (!(details instanceof HTMLElement) || details.tagName !== 'DETAILS') return;
-      const card = details.closest('.card');
-      if (!card) return;
-      document.dispatchEvent(
-        new CustomEvent('gym:highlight', {
-          detail: { slug: details.open ? card.dataset.slug : null },
-        }),
-      );
-    }, true);
+    // Card -> pin. `toggle` does not bubble, so this listens on the document in
+    // the capture phase, which does reach it wherever the card has been moved
+    // to by a re-sort.
+    document.addEventListener(
+      'toggle',
+      (e) => {
+        const details = e.target;
+        if (!(details instanceof window.HTMLElement) || details.tagName !== 'DETAILS') return;
+        const card = details.closest('.card');
+        if (!card) return;
+        setSelected(details.open ? card.dataset.slug : null);
+      },
+      true,
+    );
 
     document.documentElement.dataset.filtersReady = 'true';
   }

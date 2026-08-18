@@ -8,6 +8,7 @@
  * members rather than a count — a count tells you nothing you came for.
  */
 import L from 'leaflet';
+import { clusterLabel, clusterPoints } from './cluster.js';
 
 /**
  * Leaflet's stylesheet is attached at runtime rather than imported, because a
@@ -59,7 +60,6 @@ export function initMap(container, pins, getState) {
   }).addTo(map);
 
   let markers = [];
-  let activeSlug = null;
 
   const clear = () => {
     for (const m of markers) m.remove();
@@ -97,7 +97,7 @@ export function initMap(container, pins, getState) {
   }
 
   function render() {
-    const { visible, mode } = getState();
+    const { visible, mode, selected } = getState();
     clear();
 
     // Split into what we draw individually vs what can merge. Gyms with no
@@ -119,19 +119,7 @@ export function initMap(container, pins, getState) {
     const clusterable = points.filter((p) => p.shown && !p.noPass && p.price !== null);
     const standalone = points.filter((p) => !p.shown || p.noPass || p.price === null);
 
-    // Greedy pixel-distance clustering.
-    const groups = [];
-    for (const p of clusterable) {
-      const hit = groups.find(
-        (g) => Math.hypot(g.point.x - p.point.x, g.point.y - p.point.y) < CLUSTER_PX,
-      );
-      if (hit) {
-        hit.members.push(p);
-        hit.point = { x: (hit.point.x + p.point.x) / 2, y: (hit.point.y + p.point.y) / 2 };
-      } else {
-        groups.push({ point: { ...p.point }, members: [p] });
-      }
-    }
+    const groups = clusterPoints(clusterable, CLUSTER_PX);
 
     for (const group of groups) {
       if (group.members.length === 1) {
@@ -140,17 +128,15 @@ export function initMap(container, pins, getState) {
         const cls = [
           'pin',
           `tier-${pin.tier ?? 2}`,
-          activeSlug === pin.slug ? 'active' : '',
+          selected === pin.slug ? 'active' : '',
         ].join(' ');
         markers.push(bubble(label, cls, [pin.lat, pin.lng], () => select(pin.slug)));
       } else {
-        const prices = group.members.map((m) => m.price);
-        const lo = Math.min(...prices);
-        const hi = Math.max(...prices);
-        const label = lo === hi ? money(lo) : `${money(lo)}–${money(hi)}`;
+        const label = clusterLabel(group.members, money);
         const centre = map.layerPointToLatLng(L.point(group.point.x, group.point.y));
+        const holdsSelection = group.members.some((m) => m.pin.slug === selected);
         markers.push(
-          bubble(label, 'pin cluster', centre, () => {
+          bubble(label, `pin cluster${holdsSelection ? ' active' : ''}`, centre, () => {
             map.setView(centre, Math.min(map.getZoom() + 2, 18));
           }),
         );
@@ -165,7 +151,7 @@ export function initMap(container, pins, getState) {
         priced ? `tier-${p.pin.tier ?? 2}` : 'callfor',
         p.noPass ? 'nopass' : '',
         !p.shown ? 'dim' : '',
-        activeSlug === p.pin.slug ? 'active' : '',
+        selected === p.pin.slug ? 'active' : '',
       ]
         .filter(Boolean)
         .join(' ');
@@ -182,18 +168,16 @@ export function initMap(container, pins, getState) {
     for (const m of markers) m.addTo(map);
   }
 
+  // The map never owns selection. It announces intent; the page updates the
+  // single shared state and re-renders both views. Two mirrored handlers each
+  // holding their own copy is exactly how the card->pin direction went silently
+  // dead, so there is only one copy now.
   function select(slug) {
-    activeSlug = slug;
-    render();
     document.dispatchEvent(new CustomEvent('gym:select', { detail: { slug } }));
   }
 
   map.on('zoomend moveend', render);
   document.addEventListener('filters:changed', render);
-  document.addEventListener('gym:highlight', (e) => {
-    activeSlug = e.detail?.slug ?? null;
-    render();
-  });
 
   render();
   return { map, render, invalidate: () => map.invalidateSize() };

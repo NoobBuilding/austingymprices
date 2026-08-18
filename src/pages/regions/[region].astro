@@ -1,0 +1,91 @@
+---
+import Base from '../../layouts/Base.astro';
+import GymCard from '../../components/GymCard.astro';
+import { getRegions, getRegion, getGymsByRegion, getCityMedian } from '../../lib/gyms.js';
+
+export function getStaticPaths() {
+  return getRegions().map((r) => ({ params: { region: r.id } }));
+}
+
+const region = getRegion(Astro.params.region);
+const gyms = getGymsByRegion(region.id);
+const cityMedian = getCityMedian();
+
+const sorted = [...gyms].sort((a, b) => {
+  if (a.has_price !== b.has_price) return a.has_price ? -1 : 1;
+  if (a.has_price) return a.all_in_monthly - b.all_in_monthly;
+  return a.name.localeCompare(b.name);
+});
+
+const money = (n) => (n === null || n === undefined ? null : `$${n.toLocaleString()}`);
+const priced = gyms.filter((g) => g.has_price);
+const cheapest = priced.length ? priced.reduce((a, b) => (a.all_in_monthly < b.all_in_monthly ? a : b)) : null;
+
+const title = `${region.h1} — Austin Gym Prices`;
+const description = region.median_all_in
+  ? `${gyms.length} gyms in ${region.name}. The median is ${money(region.median_all_in)}/mo all-in, including enrollment and annual fees.`
+  : `${gyms.length} gyms in ${region.name}, Austin. Membership prices, fees and contract terms.`;
+---
+
+<Base title={title} description={description} canonicalPath={`/regions/${region.id}`}>
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="/">All gyms</a> / {region.name}</nav>
+
+    <h1>{region.h1}</h1>
+
+    <p class="intro">
+      {gyms.length} {gyms.length === 1 ? 'gym' : 'gyms'} in {region.name}
+      {region.median_all_in !== null ? (
+        <>
+          {', '}with a median of <b>{money(region.median_all_in)}/mo all-in</b>
+          {cityMedian !== null && region.median_all_in !== cityMedian && (
+            <>
+              {' — '}
+              <b class={region.median_all_in < cityMedian ? 'below' : 'above'}>
+                {money(Math.abs(region.median_all_in - cityMedian))}{' '}
+                {region.median_all_in < cityMedian ? 'below' : 'above'}
+              </b>{' '}the Austin median of {money(cityMedian)}
+            </>
+          )}
+          .
+        </>
+      ) : (
+        <>. No confirmed prices here yet.</>
+      )}
+      {region.priced_count < gyms.length && (
+        <>
+          {' '}Prices are confirmed for {region.priced_count} of them; the rest show
+          &ldquo;call for pricing&rdquo; until we have a number we can stand behind.
+        </>
+      )}
+    </p>
+
+    {cheapest && (
+      <p class="intro">
+        The cheapest confirmed option is <a href={cheapest.url}>{cheapest.name}</a> at{' '}
+        <b>{money(cheapest.all_in_monthly)}/mo all-in</b>.
+      </p>
+    )}
+
+    <div class="list">
+      {sorted.map((gym) => <GymCard gym={gym} />)}
+    </div>
+
+    <p class="foot">
+      Looking wider? <a href="/">Compare every gym in Austin</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .wrap { max-width: var(--list-max); margin: 0 auto; padding: 34px 28px 90px; }
+  .crumb { font-size: .8rem; color: var(--ink-soft); margin-bottom: 22px; }
+  .crumb a { color: var(--ink-soft); text-decoration: none; }
+  .crumb a:hover { color: var(--orange); }
+  h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 4.5vw, 2.8rem); text-transform: uppercase; line-height: 1.02; }
+  .intro { margin-top: 14px; color: var(--ink-soft); font-size: .98rem; max-width: 60ch; }
+  .intro b.below { color: var(--green); }
+  .intro b.above { color: var(--orange-dark); }
+  .list { margin-top: 26px; }
+  .foot { margin-top: 26px; font-size: .88rem; color: var(--ink-soft); }
+</style>

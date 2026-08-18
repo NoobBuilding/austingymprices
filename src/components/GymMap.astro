@@ -25,9 +25,12 @@ const pins = getAllGyms()
 
 <div class="mapwrap" id="mapwrap" data-pins={JSON.stringify(pins)}>
   <div id="map" class="map" role="application" aria-label="Map of Austin gyms"></div>
-  <p class="map-note">
-    {pins.length} of 41 gyms placed — the rest are awaiting a confirmed address.
-  </p>
+  {/* Neutral phrasing: a visitor should not read a completeness scoreboard.
+      Once most gyms are placed the note stops earning its space and is
+      dropped entirely. */}
+  {pins.length < 35 && (
+    <p class="map-note">Showing gyms with a confirmed address</p>
+  )}
 </div>
 
 <style>

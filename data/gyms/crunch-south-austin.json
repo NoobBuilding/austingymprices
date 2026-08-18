@@ -80,6 +80,7 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
+  "day_pass_detail": [],
   "pricing_note": "Annual fee is billed prorated at $10. Rates exclude tax and recurring processing fees.",
   "stale": false,
   "price_history": []

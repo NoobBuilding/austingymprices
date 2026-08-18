@@ -78,6 +78,13 @@
     "$6 discount for students, teachers, under-18, 65+, military and emergency personnel"
   ],
   "day_pass_alternative": null,
+  "day_pass_detail": [
+    "Class-only pass (yoga or fitness) $18 — cheaper than a day pass if you are only there for a class",
+    "Kids 5 and under $12",
+    "Gear rental $23/mo, or $250/yr — $18/mo and $200/yr with the discount",
+    "Long-term locker $10/mo",
+    "Membership freeze $5/mo, and no cancellation fee"
+  ],
   "pricing_note": "Day pass is $26, plus $5 for gear rental (chalk bag, harness, shoes). $6 discount for students, teachers, under-18s, 65+, military and emergency personnel. Kids 5 and under $12. Class-only pass $18. Add-ons: gear rental $23/mo ($250/yr), long-term locker $10/mo.",
   "stale": false,
   "price_history": []

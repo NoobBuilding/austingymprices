@@ -73,6 +73,11 @@
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": "Week pass $29 — seven days for barely more than one day pass",
+  "day_pass_detail": [
+    "Week pass $29 — seven days for barely more than one day pass",
+    "Month pass $99 — about five day passes for a full month of access",
+    "Couples add-on $49/mo, or $490/yr"
+  ],
   "pricing_note": "Also offers a $29 week pass and a couples add-on at $49/mo ($490/yr). Enrollment and annual fees are not mentioned on the site; treated as none but unconfirmed.",
   "stale": false,
   "price_history": []
