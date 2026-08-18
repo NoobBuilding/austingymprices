@@ -19,7 +19,8 @@
     "smoke": "node scripts/smoke-deploy.mjs",
     "check:search": "node scripts/check-search.mjs",
     "check:tabs": "node scripts/check-tabs.mjs",
-    "check:map": "node scripts/check-map.mjs"
+    "check:map": "node scripts/check-map.mjs",
+    "test:parsers": "python3 scrapers/tests/test_parsers.py"
   },
   "engines": {
     "node": ">=20.0.0"

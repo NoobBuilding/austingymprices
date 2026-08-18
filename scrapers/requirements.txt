@@ -1,0 +1,6 @@
+# Scraper dependencies.
+#
+# The scrapers are deliberately near-stdlib: Firecrawl and Nominatim are both
+# plain HTTP handled with urllib. Sentry is the only direct dependency, and the
+# scrapers degrade to quiet-but-working without it (see lib.init_sentry).
+sentry-sdk==2.19.2

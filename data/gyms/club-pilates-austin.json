@@ -1,14 +1,14 @@
 {
   "slug": "club-pilates-austin",
-  "name": "Club Pilates Austin",
+  "name": "Club Pilates William Cannon",
   "region": "south-soco",
-  "sub_locality": "South Austin",
+  "sub_locality": "William Cannon",
   "category": "pilates",
   "website": "https://clubpilates.com",
   "pricing_url": null,
-  "address": "1011, East 5th Street, Austin, Texas, 78702",
-  "lat": 30.26391,
-  "lng": -97.732576,
+  "address": "4220 W. William Cannon Dr, Suite 110, Austin, TX 78749",
+  "lat": 30.222105,
+  "lng": -97.83782,
   "known_for": null,
   "amenities": [],
   "photo": null,
@@ -21,7 +21,7 @@
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published — call the gym. Franchise; 4/8/unlimited packs vary by studio.",
+  "pricing_note": "Pricing not published — call the studio. Club Pilates has ~8 Austin studios; this listing is the William Cannon location. A free intro class is offered, and enrollment promotions run frequently.",
   "stale": false,
   "price_history": []
 }

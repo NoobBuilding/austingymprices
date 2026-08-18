@@ -1,0 +1,137 @@
+name: Scrape prices
+
+# Three-tier cadence from CLAUDE.md §6, plus the January/June seasonal bump.
+# Cron cannot express "promote every tier one level in two months of the year",
+# so the seasonal schedules are separate entries limited to those months and
+# the job decides which tier to run from the date.
+on:
+  schedule:
+    # Chains with promo churn — weekly, Mondays 09:10 UTC.
+    - cron: '10 9 * * 1'
+    # Stable locals — monthly, the 1st at 09:40 UTC.
+    - cron: '40 9 1 * *'
+    # Seasonal bump: in January and June the monthly tier is promoted to
+    # weekly, so stable locals also run on the remaining Mondays.
+    - cron: '40 9 8,15,22 1,6 *'
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: Which tier to run
+        required: true
+        default: weekly
+        type: choice
+        options: [weekly, monthly]
+      dry_run:
+        description: Parse and diff without writing
+        required: false
+        default: false
+        type: boolean
+
+# Least privilege (CLAUDE.md §8). The workflow may write a branch and open a
+# PR; it may NOT push to main. Branch protection enforces that independently.
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    name: Scrape and open a PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: python -m pip install --quiet --requirement scrapers/requirements.txt
+
+      # Fixtures are the real harvested pages, so this catches a parser
+      # regression before it can touch any data.
+      - name: Parser tests
+        run: python3 scrapers/tests/test_parsers.py
+
+      # Inputs reach the shell through env, never through ${{ }} interpolation
+      # inside run:. These particular values are constrained (a choice input and
+      # a cron string), but interpolating event data into a shell is the habit
+      # that gets workflows owned, so it is not done here at all.
+      - name: Decide tier
+        id: tier
+        env:
+          INPUT_TIER: ${{ github.event.inputs.tier }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ -n "$INPUT_TIER" ]; then
+            TIER="$INPUT_TIER"
+          elif [ "$SCHEDULE" = "10 9 * * 1" ]; then
+            TIER=weekly
+          else
+            TIER=monthly
+          fi
+          case "$TIER" in
+            weekly|monthly) ;;
+            *) echo "Refusing to run: unexpected tier '$TIER'" >&2; exit 1 ;;
+          esac
+          echo "tier=$TIER" >> "$GITHUB_OUTPUT"
+
+      - name: Run scrapers
+        id: scrape
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          TIER: ${{ steps.tier.outputs.tier }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            python3 scrapers/run.py --tier "$TIER" --dry-run
+          else
+            python3 scrapers/run.py --tier "$TIER"
+          fi
+
+      - name: Set up Node
+        if: steps.scrape.outcome == 'success'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      # The data must still satisfy the §3 schema after a scrape, or the PR is
+      # not worth opening.
+      - name: Validate gym data
+        if: steps.scrape.outcome == 'success'
+        run: node scripts/validate-data.mjs
+
+      - name: Open pull request
+        if: steps.scrape.outcome == 'success' && github.event.inputs.dry_run != 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          add-paths: data/gyms/*.json
+          branch: scrape/${{ steps.tier.outputs.tier }}
+          delete-branch: true
+          commit-message: |
+            Scrape: ${{ steps.tier.outputs.tier }} tier price update
+
+            Automated. Every number here came from a gym's own pricing page and
+            passed the >25% change guardrail. Review the diff before merging.
+          title: 'Scrape: ${{ steps.tier.outputs.tier }} tier price update'
+          body: |
+            Automated price update from the **${{ steps.tier.outputs.tier }}** tier.
+
+            Every change below was parsed from the gym's own public pricing page
+            and cleared the guardrails: no target returned zero plans, and no
+            price moved more than 25%. Anything that tripped a guardrail is
+            absent from this PR and failed the run instead.
+
+            **Check before merging**
+            - Does each new figure match the gym's live page?
+            - Does `price_history` show the change you expect, appended rather
+              than replacing?
+            - Any plan that lost its price, or gained one it should not have?
+
+            No bot can merge this — branch protection requires a human.

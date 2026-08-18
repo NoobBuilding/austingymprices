@@ -287,6 +287,15 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
 - Every scraper records `verified_date` on success. A gym whose scrape has failed for
   >14 days gets a `stale: true` flag; the UI shows "Prices last confirmed {date}" in the
   warning style.
+- **Parsers must be defensive about mangled numbers.** The one-time harvest found
+  two real corruptions that would have shipped catastrophic prices: an escaped footnote
+  marker eating a decimal point (`$3699/mo` for $36.99 at Crunch) and bold markers
+  splitting one number across two runs (`**$32** **0**` for $320 at Crux). `scrapers/money.py`
+  rejoins split runs structurally, and repairs an eaten decimal **only when the repaired
+  figure appears verbatim elsewhere on the page**. An implausible number that cannot be
+  corroborated raises `ParseError` and fails the run. A missing price is recoverable; a
+  wrong one is the failure this site exists to prevent. Both cases are regression tests
+  in `scrapers/tests/test_parsers.py`, which runs against the real harvested pages.
 - Respect robots.txt; identify with a honest User-Agent
   (`austingymprices.com price checker; reports@austingymprices.com`); one request per
   target per run; no auth-wall or paywall circumvention; scrape only public pricing pages.

@@ -1,0 +1,14 @@
+# Advisories pip-audit is told to ignore, with the reason. Reviewed whenever
+# this file is touched; nothing goes in here without a justification and a
+# condition for removal.
+#
+# PYSEC-2026-141, PYSEC-2026-142 — urllib3 2.6.3
+#   Reached only as a transitive dependency of sentry-sdk. Both advisories name
+#   2.7.0 as the fix, and 2.7.0 has not been published to PyPI, so there is no
+#   fixed version to pin to.
+#   Exposure: our own code never imports urllib3 — the scrapers use stdlib
+#   urllib for Firecrawl and Nominatim. The only traffic through urllib3 is
+#   sentry-sdk posting events to Sentry's own endpoint.
+#   REMOVE the moment urllib3 2.7.0 ships; the pin belongs in requirements.txt.
+PYSEC-2026-141
+PYSEC-2026-142

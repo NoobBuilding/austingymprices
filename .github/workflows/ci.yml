@@ -84,13 +84,22 @@ jobs:
       # requirements.txt appears at build-order step 6. Until then the
       # scrapers are stdlib-only, so there is nothing to audit and skipping
       # is honest rather than a silent pass.
+      # --strict fails on any known vulnerability. The ignore file carries the
+      # only exceptions, each with a written reason and a removal condition;
+      # see scrapers/pip-audit-ignore.txt.
       - name: pip-audit
         run: |
-          if [ -f scrapers/requirements.txt ]; then
-            pip-audit --strict --requirement scrapers/requirements.txt
-          else
-            echo "No scrapers/requirements.txt yet — scrapers are stdlib-only. Skipping."
-          fi
+          # paste -sd joins without a trailing space; a trailing space becomes
+          # an empty argument that pip-audit reads as a positional path.
+          IGNORES=$(grep -v '^#' scrapers/pip-audit-ignore.txt | grep -v '^$' \
+            | sed 's/^/--ignore-vuln /' | paste -sd' ' -)
+          # shellcheck disable=SC2086
+          pip-audit --strict --requirement scrapers/requirements.txt $IGNORES
 
       - name: Byte-compile scrapers
         run: python -m compileall -q scrapers
+
+      # Fixtures are the real harvested pages, so a parser regression fails
+      # here rather than in a nightly run against live data.
+      - name: Parser tests
+        run: python3 scrapers/tests/test_parsers.py
