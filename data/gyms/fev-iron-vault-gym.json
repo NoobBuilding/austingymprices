@@ -1,0 +1,23 @@
+{
+  "slug": "fev-iron-vault-gym",
+  "name": "FeV Iron Vault Gym",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "gym-weights",
+  "website": "https://fevgym.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Lifting-focused gym; rates not public.",
+  "stale": false,
+  "price_history": []
+}

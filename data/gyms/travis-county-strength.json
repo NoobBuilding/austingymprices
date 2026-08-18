@@ -1,0 +1,23 @@
+{
+  "slug": "travis-county-strength",
+  "name": "Travis County Strength",
+  "region": "east-austin",
+  "sub_locality": "East Austin",
+  "category": "gym-weights",
+  "website": "https://traviscountystrength.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Visit-pack rates circulating from 2023 ($80/4 visits, $160/8, $240 unlimited) are too old to ship. Call to confirm current rates.",
+  "stale": false,
+  "price_history": []
+}

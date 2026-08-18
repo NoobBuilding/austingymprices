@@ -1,0 +1,23 @@
+{
+  "slug": "anytime-fitness-north-loop",
+  "name": "Anytime Fitness North Loop",
+  "region": "hyde-park",
+  "sub_locality": "North Loop",
+  "category": "gym-weights",
+  "website": "https://anytimefitness.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Franchise pricing varies by club.",
+  "stale": false,
+  "price_history": []
+}

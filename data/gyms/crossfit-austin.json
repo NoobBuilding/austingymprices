@@ -1,0 +1,23 @@
+{
+  "slug": "crossfit-austin",
+  "name": "CrossFit Austin",
+  "region": "south-soco",
+  "sub_locality": "South Congress",
+  "category": "crossfit-hiit",
+  "website": "https://crossfitaustin.com",
+  "pricing_url": null,
+  "address": "8708 S Congress Ave, Austin, TX",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Class-based tiers.",
+  "stale": false,
+  "price_history": []
+}

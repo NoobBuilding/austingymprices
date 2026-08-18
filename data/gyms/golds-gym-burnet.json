@@ -1,0 +1,23 @@
+{
+  "slug": "golds-gym-burnet",
+  "name": "Gold's Gym Austin (Burnet)",
+  "region": "hyde-park",
+  "sub_locality": "Burnet Road",
+  "category": "gym-weights",
+  "website": "https://goldsgym.com",
+  "pricing_url": null,
+  "address": "7301 Burnet Rd, Suite 300A, Austin, TX 78757",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published on the club page. The join flow blocks automated checks, so this listing is collected by hand.",
+  "stale": false,
+  "price_history": []
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "24-hour-fitness-research-blvd",
+  "name": "24 Hour Fitness Austin Sport (Research Blvd)",
+  "region": "the-domain",
+  "sub_locality": "Arboretum",
+  "category": "gym-weights",
+  "website": "https://24hourfitness.com",
+  "pricing_url": null,
+  "address": "10616 Research Blvd, Austin, TX",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Rates are not shown on the public club listing — they sit behind a point-of-sale redirect. Collect by hand or via the club's SEE PRICES flow (clubId 00202).",
+  "stale": false,
+  "price_history": []
+}

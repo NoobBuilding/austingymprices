@@ -1,0 +1,23 @@
+{
+  "slug": "korrect-fitness",
+  "name": "Korrect Fitness (formerly Onnit Gym)",
+  "region": "east-austin",
+  "sub_locality": "South-East Austin",
+  "category": "gym-classes",
+  "website": "https://korrectfitness.com",
+  "pricing_url": null,
+  "address": "4401 Freidrich Ln, Austin, TX",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Rebranded from Onnit Gym in 2025 — confirm the current name and rates.",
+  "stale": false,
+  "price_history": []
+}

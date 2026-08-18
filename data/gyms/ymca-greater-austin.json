@@ -1,0 +1,102 @@
+{
+  "slug": "ymca-greater-austin",
+  "name": "YMCA of Greater Austin",
+  "region": "mueller",
+  "sub_locality": "Multiple branches",
+  "category": "community",
+  "website": "https://austinymca.org",
+  "pricing_url": "https://www.austinymca.org/join",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Adult",
+      "monthly": 75,
+      "enroll_fee": 49,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Standard adult rate across the 8 community fitness centers.",
+      "is_default": true,
+      "promo": {
+        "enroll_fee": 0,
+        "note": "$0 join fee — a $49 saving. Limited-time offer, no code needed."
+      }
+    },
+    {
+      "name": "Student",
+      "monthly": 25,
+      "enroll_fee": 49,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Age-restricted. Proof of enrollment required.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0,
+        "note": "$0 join fee, limited-time offer."
+      }
+    },
+    {
+      "name": "Young Adult (19–26)",
+      "monthly": 49,
+      "enroll_fee": 49,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Age-restricted, ages 19 to 26.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0,
+        "note": "$0 join fee, limited-time offer."
+      }
+    },
+    {
+      "name": "One Adult Household",
+      "monthly": 95,
+      "enroll_fee": 49,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Household plan, one adult.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0,
+        "note": "$0 join fee, limited-time offer."
+      }
+    },
+    {
+      "name": "Two Adult",
+      "monthly": 105,
+      "enroll_fee": 49,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Two-adult plan.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0,
+        "note": "$0 join fee, limited-time offer."
+      }
+    },
+    {
+      "name": "Two Adult Household",
+      "monthly": 114,
+      "enroll_fee": 49,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Household plan, two adults.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0,
+        "note": "$0 join fee, limited-time offer."
+      }
+    }
+  ],
+  "day_pass": null,
+  "pricing_note": "Memberships range from $25 to $114/month. Financial assistance is available. A 30-day notice is required to cancel.",
+  "stale": false,
+  "price_history": []
+}

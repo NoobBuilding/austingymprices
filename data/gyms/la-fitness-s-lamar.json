@@ -1,0 +1,66 @@
+{
+  "slug": "la-fitness-s-lamar",
+  "name": "LA Fitness S. Lamar",
+  "region": "south-soco",
+  "sub_locality": "South Lamar",
+  "category": "gym-weights",
+  "website": "https://lafitness.com",
+  "pricing_url": "https://lafitness.com/Pages/clubhome.aspx?clubid=1036",
+  "address": "4001 S Lamar Blvd, Austin, TX 78704",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [
+    "Lap pool",
+    "Whirlpool spa",
+    "Sauna",
+    "Basketball court",
+    "Group fitness classes"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Basic (Club of Enrollment)",
+      "monthly": 31.99,
+      "enroll_fee": 0,
+      "annual_fee": 69,
+      "commit_months": 0,
+      "note": "Access to the club of enrollment only. Annual fee is billed 14 days after enrollment and every year thereafter. Last month's dues are collected upfront alongside the first month.",
+      "is_default": true
+    },
+    {
+      "name": "Signature (Multi Club, State of Enrollment)",
+      "monthly": 99,
+      "enroll_fee": 199,
+      "annual_fee": 69,
+      "commit_months": 0,
+      "note": "Includes Pilates by LA Fitness, Studio Group Training and The Glute Room.",
+      "is_default": false
+    },
+    {
+      "name": "Classic (Nationwide Access)",
+      "monthly": 29.99,
+      "enroll_fee": 99,
+      "annual_fee": 69,
+      "commit_months": 0,
+      "note": "Access to all LA Fitness and City Sports Clubs nationwide.",
+      "is_default": false
+    },
+    {
+      "name": "Classic (Nationwide Access, no initiation)",
+      "monthly": 39.99,
+      "enroll_fee": 0,
+      "annual_fee": 69,
+      "commit_months": 0,
+      "note": "Same nationwide access with no initiation fee, at a higher monthly rate.",
+      "is_default": false
+    }
+  ],
+  "day_pass": null,
+  "pricing_note": "No initial term — all plans auto-renew with no commitment. Prices exclude tax. LA Fitness states prices may vary by location or change without notice.",
+  "stale": false,
+  "price_history": []
+}

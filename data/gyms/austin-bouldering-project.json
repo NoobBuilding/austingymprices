@@ -1,0 +1,70 @@
+{
+  "slug": "austin-bouldering-project",
+  "name": "Austin Bouldering Project",
+  "region": "east-austin",
+  "sub_locality": "East Austin",
+  "category": "climbing",
+  "website": "https://austinboulderingproject.com",
+  "pricing_url": "https://austinboulderingproject.com/membership/",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [
+    "50,000 sq ft bouldering",
+    "Yoga",
+    "Fitness area"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Adult (21+)",
+      "monthly": 95,
+      "enroll_fee": 55,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Month-to-month with easy cancellation. $55 activation fee is the standing rate.",
+      "is_default": true,
+      "promo": {
+        "price": 69,
+        "enroll_fee": 0,
+        "note": "Current promotional rate, $95 standing. Activation fee currently waived. 30% off first month."
+      }
+    },
+    {
+      "name": "Young Adult (14–20)",
+      "monthly": 85,
+      "enroll_fee": 55,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Age-restricted, ages 14 to 20.",
+      "is_default": false,
+      "promo": {
+        "price": 62,
+        "enroll_fee": 0,
+        "note": "Current promotional rate, $85 standing. Activation waived."
+      }
+    },
+    {
+      "name": "Youth (13 & under)",
+      "monthly": 55,
+      "enroll_fee": 55,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Age-restricted, 13 and under.",
+      "is_default": false,
+      "promo": {
+        "price": 40,
+        "enroll_fee": 0,
+        "note": "Current promotional rate, $55 standing. Activation waived."
+      }
+    }
+  ],
+  "day_pass": 25,
+  "pricing_note": "Day passes: $25 adult, $22 young adult, $18 youth. Rental gear is not included in a day pass.",
+  "stale": false,
+  "price_history": []
+}

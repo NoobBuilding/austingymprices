@@ -1,0 +1,23 @@
+{
+  "slug": "black-swan-yoga-downtown",
+  "name": "Black Swan Yoga (Downtown)",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "yoga",
+  "website": "https://blackswanyoga.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Donation-based — there is no fixed membership price. A $12–18 donation is suggested per class.",
+  "stale": false,
+  "price_history": []
+}

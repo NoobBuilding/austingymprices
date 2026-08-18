@@ -180,6 +180,63 @@ EXTRA_TARGETS = [
         "caveat": "",
     },
     {
+        "slug": "lafitness-anderson",
+        "covers": "LA Fitness Anderson Lane (replaces seed row 35)",
+        "pattern": "(not in sheet)",
+        "complexity": "Medium",
+        "notes": "2020 W Anderson Ln, 78757. No Domain-area club exists; this is nearest.",
+        "url": "https://www.lafitness.com/Pages/clubhome.aspx?clubid=1035",
+        "confidence": "verified",
+        "caveat": "clubid 1035 recovered from lafitness.com's own club-page URL "
+                  "(title: 'LA Fitness | AUSTIN Gym | 2020 W ANDERSON LANE'). Not guessed.",
+    },
+    {
+        "slug": "lafitness-slamar",
+        "covers": "LA Fitness S. Lamar (NEW seed row)",
+        "pattern": "(not in sheet)",
+        "complexity": "Medium",
+        "notes": "4001 S Lamar Blvd, 78704. Fits south-soco.",
+        "url": "https://www.lafitness.com/Pages/clubhome.aspx?clubid=1036",
+        "confidence": "verified",
+        "caveat": "clubid 1036 recovered from lafitness.com's own club-page URL "
+                  "(title: 'LA Fitness | AUSTIN Gym | 4001 S LAMAR BLVD'). Not guessed.",
+    },
+    {
+        "slug": "lafitness-anderson-rates",
+        "covers": "LA Fitness Anderson Lane — per-club signup rates",
+        "pattern": "(not in sheet)",
+        "complexity": "Medium",
+        "notes": "Owner-verified per-club rate page. NOTE: the id= token is encrypted "
+                 "and may rotate. If this target starts failing, suspect the token "
+                 "before anything else.",
+        "url": "https://lafitness.com/Pages/MembershipSignUpRate.aspx?id=0rKCfAR8YfSVA2GVWHmQVQ%3d%3d",
+        "confidence": "owner",
+        "caveat": "",
+    },
+    {
+        "slug": "lafitness-slamar-rates",
+        "covers": "LA Fitness S. Lamar — per-club signup rates",
+        "pattern": "(not in sheet)",
+        "complexity": "Medium",
+        "notes": "Owner-verified per-club rate page. Same rotating-token caveat as "
+                 "lafitness-anderson-rates.",
+        "url": "https://lafitness.com/Pages/MembershipSignUpRate.aspx?id=ZsgkxVy%2fljny5dznUn5EIw%3d%3d",
+        "confidence": "owner",
+        "caveat": "",
+    },
+    {
+        "slug": "goldsgym-burnet-join",
+        "covers": "Gold's Gym Burnet — join flow (where prices actually live)",
+        "pattern": "(not in sheet)",
+        "complexity": "Medium",
+        "notes": "The club page carries address + amenities but no rates. Requires "
+                 "--stealth; goldsgym.com blocks ordinary Firecrawl fetches.",
+        "url": "https://www.goldsgym.com/locations/tx/austin-burnet/join/",
+        "confidence": "derived",
+        "caveat": "Join-flow URL taken verbatim from the [Join Now] link on the "
+                  "owner-verified Burnet club page. Not guessed.",
+    },
+    {
         "slug": "goldsgym-burnet",
         "covers": "Gold's Gym North / Burnet (seed row 29)",
         "pattern": "(not in sheet)",
@@ -333,14 +390,22 @@ def robots_allows(url):
     return allowed, "robots.txt %s" % ("allows" if allowed else "DISALLOWS")
 
 
-def firecrawl_scrape(url, api_key):
-    """POST to Firecrawl, newest API version first. Returns markdown text."""
-    payload = json.dumps({
+def firecrawl_scrape(url, api_key, stealth=False):
+    """POST to Firecrawl, newest API version first. Returns markdown text.
+
+    stealth=True routes through Firecrawl's stealth proxy for targets that
+    block ordinary fetches. It bills at 5 credits instead of 1, so it is
+    opt-in per run (--stealth) and never the default.
+    """
+    body_fields = {
         "url": url,
         "formats": ["markdown"],
         "onlyMainContent": True,
         "headers": {"User-Agent": USER_AGENT},
-    }).encode("utf-8")
+    }
+    if stealth:
+        body_fields["proxy"] = "stealth"
+    payload = json.dumps(body_fields).encode("utf-8")
 
     last_error = None
     for endpoint in FIRECRAWL_ENDPOINTS:
@@ -425,6 +490,9 @@ def main():
                         help="print the resolved plan and exit — no API calls, no credits spent")
     parser.add_argument("--force", action="store_true",
                         help="refetch targets that already have output (spends credits again)")
+    parser.add_argument("--stealth", action="store_true",
+                        help="route through Firecrawl's stealth proxy for blocking sites "
+                             "(5 credits per fetch instead of 1)")
     args = parser.parse_args()
 
     targets = load_targets()
@@ -467,7 +535,7 @@ def main():
 
         print("        %s" % url)
         try:
-            markdown, metadata = firecrawl_scrape(url, api_key)
+            markdown, metadata = firecrawl_scrape(url, api_key, stealth=args.stealth)
         except ScrapeError as exc:
             print("        FAIL — %s" % exc)
             failed.append((slug, str(exc)))

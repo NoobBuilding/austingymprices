@@ -1,0 +1,71 @@
+{
+  "slug": "los-campeones-north",
+  "name": "Los Campeones Gym North",
+  "region": "mueller",
+  "sub_locality": "Highland",
+  "category": "gym-weights",
+  "website": "https://loscampeonesaustin.com",
+  "pricing_url": "https://www.loscampeonesaustin.com/austin-gym-memberships",
+  "address": "6406 N I-35 Frontage Rd, Suite 2450, Austin, TX 78752",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [
+    "Opens 4am weekdays"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Individual Monthly AutoPay",
+      "monthly": 89,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "No contract.",
+      "is_default": true
+    },
+    {
+      "name": "Monster Month Pass",
+      "monthly": 99,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 1,
+      "note": "$99 single month, no autopay.",
+      "is_default": false
+    },
+    {
+      "name": "Paid in Full 3 Months",
+      "monthly": 80,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "note": "$239 paid upfront.",
+      "is_default": false
+    },
+    {
+      "name": "Paid in Full 6 Months",
+      "monthly": 77,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "note": "$460 paid upfront.",
+      "is_default": false
+    },
+    {
+      "name": "Paid in Full 1 Year",
+      "monthly": 66,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "note": "$790 paid upfront.",
+      "is_default": false
+    }
+  ],
+  "day_pass": 19,
+  "pricing_note": "Also offers a $29 week pass and a couples add-on at $49/mo ($490/yr). Enrollment and annual fees are not mentioned on the site; treated as none but unconfirmed.",
+  "stale": false,
+  "price_history": []
+}

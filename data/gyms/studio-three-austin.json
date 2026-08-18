@@ -1,0 +1,23 @@
+{
+  "slug": "studio-three-austin",
+  "name": "Studio Three",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "crossfit-hiit",
+  "website": "https://studiothree.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Class-pack model across three studios.",
+  "stale": false,
+  "price_history": []
+}

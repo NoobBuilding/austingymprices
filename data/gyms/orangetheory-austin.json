@@ -1,0 +1,23 @@
+{
+  "slug": "orangetheory-austin",
+  "name": "Orangetheory Austin",
+  "region": "mueller",
+  "sub_locality": "Mueller",
+  "category": "crossfit-hiit",
+  "website": "https://orangetheory.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Basic / Elite / Premier tiers vary by studio.",
+  "stale": false,
+  "price_history": []
+}

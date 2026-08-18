@@ -1,0 +1,23 @@
+{
+  "slug": "lift-atx",
+  "name": "Lift ATX",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "gym-weights",
+  "website": "https://liftatx.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "A ~$40/mo rate appears in local coverage but is unconfirmed against the gym's own site, so no number is shown. Call to confirm.",
+  "stale": false,
+  "price_history": []
+}

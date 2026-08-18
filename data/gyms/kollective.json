@@ -1,0 +1,23 @@
+{
+  "slug": "kollective",
+  "name": "Kollective",
+  "region": "south-soco",
+  "sub_locality": "South Austin",
+  "category": "luxury",
+  "website": "https://kollective.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Rates of $399–500/mo have been reported but are unconfirmed, and membership runs through an application process. Call to confirm the current rate and initiation fee.",
+  "stale": false,
+  "price_history": []
+}

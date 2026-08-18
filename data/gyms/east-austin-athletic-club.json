@@ -1,0 +1,66 @@
+{
+  "slug": "east-austin-athletic-club",
+  "name": "East Austin Athletic Club",
+  "region": "east-austin",
+  "sub_locality": "East Austin",
+  "category": "gym-classes",
+  "website": "https://eastaustinathleticclub.com",
+  "pricing_url": "https://www.eastaustinathleticclub.com/prices-1",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [
+    "Boxing",
+    "Towel service",
+    "Sauna",
+    "Cold plunge",
+    "Recovery room"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "4-week",
+  "plans": [
+    {
+      "name": "Unlimited",
+      "monthly": 215,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 1,
+      "note": "Billed $215 every 4 weeks — 13 billing periods a year, not 12. 4-week minimum commitment for all new memberships.",
+      "is_default": true
+    },
+    {
+      "name": "2x / Week",
+      "monthly": 155,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 1,
+      "note": "Billed $155 every 4 weeks. 8 large-group sessions per 4 weeks.",
+      "is_default": false
+    },
+    {
+      "name": "Strike Club",
+      "monthly": 114,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 1,
+      "note": "Billed $28.50/week (~$114 per 4 weeks). Unlimited striking classes and boxing-area open gym. One week's notice to cancel.",
+      "is_default": false
+    },
+    {
+      "name": "Annual Paid in Full",
+      "monthly": 189,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "note": "$2,449 paid upfront, which the club publishes as $189 per 4 weeks.",
+      "is_default": false
+    }
+  ],
+  "day_pass": 45,
+  "pricing_note": "All memberships are billed every 4 weeks, so a year is 13 payments. Also offers a $75 week pass, a $30 single drop-in and a $275 10-pack. The $45 day pass includes one contrast-therapy session.",
+  "stale": false,
+  "price_history": []
+}

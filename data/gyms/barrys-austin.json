@@ -1,0 +1,23 @@
+{
+  "slug": "barrys-austin",
+  "name": "Barry's Austin",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "crossfit-hiit",
+  "website": "https://barrys.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Class-pack model; per §1 boutique studios get a day-pass row and a website link only in v1.",
+  "stale": false,
+  "price_history": []
+}

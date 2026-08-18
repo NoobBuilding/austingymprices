@@ -1,0 +1,23 @@
+{
+  "slug": "castle-hill-fitness",
+  "name": "Castle Hill Fitness",
+  "region": "downtown",
+  "sub_locality": "12th & Lamar",
+  "category": "gym-classes",
+  "website": "https://castlehillfitness.com",
+  "pricing_url": null,
+  "address": "1112 North Lamar Blvd, Austin, TX 78703",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Membership rates are not present in the page source we can read; they load dynamically. Collected by hand instead. A back-to-school promo on 3- and 6-month Premier Gym memberships was running when last checked.",
+  "stale": false,
+  "price_history": []
+}

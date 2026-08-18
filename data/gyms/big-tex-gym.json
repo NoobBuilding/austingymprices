@@ -1,0 +1,73 @@
+{
+  "slug": "big-tex-gym",
+  "name": "Big Tex Gym",
+  "region": "hyde-park",
+  "sub_locality": "North Loop",
+  "category": "gym-weights",
+  "website": "https://bigtexgym.com",
+  "pricing_url": "https://www.bigtexgym.com/membership",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": "Serious lifting crowd, old-school and specialty equipment, loud floor, 24/7 key-tag access. Boxing area and infrared sauna on site.",
+  "amenities": [
+    "24/7 key-tag access",
+    "Infrared sauna",
+    "Boxing area"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Month-to-Month",
+      "monthly": 55,
+      "enroll_fee": 0,
+      "annual_fee": 45,
+      "commit_months": 2,
+      "note": "Plus tax. Auto-renewal with a 2-month minimum. The $45/yr maintenance fee is charged 75 days after signup, then annually on that date.",
+      "is_default": true
+    },
+    {
+      "name": "1 Month Paid in Full",
+      "monthly": 70,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 1,
+      "note": "$70 paid upfront. Paid-in-full plans carry no annual maintenance fee.",
+      "is_default": false
+    },
+    {
+      "name": "3 Months Paid in Full",
+      "monthly": 64,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "note": "$190 paid upfront ($64/mo as published by the gym). No annual fee.",
+      "is_default": false
+    },
+    {
+      "name": "6 Months Paid in Full",
+      "monthly": 59,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "note": "$350 paid upfront ($59/mo as published by the gym). No annual fee.",
+      "is_default": false
+    },
+    {
+      "name": "12 Months Paid in Full",
+      "monthly": 53,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "note": "$630 paid upfront ($53/mo as published by the gym). No annual fee.",
+      "is_default": false
+    }
+  ],
+  "day_pass": 10,
+  "pricing_note": "Also offers a $35 week pass, a $45/mo service discount (military, police, fire, first responders) and a $135 3-month student plan, both in-person signup only. Day pass excludes sauna access.",
+  "stale": false,
+  "price_history": []
+}

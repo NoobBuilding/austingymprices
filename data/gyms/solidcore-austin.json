@@ -1,0 +1,23 @@
+{
+  "slug": "solidcore-austin",
+  "name": "[solidcore] Austin",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "pilates",
+  "website": "https://solidcore.co",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Class-pack model; rates vary by studio.",
+  "stale": false,
+  "price_history": []
+}

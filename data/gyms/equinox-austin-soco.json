@@ -1,0 +1,23 @@
+{
+  "slug": "equinox-austin-soco",
+  "name": "Equinox Austin (SoCo)",
+  "region": "downtown",
+  "sub_locality": "SoCo",
+  "category": "luxury",
+  "website": "https://equinox.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Equinox does not publish rates; membership is consult-gated.",
+  "stale": false,
+  "price_history": []
+}

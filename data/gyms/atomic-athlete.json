@@ -1,0 +1,23 @@
+{
+  "slug": "atomic-athlete",
+  "name": "Atomic Athlete",
+  "region": "south-soco",
+  "sub_locality": "South Austin",
+  "category": "gym-weights",
+  "website": "https://atomic-athlete.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Open gym plus classes; rates only partially public.",
+  "stale": false,
+  "price_history": []
+}

@@ -1,0 +1,77 @@
+{
+  "slug": "planet-fitness-e-riverside",
+  "name": "Planet Fitness E. Riverside",
+  "region": "east-austin",
+  "sub_locality": "E. Riverside",
+  "category": "gym-weights",
+  "website": "https://planetfitness.com",
+  "pricing_url": "https://www.planetfitness.com/gyms/austin-e-riverside-tx/offers",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [
+    "24/7",
+    "HydroMassage",
+    "Massage chairs",
+    "Tanning"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Classic",
+      "monthly": null,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "note": "PROMO-ONLY: the standing rate is not published. Every tier on the page carries an offer expiring August 30, 2026, so the promotional $10/mo, $59 startup and $0.00 annual fee cannot be promoted to standing. Recheck after the offer expires.",
+      "is_default": true,
+      "promo": {
+        "price": 10,
+        "enroll_fee": 59,
+        "annual_fee": 0,
+        "note": "Promotional rate — offer expires August 30, 2026. Annual fee shown as $0.00 during the promo.",
+        "expires": "2026-08-30"
+      }
+    },
+    {
+      "name": "Classic PLUS",
+      "monthly": null,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "note": "PROMO-ONLY — standing rate not published. Adds access to any club.",
+      "is_default": false,
+      "promo": {
+        "price": 20,
+        "enroll_fee": 59,
+        "annual_fee": 0,
+        "note": "Promotional rate — offer expires August 30, 2026.",
+        "expires": "2026-08-30"
+      }
+    },
+    {
+      "name": "PF Black Card",
+      "monthly": null,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "note": "PROMO-ONLY — standing rate not published.",
+      "is_default": false,
+      "promo": {
+        "price": 29.99,
+        "enroll_fee": 1,
+        "annual_fee": 0,
+        "note": "Promotional rate — $1 down, offer expires August 30, 2026.",
+        "expires": "2026-08-30"
+      }
+    }
+  ],
+  "day_pass": null,
+  "pricing_note": "Prices not published — every tier was in promotional state when checked. Awaiting a post-promo recheck before any number is shown as the standing rate.",
+  "stale": false,
+  "price_history": []
+}

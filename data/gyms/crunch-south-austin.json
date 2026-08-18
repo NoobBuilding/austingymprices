@@ -1,0 +1,79 @@
+{
+  "slug": "crunch-south-austin",
+  "name": "Crunch South Austin",
+  "region": "south-soco",
+  "sub_locality": "South Austin",
+  "category": "gym-weights",
+  "website": "https://crunch.com",
+  "pricing_url": "https://www.crunch.com/locations/south-austin",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [
+    "Group fitness classes",
+    "HIIT classes"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Base (12-month commitment)",
+      "monthly": 9.99,
+      "enroll_fee": 75,
+      "annual_fee": 10,
+      "commit_months": 12,
+      "note": "Single-club access. Enrollment fee is $75 standing.",
+      "is_default": true,
+      "promo": {
+        "enroll_fee": 0.01,
+        "note": "Join for 1¢ + 2 weeks free — enrollment fee reduced to $0.01."
+      }
+    },
+    {
+      "name": "Base (month-to-month)",
+      "monthly": 15.99,
+      "enroll_fee": 75,
+      "annual_fee": 10,
+      "commit_months": 0,
+      "note": "Single-club access, no commitment.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0.01,
+        "note": "Join for 1¢ + 2 weeks free."
+      }
+    },
+    {
+      "name": "Peak",
+      "monthly": 26.99,
+      "enroll_fee": 75,
+      "annual_fee": 10,
+      "commit_months": 0,
+      "note": "Adds group fitness classes and multi-club access.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0.01,
+        "note": "Join for 1¢ + 2 weeks free."
+      }
+    },
+    {
+      "name": "Peak Results",
+      "monthly": 36.99,
+      "enroll_fee": 75,
+      "annual_fee": 10,
+      "commit_months": 0,
+      "note": "Adds HIIT classes, R&R services and unlimited guests.",
+      "is_default": false,
+      "promo": {
+        "enroll_fee": 0.01,
+        "note": "Join for 1¢ + 2 weeks free."
+      }
+    }
+  ],
+  "day_pass": null,
+  "pricing_note": "Annual fee is billed prorated at $10. Rates exclude tax and recurring processing fees.",
+  "stale": false,
+  "price_history": []
+}

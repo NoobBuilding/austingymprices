@@ -1,0 +1,38 @@
+{
+  "slug": "life-time-south",
+  "name": "Life Time Austin South",
+  "region": "south-soco",
+  "sub_locality": "South Lamar",
+  "category": "luxury",
+  "website": "https://lifetime.life",
+  "pricing_url": "https://www.lifetime.life/locations/tx/austin-south/memberships.html",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [
+    "Pool",
+    "Spa",
+    "Group fitness",
+    "Café"
+  ],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Membership",
+      "monthly": 259,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Published as a \"starting at\" rate — the entry tier. Life Time states dues, fees and charges may vary by location and change. No enrollment or annual fee is stated on the site; recorded as none but unconfirmed.",
+      "is_default": true
+    }
+  ],
+  "day_pass": null,
+  "pricing_note": "Day passes are sold but the price is not published online.",
+  "stale": false,
+  "price_history": []
+}

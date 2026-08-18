@@ -1,0 +1,23 @@
+{
+  "slug": "f45-downtown",
+  "name": "F45 Downtown",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "crossfit-hiit",
+  "website": "https://f45training.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published — call the gym. Franchise pricing varies by location.",
+  "stale": false,
+  "price_history": []
+}

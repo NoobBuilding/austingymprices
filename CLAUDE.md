@@ -83,6 +83,8 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
       "is_default": true              // exactly one plan per gym; drives card price + map pin
     }
   ],
+  "sub_locality": "North Loop",       // display-only neighbourhood, shown after the region
+  "billing_period": "monthly",        // "monthly" (default) | "4-week" | "weekly"
   "day_pass": 15,                     // null if unknown/none
   "price_history": [                  // append-only; never overwritten, never hand-edited
     {
@@ -95,6 +97,25 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   ]
 }
 ```
+
+**`billing_period` rules:** store the amount the gym actually bills, in the period it
+actually bills it — never silently convert. EAAC bills $215 every 4 weeks, which is 13
+payments a year, not 12. The normalized monthly equivalent is computed at build time and
+used for all-in math, region medians, price tiers and map pins; the detail-page receipt
+shows the gym's own reality alongside it: "$215 per 4 weeks (≈$233/mo)".
+
+**`promo` rules:** any plan may carry an optional
+`promo: {price, enroll_fee, annual_fee, note, expires}` (all fields optional). The
+**standing** price always drives all-in math, medians, tiers and map pins; the promo
+renders as a flag on the card and detail page ("$0 join fee through Aug 30"). Where the
+standing rate is unknown because the page only ever shows a promo state, the standing
+fields stay `null` and the plan is marked promo-only — **never promote a promo number to
+standing**. This is deliberately the foundation for the §10 deals feed.
+
+**Commitment badge rules:** the green "No contract" badge renders **only** when
+`commit_months ≤ 1`. For 2–3 months, render a neutral grey badge stating the exact truth
+("2-mo minimum"). The **"No contract" filter** includes `commit_months ≤ 2`, because a
+two-month floor is not what people mean by a contract — but the badge never overstates.
 
 **`price_history` rules:** on every scrape where any plan value changes, the scraper
 **appends** a `{date, plan_name, field, old, new}` entry rather than silently overwriting

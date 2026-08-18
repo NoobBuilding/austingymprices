@@ -1,0 +1,38 @@
+[
+  {
+    "id": "downtown",
+    "name": "Downtown",
+    "h1": "Gym prices in Downtown Austin",
+    "map_label": { "x": 176, "y": 452 }
+  },
+  {
+    "id": "east-austin",
+    "name": "East Austin",
+    "h1": "Gym prices in East Austin",
+    "map_label": { "x": 392, "y": 300 }
+  },
+  {
+    "id": "south-soco",
+    "name": "South / SoCo",
+    "h1": "Gym prices in South Austin and SoCo",
+    "map_label": { "x": 170, "y": 660 }
+  },
+  {
+    "id": "hyde-park",
+    "name": "Hyde Park",
+    "h1": "Gym prices in Hyde Park, Austin",
+    "map_label": { "x": 160, "y": 140 }
+  },
+  {
+    "id": "mueller",
+    "name": "Mueller",
+    "h1": "Gym prices in Mueller, Austin",
+    "map_label": { "x": 404, "y": 140 }
+  },
+  {
+    "id": "the-domain",
+    "name": "The Domain",
+    "h1": "Gym prices near The Domain, Austin",
+    "map_label": { "x": 30, "y": 40 }
+  }
+]

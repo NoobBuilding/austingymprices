@@ -1,0 +1,60 @@
+{
+  "slug": "hyde-park-gym",
+  "name": "Hyde Park Gym",
+  "region": "hyde-park",
+  "sub_locality": "Hyde Park",
+  "category": "gym-weights",
+  "website": "https://hydeparkgym.com",
+  "pricing_url": "https://www.hydeparkgym.com/membership-info",
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-18",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Monthly Auto-Draft",
+      "monthly": 79,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "note": "Plus sales tax. No time commitment and no initiation fee.",
+      "is_default": true
+    },
+    {
+      "name": "3 Months",
+      "monthly": 73,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "note": "$219 paid upfront. Plus sales tax.",
+      "is_default": false
+    },
+    {
+      "name": "6 Months",
+      "monthly": 63,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "note": "$379 paid upfront. Plus sales tax.",
+      "is_default": false
+    },
+    {
+      "name": "1 Year",
+      "monthly": 57,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "note": "$689 paid upfront. Plus sales tax.",
+      "is_default": false
+    }
+  ],
+  "day_pass": 15,
+  "pricing_note": "Also offers a 10-visit punchcard for $90 (valid 6 months) and a 1-week pass for $39. All prices exclude sales tax.",
+  "stale": false,
+  "price_history": []
+}

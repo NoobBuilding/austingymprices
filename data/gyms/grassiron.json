@@ -1,0 +1,23 @@
+{
+  "slug": "grassiron",
+  "name": "Grassiron",
+  "region": "hyde-park",
+  "sub_locality": "Hyde Park",
+  "category": "gym-weights",
+  "website": "https://grassiron.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Personal-training tiers reported at $189–299/mo in 2023 — too old to ship. Call to confirm.",
+  "stale": false,
+  "price_history": []
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "golds-gym-downtown",
+  "name": "Gold's Gym Downtown",
+  "region": "downtown",
+  "sub_locality": "Downtown",
+  "category": "gym-weights",
+  "website": "https://goldsgym.com",
+  "pricing_url": null,
+  "address": null,
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": null,
+  "billing_period": "monthly",
+  "plans": [],
+  "day_pass": null,
+  "pricing_note": "Pricing not published online. The club site blocks automated checks (repeated timeouts, and the join flow returns a server error), so this listing is collected by hand.",
+  "stale": false,
+  "price_history": []
+}
