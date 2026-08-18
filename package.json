@@ -1,0 +1,33 @@
+{
+  "name": "austingymprices",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Gym price transparency for Austin, TX",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "check": "astro check",
+    "validate:data": "node scripts/validate-data.mjs"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "astro": "^7.2.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@typescript-eslint/parser": "^8.67.0",
+    "astro-eslint-parser": "^1.4.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-astro": "^1.7.0",
+    "globals": "^17.11.0",
+    "typescript": "^6.0.3"
+  }
+}

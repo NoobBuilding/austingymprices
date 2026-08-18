@@ -1,0 +1,104 @@
+/**
+ * Validates /data against the schema in CLAUDE.md §3. Runs in CI so a bad
+ * gym file fails the build rather than shipping a wrong price.
+ *
+ * Checks the invariants that would put a wrong number on the site:
+ *   - slug matches filename, no duplicates
+ *   - region and category are in the locked enums
+ *   - exactly one is_default plan on any gym that has plans
+ *   - no plan carries a price without also carrying its fee fields
+ *   - a gym with no plans must explain itself via pricing_note
+ *   - price_history entries are well formed and append-only in shape
+ */
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const GYM_DIR = 'data/gyms';
+const CATEGORIES = new Set([
+  'gym-weights', 'gym-classes', 'luxury', 'crossfit-hiit', 'pilates',
+  'yoga', 'boxing', 'bjj-mma', 'climbing', 'community',
+]);
+const BILLING_PERIODS = new Set(['monthly', '4-week', 'weekly']);
+const HISTORY_FIELDS = new Set([
+  'monthly', 'enroll_fee', 'annual_fee', 'commit_months', 'day_pass',
+]);
+
+const regions = new Set(
+  JSON.parse(readFileSync('data/regions.json', 'utf8')).map((r) => r.id),
+);
+
+const errors = [];
+const seen = new Set();
+let priced = 0;
+let unpriced = 0;
+
+for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort()) {
+  const gym = JSON.parse(readFileSync(join(GYM_DIR, file), 'utf8'));
+  const fail = (msg) => errors.push(`${file}: ${msg}`);
+
+  if (`${gym.slug}.json` !== file) fail(`slug "${gym.slug}" does not match filename`);
+  if (seen.has(gym.slug)) fail(`duplicate slug "${gym.slug}"`);
+  seen.add(gym.slug);
+
+  if (!gym.name) fail('missing name');
+  if (!regions.has(gym.region)) fail(`unknown region "${gym.region}"`);
+  if (!CATEGORIES.has(gym.category)) fail(`unknown category "${gym.category}"`);
+  if (!BILLING_PERIODS.has(gym.billing_period)) {
+    fail(`unknown billing_period "${gym.billing_period}"`);
+  }
+  if (!['scrape', 'manual'].includes(gym.data_source)) {
+    fail(`data_source must be "scrape" or "manual", got "${gym.data_source}"`);
+  }
+  if (!Array.isArray(gym.price_history)) fail('price_history must be an array');
+
+  for (const entry of gym.price_history ?? []) {
+    if (!entry.date || !entry.plan_name) fail('price_history entry missing date/plan_name');
+    if (!HISTORY_FIELDS.has(entry.field)) {
+      fail(`price_history has unknown field "${entry.field}"`);
+    }
+  }
+
+  // A lat without a lng (or vice versa) would place a pin in the ocean.
+  if ((gym.lat === null) !== (gym.lng === null)) fail('lat and lng must both be set or both null');
+
+  const plans = gym.plans ?? [];
+  if (plans.length === 0) {
+    unpriced += 1;
+    if (!gym.pricing_note) fail('has no plans and no pricing_note explaining why');
+  } else {
+    const defaults = plans.filter((p) => p.is_default);
+    if (defaults.length !== 1) fail(`${defaults.length} default plans, expected exactly 1`);
+
+    for (const plan of plans) {
+      if (!plan.name) fail('a plan is missing a name');
+      if (typeof plan.commit_months !== 'number') {
+        fail(`plan "${plan.name}" has a non-numeric commit_months`);
+      }
+      // A price with undefined fees would silently understate the all-in.
+      if (plan.monthly !== null) {
+        if (plan.enroll_fee === null || plan.enroll_fee === undefined) {
+          fail(`plan "${plan.name}" has a monthly rate but no enroll_fee`);
+        }
+        if (plan.annual_fee === null || plan.annual_fee === undefined) {
+          fail(`plan "${plan.name}" has a monthly rate but no annual_fee`);
+        }
+      } else if (!plan.promo && !plan.note) {
+        fail(`plan "${plan.name}" has no price and no promo/note explaining why`);
+      }
+    }
+
+    if (defaults[0]?.monthly !== null && defaults[0]?.monthly !== undefined) priced += 1;
+    else unpriced += 1;
+  }
+}
+
+console.log(`data/gyms: ${seen.size} files`);
+console.log(`  confirmed standing price : ${priced}`);
+console.log(`  call for pricing         : ${unpriced}`);
+
+if (errors.length > 0) {
+  console.error(`\n${errors.length} validation error(s):`);
+  for (const e of errors) console.error(`  - ${e}`);
+  process.exit(1);
+}
+console.log('\nOK — all gym data valid.');

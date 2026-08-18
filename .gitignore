@@ -62,3 +62,6 @@ desktop.ini
 *.swp
 *.swo
 *~
+
+# ── Astro build output ────────────────────────────────────────────────
+# (dist/ and .astro/ are already listed above under Node/Astro)

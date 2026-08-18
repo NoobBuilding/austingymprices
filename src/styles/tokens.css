@@ -1,0 +1,59 @@
+/* Design tokens — CLAUDE.md §5.
+ *
+ * Values are lifted verbatim from the two mockups' :root blocks. Do not
+ * restyle. Orange is an ACCENT: chips, active states, links, fee warnings.
+ * It is never a background wash.
+ */
+
+:root {
+  /* ── Colour ─────────────────────────────────────────────────────── */
+  --orange: #BF5700;
+  --orange-dark: #9E4800;
+  --orange-tint: #FBF1E9;
+  --ink: #211D19;
+  --ink-soft: #6B635B;
+  --line: #ECE7E1;
+  --bg: #FFFFFF;
+  --green: #1E7A46;
+  --green-tint: #E9F5EE;
+
+  /* Surfaces used by receipts, expanded cards and the "known for" box */
+  --surface-sunk: #FCFAF8;
+  --map-ground: #F5F2ED;
+  --map-park: #E7EDE2;
+  --map-street: #EBE6DF;
+  --map-highway: #E3DBD0;
+  --map-highway-minor: #E9E2D8;
+  --map-river: #D8E6EE;
+  --map-label: #C4BAAD;
+  --pin-stroke: #E4DDD4;
+
+  /* Muted metadata: provenance footers, photo credits */
+  --ink-faint: #A79D92;
+  --dash: #D8D0C6;
+
+  /* Neutral commitment badge — CLAUDE.md §3, for a 2-3 month minimum.
+   * Never green: green is reserved for genuinely no-contract. */
+  --neutral-badge-bg: #F1EEEA;
+
+  /* ── Type ───────────────────────────────────────────────────────── */
+  --font-display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* ── Shape ──────────────────────────────────────────────────────── */
+  --r: 12px;
+  --r-sm: 9px;
+  --r-xs: 6px;
+  --r-pill: 999px;
+
+  /* ── Elevation ──────────────────────────────────────────────────── */
+  --shadow-input: 0 1px 2px rgba(33, 29, 25, 0.03);
+  --shadow-card-hover: 0 2px 14px rgba(191, 87, 0, 0.09);
+  --shadow-tip: 0 4px 16px rgba(33, 29, 25, 0.12);
+
+  /* ── Layout ─────────────────────────────────────────────────────── */
+  --wrap-narrow: 880px;   /* gym detail page */
+  --wrap-hero: 1140px;    /* index hero */
+  --wrap-split: 1400px;   /* index list + map */
+  --list-max: 640px;
+}

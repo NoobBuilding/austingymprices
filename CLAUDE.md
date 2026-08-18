@@ -189,6 +189,8 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   Orange is never a background wash — accent, not wallpaper.
 - Type: Barlow Condensed 600/700 for display/headlines/prices, Inter for everything else.
   Self-host the fonts (no Google Fonts request at runtime — privacy + speed).
+- `known_for` is the owner's editorial voice, never generated. When it is `null`,
+  render **nothing** — no placeholder, no empty box.
 - Voice: neutral and factual. No "contract traps," no snark at gyms. Fee surprises are
   stated plainly ("charged 75 days after signup"), not editorialized. "Known for" lines
   are descriptive, never derogatory.
@@ -311,6 +313,14 @@ exists; they are recorded now so they're inherited, not retrofitted.
 1. Repo scaffold, Astro, design tokens, fonts, CI (lint + audit), branch protection, `_headers`.
 2. Data schema + loader; convert seed xlsx rows with confirmed prices into `/data/gyms/*.json`.
 3. Index page: list + filters (no map yet). Cards + accordion per mockup.
+4a. **Address collection + geocoding pass, all 41 gyms.** Addresses come from each
+   gym's own site footer/contact page during normal scrapes where possible; the owner
+   fills the stragglers. Geocode with **Nominatim** (OpenStreetMap's free geocoder) —
+   zero key, zero cost, same rationale as Leaflet/OSM. Observe its usage policy:
+   **max 1 request/second**, honest identifying User-Agent, cache results. Where
+   Nominatim returns a low-confidence match, **flag it for a manual pin-drop by the
+   owner** rather than accepting a fuzzy hit — a wrong pin is the map equivalent of a
+   wrong price. `lat`/`lng` stay `null` until confirmed; a null pin is simply not drawn.
 4. Leaflet map island + pin/card sync. Mobile map toggle.
 5. Gym detail pages + region pages + JSON-LD + sitemap.
 6. Scrapers: lib + the 6 "Low complexity" targets first; Actions cron + PR flow; Sentry.
@@ -320,7 +330,7 @@ exists; they are recorded now so they're inherited, not retrofitted.
 8. FAQ / for-gym-owners pages; OG images; final a11y + Lighthouse pass (target ≥95 across the board).
 9. Deploy to Cloudflare Pages, wire domains + redirect, smoke test, ship.
 
-**Definition of done for launch:** ≥31 of 39 gyms with confirmed prices ("Need price" ≤ 8),
+**Definition of done for launch:** ≥33 of 41 gyms with confirmed prices ("Need price" ≤ 8),
 every shipped number traceable to a source, zero console errors, works without JS,
 Lighthouse ≥95, and the owner has clicked through every gym page once.
 

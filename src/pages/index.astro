@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Scaffold placeholder. The real index — hero, tabs, search, region chips,
+// filter row, card list + Leaflet map — is build-order steps 3 and 4.
+const title = 'Austin Gym Prices — Compare gym membership costs in Austin';
+const description =
+  "Membership prices and fees for gyms across Austin, from each gym's own website.";
+---
+
+<Base title={title} description={description}>
+  <section class="scaffold">
+    <h1>Every Austin gym. <em>The real price.</em></h1>
+    <p class="sub">{description}</p>
+    <p class="note">
+      Scaffold only — design tokens, self-hosted fonts and security headers are in
+      place. The gym list, filters and map arrive in build-order steps 3 and 4.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .scaffold {
+    padding: 72px 32px 0;
+    max-width: var(--wrap-hero);
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 5.6vw, 4.2rem);
+    line-height: 0.96;
+    text-transform: uppercase;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--orange);
+  }
+
+  .sub {
+    margin-top: 16px;
+    color: var(--ink-soft);
+    font-size: 1.08rem;
+  }
+
+  .note {
+    margin-top: 28px;
+    font-size: 0.85rem;
+    color: var(--orange-dark);
+    background: var(--orange-tint);
+    border-radius: var(--r-sm);
+    padding: 11px 14px;
+    max-width: 60ch;
+  }
+</style>
