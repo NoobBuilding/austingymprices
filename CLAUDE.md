@@ -83,9 +83,25 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
       "is_default": true              // exactly one plan per gym; drives card price + map pin
     }
   ],
-  "day_pass": 15                      // null if unknown/none
+  "day_pass": 15,                     // null if unknown/none
+  "price_history": [                  // append-only; never overwritten, never hand-edited
+    {
+      "date": "2026-08-18",           // date the change was observed
+      "plan_name": "Month-to-Month",  // which plan object changed
+      "field": "monthly",             // monthly | enroll_fee | annual_fee | commit_months | day_pass
+      "old": 49,
+      "new": 55
+    }
+  ]
 }
 ```
+
+**`price_history` rules:** on every scrape where any plan value changes, the scraper
+**appends** a `{date, plan_name, field, old, new}` entry rather than silently overwriting
+the plan. The current value still lives on the plan object — history is additive, not a
+replacement for it. History starts accumulating from the first harvest; a gym harvested
+once has an empty array, which is correct and not a gap. Entries are never edited or
+deleted, because the whole point is an auditable trail behind every number we show.
 
 **Derived at build time — never stored, never hand-edited:**
 - `all_in_monthly` = round((monthly × 12 + enroll_fee + annual_fee) / 12)
@@ -156,6 +172,10 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   stated plainly ("charged 75 days after signup"), not editorialized. "Known for" lines
   are descriptive, never derogatory.
 - Price unit everywhere: **"/mo all-in."** Sticker price appears only inside breakdowns.
+- **Never claim a site-wide refresh cadence.** No "Updated daily" (the v2 mockup's hero
+  subhead says this — it predates the tiered cadence and must not ship). Freshness is
+  stated per gym, from that gym's own `verified_date`: **"Prices checked {date}."**
+  A claim we cannot honour for every gym is worse than no claim.
 
 ---
 
@@ -163,9 +183,21 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
 
 - One Python module per target in `/scrapers/targets/` (14 targets — see "Scraper Targets"
   sheet in the seed xlsx for URLs and gotchas). Shared Firecrawl client in `/scrapers/lib.py`.
-- Nightly GitHub Actions cron. Chains (PF, Crunch, Gold's, Life Time, 24hr, LA Fitness,
-  YMCA) run **daily**; stable locals (Big Tex, Hyde Park, EAAC, Los Campeones, Castle Hill,
-  Crux, ABP) run **weekly** — keeps usage ~250–450 credits/mo vs the 1,000 free.
+- GitHub Actions cron, three tiers — cadence follows how often a target's price
+  actually moves, not how easy it is to scrape:
+
+  | Tier | Targets | Cadence |
+  |------|---------|---------|
+  | Chains with promo churn | planetfitness, crunch, goldsgym, 24hour, lafitness, lifetime | **weekly** |
+  | Stable locals | bigtex, hydepark, eaac, lacampeones, castlehill, crux, abp, ymca | **monthly** |
+  | Manual-status gyms | the consult-gated set (Equinox, Kollective, F45, studios…) | **monthly probe**, watching for pricing becoming published |
+
+  **Seasonal bump:** during **January and June** — the two months gyms actually change
+  offers — every tier promotes one level. Monthly→weekly is the meaningful move; weekly
+  stays weekly (2x/week buys nothing and doubles spend).
+
+  Budget target: **~40–60 credits/month** against the 1,000 free, leaving ample headroom
+  for re-runs, new targets, and the seasonal bump.
 - Scrapers parse to the plan schema and open a **PR** with the JSON diff — never push to
   main. Human merges. A price change of >25% or a parse returning zero plans fails loudly
   (Sentry + failed check), does not write.
@@ -270,3 +302,18 @@ exists; they are recorded now so they're inherited, not retrofitted.
 **Definition of done for launch:** ≥31 of 39 gyms with confirmed prices ("Need price" ≤ 8),
 every shipped number traceable to a source, zero console errors, works without JS,
 Lighthouse ≥95, and the owner has clicked through every gym page once.
+
+---
+
+## 10. Phase 2 (not v1 — recorded so v1 does not foreclose it)
+
+Nothing here gets built, or partially built, in v1. It is written down so that v1's
+data model stays compatible with it.
+
+- **Deals feed + price-drop email alerts + price history charts**, built on scrape diffs;
+  potential promo-placement revenue layer once traffic exists.
+
+The `price_history` array in §3 is the v1 groundwork for this: it costs nothing now, and
+without it from day one the charts would have no back-catalogue to draw. Everything else
+this implies — accounts, email capture, a write path — remains firmly out of v1 per §1,
+and inherits every **[phase-2]** security rule in §8 the day it arrives.

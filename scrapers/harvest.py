@@ -34,6 +34,10 @@ import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
+class ScrapeError(Exception):
+    """One target failed. The run continues with the next target."""
+
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SEED_XLSX = REPO_ROOT / "docs" / "austin-gym-seed-list.xlsx"
 OUT_DIR = Path(__file__).resolve().parent / "harvest_output"
@@ -43,7 +47,7 @@ FIRECRAWL_ENDPOINTS = (
     "https://api.firecrawl.dev/v2/scrape",
     "https://api.firecrawl.dev/v1/scrape",
 )
-REQUEST_TIMEOUT = 120       # Firecrawl renders JS; some targets are slow
+REQUEST_TIMEOUT = 300       # Firecrawl renders JS; Gold's is very slow
 POLITE_DELAY_SECONDS = 3    # between targets
 
 # ---------------------------------------------------------------------------
@@ -75,18 +79,20 @@ URL_OVERRIDES = {
         "Austin'; slug guessed. Verify on crunch.com/locations.",
     ),
     "goldsgym": (
-        "https://www.goldsgym.com/austin-downtown/",
-        "guess",
-        "Sheet says only 'goldsgym.com club pages'. Covers two seed rows "
-        "(Downtown row 1, Burnet row 29) — this harvest fetches the Downtown "
-        "club page. Burnet needs a second URL once located.",
+        "https://www.goldsgym.com/locations/tx/austin-downtown/",
+        "pattern-matched",
+        "Sheet says only 'goldsgym.com club pages'. The first guess "
+        "(goldsgym.com/austin-downtown/) timed out twice. The owner-verified "
+        "Burnet URL shows the real shape is /locations/tx/{club}/, so the "
+        "Downtown URL is realigned to match. Still needs eyeballing.",
     ),
     "lifetime": (
-        "https://www.lifetime.life/life-time-locations/tx-south-austin.html",
-        "guess",
-        "Sheet gives lifetime.life/locations/tx/{slug}.html. Seed row 20 (South, "
-        "$259) is the confirmed one; slug guessed. Downtown/North need their own "
-        "URLs — Life Time covers four seed rows.",
+        "https://www.lifetime.life/locations/tx/austin-south/memberships.html",
+        "pattern-matched",
+        "Sheet's lifetime.life/locations/tx/{slug}.html was wrong — the first "
+        "guess returned a hard 404. The owner-verified Downtown/North URLs show "
+        "the real shape is /locations/tx/austin-{area}/memberships.html, so "
+        "South is realigned to match. Covers seed row 20 ($259).",
     ),
     "24hour": (
         "https://www.24hourfitness.com/gyms/austin-tx/",
@@ -143,6 +149,47 @@ URL_OVERRIDES = {
     ),
 }
 
+
+# ---------------------------------------------------------------------------
+# Sister locations.
+#
+# Four seed rows are covered by a scraper whose sheet row names only ONE club:
+# Gold's covers Downtown + Burnet, Life Time covers South + Downtown + North.
+# These extra club URLs are not in the sheet at all — they were hand-verified by
+# the owner, which is why they carry confidence="owner" rather than a guess.
+# ---------------------------------------------------------------------------
+EXTRA_TARGETS = [
+    {
+        "slug": "lifetime-downtown",
+        "covers": "Life Time Downtown (seed row 3)",
+        "pattern": "(not in sheet)",
+        "complexity": "Low",
+        "notes": "Sister location of the `lifetime` scraper target.",
+        "url": "https://www.lifetime.life/locations/tx/austin-downtown/memberships.html",
+        "confidence": "owner",
+        "caveat": "",
+    },
+    {
+        "slug": "lifetime-north",
+        "covers": "Life Time North / Domain area (seed row 33)",
+        "pattern": "(not in sheet)",
+        "complexity": "Low",
+        "notes": "Sister location of the `lifetime` scraper target.",
+        "url": "https://www.lifetime.life/locations/tx/austin-north/memberships.html",
+        "confidence": "owner",
+        "caveat": "",
+    },
+    {
+        "slug": "goldsgym-burnet",
+        "covers": "Gold's Gym North / Burnet (seed row 29)",
+        "pattern": "(not in sheet)",
+        "complexity": "Medium",
+        "notes": "Sister location of the `goldsgym` scraper target.",
+        "url": "https://www.goldsgym.com/locations/tx/austin-burnet/",
+        "confidence": "owner",
+        "caveat": "",
+    },
+]
 
 # ---------------------------------------------------------------------------
 # Seed sheet reading (stdlib xlsx parse — an xlsx is a zip of XML)
@@ -232,6 +279,7 @@ def load_targets():
             "confidence": confidence,
             "caveat": caveat,
         })
+    targets.extend(EXTRA_TARGETS)
     return targets
 
 
@@ -316,17 +364,21 @@ def firecrawl_scrape(url, api_key):
             if exc.code in (404, 410):
                 last_error = "HTTP %s from %s" % (exc.code, endpoint)
                 continue
-            raise SystemExit("Firecrawl returned HTTP %s for %s" % (exc.code, url))
-        except urllib.error.URLError as exc:
-            raise SystemExit("Network error reaching Firecrawl: %s" % exc.reason)
+            raise ScrapeError("Firecrawl returned HTTP %s" % exc.code)
+        except OSError as exc:
+            # Covers socket.timeout and urllib URLError — both OSError subclasses.
+            # A slow or unresponsive target must not abort the whole run.
+            raise ScrapeError("network error (%s: %s)" % (type(exc).__name__, exc))
+        except json.JSONDecodeError:
+            raise ScrapeError("Firecrawl returned a non-JSON response")
 
         data = body.get("data") or {}
         markdown = data.get("markdown") or ""
         if not markdown:
-            raise SystemExit("Firecrawl returned no markdown for %s" % url)
+            raise ScrapeError("Firecrawl returned no markdown (page may be empty or blocked)")
         return markdown, data.get("metadata") or {}
 
-    raise SystemExit("Every Firecrawl endpoint failed (%s)" % last_error)
+    raise ScrapeError("every Firecrawl endpoint failed (%s)" % last_error)
 
 
 # ---------------------------------------------------------------------------
@@ -371,6 +423,8 @@ def main():
     parser.add_argument("targets", nargs="*", help="target slugs to harvest (default: all)")
     parser.add_argument("--list", action="store_true",
                         help="print the resolved plan and exit — no API calls, no credits spent")
+    parser.add_argument("--force", action="store_true",
+                        help="refetch targets that already have output (spends credits again)")
     args = parser.parse_args()
 
     targets = load_targets()
@@ -404,10 +458,17 @@ def main():
             skipped.append((slug, reason))
             continue
 
+        existing = OUT_DIR / ("%s.md" % slug)
+        if existing.is_file() and not args.force:
+            print("        SKIP — already harvested (%s); --force to refetch"
+                  % existing.relative_to(REPO_ROOT))
+            skipped.append((slug, "already harvested"))
+            continue
+
         print("        %s" % url)
         try:
             markdown, metadata = firecrawl_scrape(url, api_key)
-        except SystemExit as exc:
+        except ScrapeError as exc:
             print("        FAIL — %s" % exc)
             failed.append((slug, str(exc)))
         else:
