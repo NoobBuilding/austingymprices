@@ -21,6 +21,16 @@ npm run dev          # http://localhost:4321
 | `npm run preview` | Serve the built site locally |
 | `npm run lint` | ESLint, including the `no-console` and no-`innerHTML` rules |
 | `npm run validate:data` | Check every `data/gyms/*.json` against the §3 schema |
+| `npm run check:csp` | Scan `dist/` for anything the CSP would refuse |
+| `npm run verify` | The full local gate: lint → data → build → CSP |
+| `npm run smoke <url>` | Assert security headers and asset reachability on a **deployed** URL |
+
+> **`public/_headers` only applies on Cloudflare Pages.** `astro dev` and
+> `astro preview` do not serve it, so the CSP is absent locally and present in
+> production. Anything the CSP refuses — an inlined script or style, an
+> `onclick=` — passes locally and fails silently once deployed. Nothing
+> involving client-side JS is done until it has been exercised on the deployed
+> `.pages.dev` URL with the browser console open.
 
 ## Deploying (Cloudflare Pages)
 

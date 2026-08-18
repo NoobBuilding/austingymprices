@@ -334,6 +334,11 @@ exists; they are recorded now so they're inherited, not retrofitted.
   the build. It runs in CI after `npm run build`. It is a backstop, not a replacement for
   looking at the deployed page.
 - `npm run verify` runs the whole gate locally: lint → data validation → build → CSP check.
+- `npm run smoke <deployed-url>` runs against the **deployed** site and asserts the
+  security headers are actually being served and that the page's own assets are
+  compatible with the policy they declare. It cannot click a button — that still needs a
+  human with a browser console — but it proves the client script is reachable,
+  same-origin and not inlined, which is the failure that shipped.
 
 **Observability & hygiene**
 - **Error boundaries + Sentry reporting:** Sentry on the client (the filter/map island) and
