@@ -77,7 +77,9 @@ const pins = getAllGyms()
     color: var(--ink);
     box-shadow: 0 2px 5px rgba(33, 29, 25, 0.14);
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition:
+      opacity 0.15s,
+      transform 0.12s;
   }
 
   :global(.pin.tier-1) {
@@ -101,11 +103,20 @@ const pins = getAllGyms()
     font-weight: 600;
   }
 
+  /* Selected must be unmistakable against EVERY tier tint. Inverting to ink
+   * collided with tier 3, which is already ink — a tier-3 pin read as
+   * permanently selected. Selected now inverts to ORANGE, which no tier uses
+   * as a fill, and adds a heavy ring plus a scale bump so it reads as active
+   * even in a dense cluster of bubbles. */
   :global(.pin.active) {
-    background: var(--ink);
-    border-color: var(--orange);
+    background: var(--orange);
+    border-color: var(--orange-dark);
     color: #fff;
-    box-shadow: 0 0 0 3px rgba(191, 87, 0, 0.25);
+    box-shadow:
+      0 0 0 4px rgba(191, 87, 0, 0.3),
+      0 3px 10px rgba(33, 29, 25, 0.25);
+    transform: scale(1.12);
+    z-index: 1000;
   }
 
   /* Filtered out. */

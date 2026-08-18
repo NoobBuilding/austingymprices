@@ -33,3 +33,33 @@ export function clusterLabel(members, format) {
   if (lo === hi) return format(lo);
   return `${format(lo)}–${String(format(hi)).replace(/^\$/, '')}`;
 }
+
+/**
+ * The classes a rendered bubble wears. Pure, so the "exactly one thing looks
+ * selected" invariant can be asserted without a map.
+ *
+ * A gym is drawn EITHER as a lone pin or inside a cluster, never both, so at
+ * most one bubble can carry `active` for a given selection.
+ */
+export function pinClasses({ tier, priced, selected, dimmed, noPass, cluster }) {
+  const classes = ['pin'];
+  if (cluster) classes.push('cluster');
+  else classes.push(priced ? `tier-${tier ?? 2}` : 'callfor');
+  if (noPass) classes.push('nopass');
+  if (dimmed) classes.push('dim');
+  if (selected) classes.push('active');
+  return classes.join(' ');
+}
+
+/**
+ * How many bubbles would carry `active` for a given selection. Used by the
+ * tests to hold the invariant: never more than one.
+ */
+export function countActive(groups, standalone, selectedSlug) {
+  if (!selectedSlug) return 0;
+  const inGroups = groups.filter((g) =>
+    g.members.some((m) => m.pin.slug === selectedSlug),
+  ).length;
+  const inStandalone = standalone.filter((p) => p.pin.slug === selectedSlug).length;
+  return inGroups + inStandalone;
+}

@@ -80,6 +80,10 @@ for (const cls of ['.pin', '.pin.tier-1', '.pin.tier-3', '.pin.callfor', '.pin.c
 
 console.log('\nCSP compatibility');
 check(/basemaps\.cartocdn\.com/.test(headers), 'CartoDB tile host allowed by img-src');
+check(
+  /rastertiles\/voyager/.test(readFileSync(join('dist/_astro', mapChunk), 'utf8')),
+  'using CartoDB Voyager tiles',
+);
 check(!/unsafe-inline/.test(headers), "CSP still forbids 'unsafe-inline'");
 check(
   /\/vendor\/leaflet\.css/.test(readFileSync(join('dist/_astro', mapChunk), 'utf8')),
@@ -88,7 +92,7 @@ check(
 
 // ── Clustering maths (pure, no DOM needed) ───────────────────────────────
 console.log('\nClustering');
-const { clusterPoints, clusterLabel } = await import('../src/lib/cluster.js');
+const { clusterPoints, clusterLabel, pinClasses, countActive } = await import('../src/lib/cluster.js');
 const mk = (slug, x, y, price) => ({ pin: { slug, tier: 2 }, price, point: { x, y } });
 
 const far = clusterPoints([mk('a', 0, 0, 10), mk('b', 500, 500, 99)], 44);
@@ -115,6 +119,39 @@ check(
 check(
   !/\b\d+\s*(gyms?|pins?)\b/i.test(clusterLabel(near[0].members, fmt)),
   'cluster label is never a count',
+);
+
+console.log('\nSelected state is unmistakable against every tier');
+const cssRule = (sel) => {
+  const m = css.match(new RegExp(sel.replace(/[.]/g, '\\.') + '\\{([^}]*)\\}'));
+  return m ? m[1] : '';
+};
+const activeRule = cssRule('.pin.active');
+const tier3Rule = cssRule('.pin.tier-3');
+const bg = (rule) => (rule.match(/background:([^;]+)/) || [])[1]?.trim();
+check(Boolean(activeRule), '.pin.active has a rule');
+check(
+  bg(activeRule) !== undefined && bg(activeRule) !== bg(tier3Rule),
+  'selected fill differs from the tier-3 fill (they collided before)',
+  `active=${bg(activeRule)} tier3=${bg(tier3Rule)}`,
+);
+check(/orange/.test(activeRule), 'selected inverts to orange, which no tier uses as a fill');
+check(/scale/.test(activeRule), 'selected adds a scale bump so it reads in a dense cluster');
+
+console.log('\nAt most one bubble is ever selected');
+const groups2 = clusterPoints([mk('a', 0, 0, 15), mk('b', 10, 10, 259)], 44);
+const alone = [mk('c', 900, 900, 40)];
+check(countActive(groups2, alone, 'b') === 1, 'a gym inside a cluster marks exactly one bubble');
+check(countActive(groups2, alone, 'c') === 1, 'a lone gym marks exactly one bubble');
+check(countActive(groups2, alone, null) === 0, 'no selection marks nothing');
+check(countActive(groups2, alone, 'nonexistent') === 0, 'an unknown slug marks nothing');
+check(
+  pinClasses({ tier: 3, priced: true, selected: true }).includes('active'),
+  'a tier-3 pin can still be marked selected',
+);
+check(
+  !pinClasses({ tier: 3, priced: true, selected: false }).includes('active'),
+  'an unselected tier-3 pin is NOT marked selected (the reported bug)',
 );
 
 // ── Selection is one piece of state, rendered by both views ──────────────

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Parser tests, run against the REAL harvested pages in scrapers/harvest_output.
+Parser tests, run against the REAL harvested pages in tests/fixtures.
 
 Fixtures are the actual markdown Firecrawl returned, not hand-written samples,
 so a parser cannot pass here and fail in production on formatting it never saw.
@@ -20,7 +20,10 @@ sys.path.insert(0, str(ROOT))
 from money import ParseError, find_prices, normalize_markdown, parse_price  # noqa: E402
 import targets  # noqa: E402
 
-HARVEST = ROOT / "harvest_output"
+# Committed fixtures, not the gitignored scratch directory: a regression test
+# that only runs on the machine that happens to have scratch output is not a
+# test. See fixtures/README.md.
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 FAILURES = []
 CHECKS = 0
@@ -35,7 +38,7 @@ def check(ok, label, detail=""):
 
 
 def fixture(name):
-    path = HARVEST / ("%s.md" % name)
+    path = FIXTURES / ("%s.md" % name)
     if not path.is_file():
         return None
     return path.read_text(encoding="utf-8")
