@@ -35,12 +35,13 @@ for (const file of htmlFiles(DIST)) {
   for (const m of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
     const attrs = m[1];
     const body = m[2].trim();
-    const isJsonLd = /type\s*=\s*["']application\/ld\+json["']/i.test(attrs);
-    if (body.length > 0 && !isJsonLd) {
+    // Data blocks are not executed, so CSP script-src does not apply to them.
+    const isDataBlock = /type\s*=\s*["']application\/(ld\+)?json["']/i.test(attrs);
+    if (body.length > 0 && !isDataBlock) {
       problems.push(
         `${file}: inline <script> with a ${body.length}-char body. CSP is ` +
           `script-src 'self' — this will NOT execute in production. ` +
-          `(JSON-LD is exempt; it is data, not script.)`,
+          `(application/json and ld+json are exempt; they are data, not script.)`,
       );
     }
   }

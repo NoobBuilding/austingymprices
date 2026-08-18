@@ -15,16 +15,18 @@
     "check": "astro check",
     "validate:data": "node scripts/validate-data.mjs",
     "check:csp": "node scripts/check-csp.mjs",
-    "verify": "npm run lint && npm run validate:data && npm run build && npm run check:csp && npm run check:search && npm run check:tabs",
+    "verify": "npm run lint && npm run validate:data && npm run build && npm run check:csp && npm run check:search && npm run check:tabs && npm run check:map",
     "smoke": "node scripts/smoke-deploy.mjs",
     "check:search": "node scripts/check-search.mjs",
-    "check:tabs": "node scripts/check-tabs.mjs"
+    "check:tabs": "node scripts/check-tabs.mjs",
+    "check:map": "node scripts/check-map.mjs"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "astro": "^7.2.3"
+    "astro": "^7.2.3",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

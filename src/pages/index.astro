@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import GymCard from '../components/GymCard.astro';
+import GymMap from '../components/GymMap.astro';
 import { getAllGyms, getRegions } from '../lib/gyms.js';
 
 const gyms = getAllGyms();
@@ -83,18 +84,26 @@ const description =
     </div>
   </section>
 
-  <div class="list-wrap">
-    <p class="count">
-      <span id="n">{gyms.length}</span> gyms — tap a gym for the full cost breakdown
-    </p>
-    <div id="cards">
-      {sorted.map((gym) => <GymCard gym={gym} />)}
+  <div class="split">
+    <div class="list-wrap">
+      <p class="count">
+        <span id="n">{gyms.length}</span> gyms — tap a gym for the full cost breakdown
+      </p>
+      <div id="cards">
+        {sorted.map((gym) => <GymCard gym={gym} />)}
+      </div>
+      <div class="empty" id="empty" hidden>
+        <p>No gyms match those filters.</p>
+        <button type="button" id="clear-filters" class="clear-btn">Clear filters</button>
+      </div>
     </div>
-    <div class="empty" id="empty" hidden>
-      <p>No gyms match those filters.</p>
-      <button type="button" id="clear-filters" class="clear-btn">Clear filters</button>
-    </div>
+
+    <GymMap />
   </div>
+
+  <button type="button" class="map-toggle" id="map-toggle" aria-expanded="false">
+    <span data-open-label>Map</span>
+  </button>
 </Base>
 
 <style>
@@ -238,10 +247,53 @@ const description =
     background-position: right 11px center;
   }
 
-  .list-wrap {
-    max-width: var(--list-max);
+  /* Split view per the v2 mockup: card list left, map right. */
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 46%;
+    max-width: var(--wrap-split);
     margin: 34px auto 0;
-    padding: 0 32px 80px;
+  }
+
+  .list-wrap {
+    padding: 0 26px 80px 32px;
+    max-width: var(--list-max);
+    justify-self: end;
+    width: 100%;
+  }
+
+  /* Mobile: map lives behind a bottom toggle. */
+  .map-toggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 950;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: var(--r-pill);
+    padding: 12px 26px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(33, 29, 25, 0.28);
+  }
+
+  @media (max-width: 920px) {
+    .split {
+      grid-template-columns: 1fr;
+    }
+
+    .list-wrap {
+      justify-self: stretch;
+      max-width: none;
+      padding: 0 18px 90px;
+    }
+
+    .map-toggle {
+      display: block;
+    }
   }
 
   .count {
@@ -364,6 +416,17 @@ const description =
 
       if (countEl) countEl.textContent = String(shown);
       if (emptyEl) emptyEl.hidden = shown !== 0;
+
+      // The map follows the list rather than filtering independently, so the
+      // two can never disagree about what is shown.
+      document.dispatchEvent(
+        new CustomEvent('filters:changed', {
+          detail: {
+            visible: new Set(visible.map((c) => c.dataset.slug)),
+            mode: state.mode,
+          },
+        }),
+      );
     }
 
     document.getElementById('regions')?.addEventListener('click', (e) => {
@@ -444,6 +507,89 @@ const description =
     // post-deploy smoke check — nothing renders conditionally on it, so the
     // page looks identical either way.
     apply();
+
+    // ── Map: lazy, and never blocking the list ────────────────────────────
+    const mapWrap = document.getElementById('mapwrap');
+    const mapEl = document.getElementById('map');
+    const mapToggle = document.getElementById('map-toggle');
+    let mapApi = null;
+    let mapLoading = false;
+
+    const currentState = () => ({
+      visible: new Set(cards.filter((c) => !c.hidden).map((c) => c.dataset.slug)),
+      mode: state.mode,
+    });
+
+    async function loadMap() {
+      if (mapApi || mapLoading || !mapEl) return;
+      mapLoading = true;
+      try {
+        // Dynamic import: no Leaflet byte is fetched until this runs.
+        const { initMap } = await import('../lib/map-island.js');
+        const pins = JSON.parse(mapWrap.dataset.pins || '[]');
+        mapApi = initMap(mapEl, pins, currentState);
+      } catch (err) {
+        console.error('[austingymprices] map failed to load; list is unaffected', err);
+      } finally {
+        mapLoading = false;
+      }
+    }
+
+    // Desktop: load when the map scrolls into view. Mobile: only on toggle.
+    if (mapWrap && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            io.disconnect();
+            loadMap();
+          }
+        },
+        { rootMargin: '200px' },
+      );
+      io.observe(mapWrap);
+    }
+
+    mapToggle?.addEventListener('click', async () => {
+      const open = mapWrap.classList.toggle('open');
+      mapToggle.setAttribute('aria-expanded', String(open));
+      mapToggle.querySelector('[data-open-label]').textContent = open ? 'List' : 'Map';
+      if (open) {
+        await loadMap();
+        mapApi?.invalidate();
+      }
+    });
+
+    // Pin click -> open and scroll to the matching card.
+    document.addEventListener('gym:select', (e) => {
+      const slug = e.detail?.slug;
+      const card = cards.find((c) => c.dataset.slug === slug);
+      if (!card) return;
+      cards.forEach((c) => c.classList.remove('hl'));
+      card.classList.add('hl');
+      const details = card.querySelector('details');
+      if (details) details.open = true;
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (mapWrap?.classList.contains('open')) {
+        mapWrap.classList.remove('open');
+        mapToggle?.setAttribute('aria-expanded', 'false');
+        const label = mapToggle?.querySelector('[data-open-label]');
+        if (label) label.textContent = 'Map';
+      }
+    });
+
+    // Card open -> highlight its pin.
+    container.addEventListener('toggle', (e) => {
+      const details = e.target;
+      if (!(details instanceof HTMLElement) || details.tagName !== 'DETAILS') return;
+      const card = details.closest('.card');
+      if (!card) return;
+      document.dispatchEvent(
+        new CustomEvent('gym:highlight', {
+          detail: { slug: details.open ? card.dataset.slug : null },
+        }),
+      );
+    }, true);
+
     document.documentElement.dataset.filtersReady = 'true';
   }
   } catch (err) {

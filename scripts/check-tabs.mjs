@@ -47,7 +47,25 @@ const scriptCode = readFileSync(join('dist', scriptSrc.replace(/^\//, '')), 'utf
 
 const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true });
 const { window } = dom;
-window.eval(scriptCode);
+
+// The bundle is an ES module and uses Vite's preload helper, which references
+// import.meta — a syntax error in eval'd non-module code. Rewrite it to an
+// equivalent object literal. This does not touch any logic under test.
+const evalSafe = scriptCode.replace(
+  /import\.meta/g,
+  "({url:'file:///bundle.js',resolve:undefined})",
+);
+
+// Stub IntersectionObserver so the lazy map loader never fires: these tests
+// cover the list and tabs, and Leaflet needs real layout that jsdom lacks.
+// The map has its own build assertions in check-map.mjs.
+window.IntersectionObserver = class {
+  observe() {}
+  disconnect() {}
+  unobserve() {}
+};
+
+window.eval(evalSafe);
 
 const $ = (sel) => Array.from(window.document.querySelectorAll(sel));
 const visible = (sel) => $(sel).filter((el) => !el.hidden);

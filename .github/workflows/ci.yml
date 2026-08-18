@@ -59,6 +59,9 @@ jobs:
       - name: Check tab-aware rendering
         run: npm run check:tabs
 
+      - name: Check map build
+        run: npm run check:map
+
       # §8: build fails on high-severity vulnerabilities.
       - name: npm audit
         run: npm audit --audit-level=high

@@ -416,6 +416,11 @@ exists; they are recorded now so they're inherited, not retrofitted.
    - **Mobile**: map behind a bottom toggle, per the mockup.
    - **Performance budget**: map JS lazy-loads below the fold or on toggle. The list must
      render before any map asset arrives.
+   - **Default view frames CENTRAL Austin, never the full pin set.** Some gyms are far
+     out — Life Time North sits at Lakeline / RR 620, ~10 miles north-west — and a
+     `fitBounds` over everything would zoom out until central Austin, where almost every
+     gym is, became unreadable. Outliers stay reachable by panning or zooming out; they
+     do not get to set the frame.
 5. Gym detail pages + region pages + JSON-LD + sitemap.
 6. Scrapers: lib + the 6 "Low complexity" targets first; Actions cron + PR flow; Sentry.
    (Low = planetfitness, lifetime, lacampeones, bigtex, hydepark, eaac.)

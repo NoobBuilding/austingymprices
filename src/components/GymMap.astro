@@ -1,0 +1,151 @@
+---
+/**
+ * Leaflet map island (CLAUDE.md §9 step 4).
+ *
+ * The map is progressive enhancement over the list: this component renders an
+ * empty container and a JSON data block, and the Leaflet bundle is imported
+ * dynamically only when the map scrolls into view or the mobile toggle is
+ * pressed. The list is fully usable before any map byte arrives.
+ */
+import { getAllGyms } from '../lib/gyms.js';
+
+// Only what the map needs. Keeping the payload tight matters — it ships inline.
+const pins = getAllGyms()
+  .filter((g) => g.lat !== null && g.lng !== null)
+  .map((g) => ({
+    slug: g.slug,
+    name: g.name,
+    lat: g.lat,
+    lng: g.lng,
+    allIn: g.all_in_monthly,
+    dayPass: g.day_pass,
+    tier: g.price_tier,
+  }));
+---
+
+<div class="mapwrap" id="mapwrap" data-pins={JSON.stringify(pins)}>
+  <div id="map" class="map" role="application" aria-label="Map of Austin gyms"></div>
+  <p class="map-note">
+    {pins.length} of 41 gyms placed — the rest are awaiting a confirmed address.
+  </p>
+</div>
+
+<style>
+  .mapwrap {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    min-height: 620px;
+    background: var(--map-ground);
+    overflow: hidden;
+  }
+
+  .map {
+    width: 100%;
+    height: 100%;
+  }
+
+  .map-note {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 500;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    padding: 7px 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Price bubbles. Tier tints per §9: 1 green, 2 neutral, 3 ink. */
+  :global(.pin) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 26px;
+    padding: 0 9px;
+    border-radius: 13px;
+    font: 700 12px var(--font-body);
+    white-space: nowrap;
+    border: 1px solid var(--pin-stroke);
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 2px 5px rgba(33, 29, 25, 0.14);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  :global(.pin.tier-1) {
+    background: var(--green-tint);
+    border-color: #BFE0CD;
+    color: var(--green);
+  }
+
+  :global(.pin.tier-3) {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+
+  /* Unpriced: visible but secondary. */
+  :global(.pin.callfor) {
+    background: transparent;
+    border: 1.5px dashed var(--dash);
+    color: var(--ink-soft);
+    box-shadow: none;
+    font-weight: 600;
+  }
+
+  :global(.pin.active) {
+    background: var(--ink);
+    border-color: var(--orange);
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(191, 87, 0, 0.25);
+  }
+
+  /* Filtered out. */
+  :global(.pin.dim) {
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  /* Day-pass tab, gym has no published pass. */
+  :global(.pin.nopass) {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  /* Cluster label is the PRICE RANGE of its members, never a count. */
+  :global(.pin.cluster) {
+    background: #fff;
+    border-color: var(--ink-soft);
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  :global(.leaflet-container) {
+    background: var(--map-ground);
+    font: inherit;
+  }
+
+  :global(.leaflet-control-attribution) {
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  @media (max-width: 920px) {
+    .mapwrap {
+      position: fixed;
+      inset: 0;
+      height: 100dvh;
+      z-index: 900;
+      display: none;
+    }
+
+    .mapwrap.open {
+      display: block;
+    }
+  }
+</style>
