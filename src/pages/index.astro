@@ -1,26 +1,101 @@
 ---
 import Base from '../layouts/Base.astro';
+import GymCard from '../components/GymCard.astro';
+import { getAllGyms, getRegions } from '../lib/gyms.js';
 
-// Scaffold placeholder. The real index — hero, tabs, search, region chips,
-// filter row, card list + Leaflet map — is build-order steps 3 and 4.
+const gyms = getAllGyms();
+const regions = getRegions();
+
+// Cheapest all-in first; gyms without a confirmed price sort last rather than
+// being hidden — a missing price is information, not an omission.
+const sorted = [...gyms].sort((a, b) => {
+  if (a.has_price !== b.has_price) return a.has_price ? -1 : 1;
+  if (a.has_price) return a.all_in_monthly - b.all_in_monthly;
+  return a.name.localeCompare(b.name);
+});
+
+const activities = [
+  ['gym-weights', 'Gym / weights'],
+  ['gym-classes', 'Gym + classes'],
+  ['luxury', 'Luxury club'],
+  ['crossfit-hiit', 'CrossFit / HIIT'],
+  ['pilates', 'Pilates'],
+  ['yoga', 'Yoga'],
+  ['boxing', 'Boxing'],
+  ['bjj-mma', 'BJJ / MMA'],
+  ['climbing', 'Climbing'],
+  ['community', 'Community gym'],
+];
+
 const title = 'Austin Gym Prices — Compare gym membership costs in Austin';
 const description =
-  "Membership prices and fees for gyms across Austin, from each gym's own website.";
+  "Real membership prices for gyms across Austin: monthly rate, enrollment fee, annual fee and contract terms, from each gym's own website.";
 ---
 
 <Base title={title} description={description}>
-  <section class="scaffold">
+  <section class="hero">
     <h1>Every Austin gym. <em>The real price.</em></h1>
-    <p class="sub">{description}</p>
-    <p class="note">
-      Scaffold only — design tokens, self-hosted fonts and security headers are in
-      place. The gym list, filters and map arrive in build-order steps 3 and 4.
+    <p class="sub">
+      Membership prices and fees for gyms across Austin, from each gym's own website.
+      Every gym shows the date its price was last checked.
     </p>
+
+    <div class="tabs" role="tablist" aria-label="Price type">
+      <button class="tab active" data-mode="membership" role="tab" aria-selected="true">
+        Memberships
+      </button>
+      <button class="tab" data-mode="daypass" role="tab" aria-selected="false">
+        Day passes
+      </button>
+    </div>
+
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <label class="visually-hidden" for="q">Search gyms</label>
+      <input id="q" type="search" placeholder="Search by gym name or neighborhood" autocomplete="off" />
+    </div>
+
+    <div class="chip-row" id="regions">
+      <button class="chip active" data-region="all">All of Austin</button>
+      {regions.map((r) => <button class="chip" data-region={r.id}>{r.name}</button>)}
+    </div>
+
+    <div class="filters">
+      <button class="pill tier active" data-tier="all">Any price</button>
+      <button class="pill tier" data-tier="1">Under $40</button>
+      <button class="pill tier" data-tier="2">$40–100</button>
+      <button class="pill tier" data-tier="3">$100+</button>
+      <button class="pill" id="nocontract" aria-pressed="false">No contract</button>
+      <label class="visually-hidden" for="activity">Activity</label>
+      <select class="pill" id="activity">
+        <option value="all">All activities</option>
+        {activities.map(([v, l]) => <option value={v}>{l}</option>)}
+      </select>
+      <label class="visually-hidden" for="sort">Sort</label>
+      <select class="pill" id="sort">
+        <option value="cheapest">Cheapest first</option>
+        <option value="priciest">Most expensive first</option>
+        <option value="az">A–Z</option>
+      </select>
+    </div>
   </section>
+
+  <div class="list-wrap">
+    <p class="count">
+      <span id="n">{gyms.length}</span> gyms — tap a gym for the full cost breakdown
+    </p>
+    <div id="cards">
+      {sorted.map((gym) => <GymCard gym={gym} />)}
+    </div>
+    <p class="empty" id="empty" hidden>No gyms match those filters.</p>
+  </div>
 </Base>
 
 <style>
-  .scaffold {
+  .hero {
     padding: 72px 32px 0;
     max-width: var(--wrap-hero);
     margin: 0 auto;
@@ -43,15 +118,260 @@ const description =
     margin-top: 16px;
     color: var(--ink-soft);
     font-size: 1.08rem;
+    max-width: 62ch;
   }
 
-  .note {
-    margin-top: 28px;
-    font-size: 0.85rem;
+  .tabs {
+    display: flex;
+    gap: 28px;
+    margin: 38px 0 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tab {
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    padding: 0 2px 12px;
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab.active {
+    color: var(--ink);
+    border-color: var(--orange);
+  }
+
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--r);
+    padding: 16px 18px;
+    background: var(--bg);
+    box-shadow: var(--shadow-input);
+  }
+
+  .search:focus-within {
+    border-color: var(--orange);
+  }
+
+  .search svg {
+    flex: none;
+    stroke: var(--ink-soft);
+  }
+
+  .search input {
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    width: 100%;
+    font-family: inherit;
+    background: transparent;
+    color: inherit;
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .chip {
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    border-radius: var(--r-pill);
+    padding: 9px 18px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    transition: 0.12s;
+  }
+
+  .chip:hover {
+    border-color: var(--orange);
     color: var(--orange-dark);
-    background: var(--orange-tint);
+  }
+
+  .chip.active {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .pill {
+    border: 1.5px solid var(--line);
+    background: var(--bg);
     border-radius: var(--r-sm);
-    padding: 11px 14px;
-    max-width: 60ch;
+    padding: 8px 14px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-family: inherit;
+  }
+
+  .pill.active {
+    background: var(--orange-tint);
+    border-color: var(--orange);
+    color: var(--orange-dark);
+  }
+
+  select.pill {
+    appearance: none;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B635B' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 11px center;
+  }
+
+  .list-wrap {
+    max-width: var(--list-max);
+    margin: 34px auto 0;
+    padding: 0 32px 80px;
+  }
+
+  .count {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+
+  .empty {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    padding: 24px 0;
+  }
+
+  @media (max-width: 560px) {
+    .hero {
+      padding: 40px 18px 0;
+    }
+
+    .list-wrap {
+      padding: 0 18px 60px;
+    }
   }
 </style>
+
+<script>
+  // Progressive enhancement only. With JS off the full list still renders,
+  // sorted cheapest-first, and every accordion still opens (native <details>).
+  // CLAUDE.md §8: no inline handlers, no innerHTML — this file is bundled to
+  // an external script so the CSP stays script-src 'self'.
+  const container = document.getElementById('cards');
+  if (container) {
+    const cards = Array.from(container.querySelectorAll('.card'));
+    const countEl = document.getElementById('n');
+    const emptyEl = document.getElementById('empty');
+    const search = document.getElementById('q');
+    const activity = document.getElementById('activity');
+    const sortEl = document.getElementById('sort');
+    const noContractBtn = document.getElementById('nocontract');
+
+    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership' };
+
+    const num = (card, attr) => {
+      const raw = card.dataset[attr];
+      return raw === '' || raw === undefined ? null : Number(raw);
+    };
+
+    function apply() {
+      let shown = 0;
+      for (const card of cards) {
+        const price = state.mode === 'daypass' ? num(card, 'daypass') : num(card, 'allin');
+        const matches =
+          (state.region === 'all' || card.dataset.region === state.region) &&
+          (state.tier === 'all' || card.dataset.tier === state.tier) &&
+          (!state.noContract || card.dataset.nocontract === 'true') &&
+          (state.activity === 'all' || card.dataset.category === state.activity) &&
+          (state.q === '' || (card.dataset.search || '').includes(state.q)) &&
+          (state.mode !== 'daypass' || price !== null);
+        card.hidden = !matches;
+        if (matches) shown += 1;
+      }
+
+      const visible = cards.filter((c) => !c.hidden);
+      visible.sort((a, b) => {
+        if (state.sort === 'az') return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+        const key = state.mode === 'daypass' ? 'daypass' : 'allin';
+        const av = num(a, key);
+        const bv = num(b, key);
+        if (av === null && bv === null) return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+        if (av === null) return 1;
+        if (bv === null) return -1;
+        return state.sort === 'priciest' ? bv - av : av - bv;
+      });
+      for (const card of visible) container.appendChild(card);
+
+      if (countEl) countEl.textContent = String(shown);
+      if (emptyEl) emptyEl.hidden = shown !== 0;
+    }
+
+    document.getElementById('regions')?.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      document.querySelectorAll('#regions .chip').forEach((c) => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.region = chip.dataset.region;
+      apply();
+    });
+
+    document.querySelectorAll('.tier').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tier').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.tier = btn.dataset.tier;
+        apply();
+      });
+    });
+
+    noContractBtn?.addEventListener('click', () => {
+      state.noContract = !state.noContract;
+      noContractBtn.classList.toggle('active', state.noContract);
+      noContractBtn.setAttribute('aria-pressed', String(state.noContract));
+      apply();
+    });
+
+    search?.addEventListener('input', () => {
+      state.q = search.value.trim().toLowerCase();
+      apply();
+    });
+
+    activity?.addEventListener('change', () => {
+      state.activity = activity.value;
+      apply();
+    });
+
+    sortEl?.addEventListener('change', () => {
+      state.sort = sortEl.value;
+      apply();
+    });
+
+    document.querySelectorAll('.tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((t) => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        state.mode = tab.dataset.mode;
+        const daypass = state.mode === 'daypass';
+        document.querySelectorAll('.price-membership').forEach((el) => { el.hidden = daypass; });
+        document.querySelectorAll('.price-daypass').forEach((el) => { el.hidden = !daypass; });
+        apply();
+      });
+    });
+  }
+</script>

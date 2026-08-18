@@ -60,7 +60,9 @@ export function selectDefaultPlan(plans, billingPeriod) {
       p.monthly !== null &&
       p.monthly !== undefined &&
       p.restricted === null &&
-      (p.commit_months ?? 0) <= 2,
+      // null commit means terms unpublished, not a long lock-in. The PRICE is
+      // still confirmed, so the plan stays eligible; only the badge is withheld.
+      (p.commit_months === null || p.commit_months === undefined || p.commit_months <= 2),
   );
   if (eligible.length === 0) return null;
   return eligible.reduce((best, p) =>
@@ -91,7 +93,10 @@ const PERIOD_NOUN = { monthly: 'mo', '4-week': '4-week', weekly: 'week' };
  * "No contract".
  */
 export function commitmentBadge(plan, billingPeriod = 'monthly') {
-  const months = plan?.commit_months ?? 0;
+  // null means the gym does not publish its terms. Render NOTHING — inferring
+  // "no contract" from silence is the same error as inventing a price.
+  if (plan?.commit_months === null || plan?.commit_months === undefined) return null;
+  const months = plan.commit_months;
   if (billingPeriod !== 'monthly' && months >= 1) {
     const noun = PERIOD_NOUN[billingPeriod] ?? billingPeriod;
     return {
@@ -104,9 +109,15 @@ export function commitmentBadge(plan, billingPeriod = 'monthly') {
   return { tone: 'neutral', label: `${months}-mo commit` };
 }
 
-/** The "No contract" FILTER is looser than the badge: <= 2 months counts. */
+/**
+ * The "No contract" FILTER is looser than the badge: <= 2 months counts,
+ * because a two-month floor is not what people mean by a contract. Unknown
+ * terms are NOT claimed as no-contract.
+ */
 export function isNoContract(plan) {
-  return (plan?.commit_months ?? 0) <= 2;
+  const months = plan?.commit_months;
+  if (months === null || months === undefined) return false;
+  return months <= 2;
 }
 
 /** Badge text for a restricted plan. Null for unrestricted plans. */
@@ -116,9 +127,18 @@ const RESTRICTED_LABELS = {
   'young-adult': 'Young adults only',
   senior: 'Seniors only',
   military: 'Military only',
+  household: '2+ person plan',
   scope: 'Limited access',
 };
 
+/** Plan names that already announce they are multi-person. */
+const SELF_EVIDENT_HOUSEHOLD = /household|person|crew|couple|family|^(one|two|three|\d+)\s/i;
+
 export function restrictedLabel(plan) {
-  return plan?.restricted ? (RESTRICTED_LABELS[plan.restricted] ?? 'Restricted') : null;
+  if (!plan?.restricted) return null;
+  // Don't double-label: "Two Adult Household" needs no "2+ person plan" badge.
+  if (plan.restricted === 'household' && SELF_EVIDENT_HOUSEHOLD.test(plan.name ?? '')) {
+    return null;
+  }
+  return RESTRICTED_LABELS[plan.restricted] ?? 'Restricted';
 }

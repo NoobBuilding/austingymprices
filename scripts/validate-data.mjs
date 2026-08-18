@@ -20,7 +20,7 @@ const CATEGORIES = new Set([
 ]);
 const BILLING_PERIODS = new Set(['monthly', '4-week', 'weekly']);
 const RESTRICTED = new Set([
-  'student', 'youth', 'young-adult', 'senior', 'military', 'scope',
+  'student', 'youth', 'young-adult', 'senior', 'military', 'household', 'scope',
 ]);
 const PERIODS_PER_YEAR = { monthly: 12, '4-week': 13, weekly: 52 };
 
@@ -95,7 +95,8 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
       const eligible = plans.filter(
         (p) =>
           p.monthly !== null && p.monthly !== undefined &&
-          p.restricted === null && (p.commit_months ?? 0) <= 2,
+          p.restricted === null &&
+          (p.commit_months === null || p.commit_months === undefined || p.commit_months <= 2),
       );
       if (eligible.length > 0) {
         const cheapest = eligible.reduce((best, p) =>
@@ -111,7 +112,7 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
         if (def.restricted !== null) {
           fail(`default plan "${def.name}" is restricted ("${def.restricted}")`);
         }
-        if ((def.commit_months ?? 0) > 2) {
+        if (def.commit_months !== null && (def.commit_months ?? 0) > 2) {
           fail(`default plan "${def.name}" has commit_months ${def.commit_months} (> 2)`);
         }
       }
@@ -119,8 +120,16 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
 
     for (const plan of plans) {
       if (!plan.name) fail('a plan is missing a name');
-      if (typeof plan.commit_months !== 'number') {
-        fail(`plan "${plan.name}" has a non-numeric commit_months`);
+      // null is legal and meaningful: terms not published, no badge renders.
+      if (plan.commit_months !== null && typeof plan.commit_months !== 'number') {
+        fail(`plan "${plan.name}" commit_months must be a number or null`);
+      }
+      // A green "No contract" badge may only come from confirmed data.
+      if ((plan.commit_months === 0 || plan.commit_months === 1) && !gym.verified_date) {
+        fail(
+          `plan "${plan.name}" claims commit_months ${plan.commit_months} (green ` +
+            `"No contract" badge) but the gym has no verified_date to back it`,
+        );
       }
       // A price with undefined fees would silently understate the all-in.
       if (plan.monthly !== null) {

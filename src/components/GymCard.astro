@@ -1,0 +1,409 @@
+---
+/**
+ * Index card. Collapsed by default; the accordion is a native <details> so it
+ * works with JavaScript disabled (CLAUDE.md §8).
+ *
+ * The headline price is ALL-IN with the "/mo all-in" unit. The sticker price
+ * appears only inside the breakdown (§5). A gym without a confirmed price
+ * renders the "call for pricing" state — never a number, never a guess.
+ */
+import { getRegion } from '../lib/gyms.js';
+
+const { gym } = Astro.props;
+
+const region = getRegion(gym.region);
+const plan = gym.default_plan;
+const badge = plan?.commitment_badge ?? null;
+
+const CATEGORY_LABELS = {
+  'gym-weights': 'Gym / weights',
+  'gym-classes': 'Gym + classes',
+  luxury: 'Luxury club',
+  'crossfit-hiit': 'CrossFit / HIIT',
+  pilates: 'Pilates',
+  yoga: 'Yoga',
+  boxing: 'Boxing',
+  'bjj-mma': 'BJJ / MMA',
+  climbing: 'Climbing',
+  community: 'Community gym',
+};
+
+const money = (n) =>
+  n === null || n === undefined
+    ? null
+    : `$${Number.isInteger(n) ? n.toLocaleString() : n.toFixed(2)}`;
+
+const placeLabel = gym.sub_locality ?? region?.name ?? '';
+const verified = gym.verified_date
+  ? new Date(`${gym.verified_date}T00:00:00Z`).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
+  : null;
+const sourceDomain = gym.pricing_url
+  ? new URL(gym.pricing_url).hostname.replace(/^www\./, '')
+  : null;
+const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURIComponent(
+  `Price correction: ${gym.name}`,
+)}`;
+---
+
+<article
+  class="card"
+  data-slug={gym.slug}
+  data-region={gym.region}
+  data-category={gym.category}
+  data-tier={gym.price_tier ?? ''}
+  data-allin={gym.all_in_monthly ?? ''}
+  data-daypass={gym.day_pass ?? ''}
+  data-nocontract={gym.is_no_contract === true ? 'true' : 'false'}
+  data-name={gym.name}
+  data-search={`${gym.name} ${placeLabel} ${region?.name ?? ''} ${CATEGORY_LABELS[gym.category] ?? ''}`.toLowerCase()}
+>
+  <details class="card-details">
+    <summary class="card-top">
+      <div class="card-id">
+        <h3 class="card-name">
+          {gym.name}
+          {badge && <span class={`tag ${badge.tone}`}>{badge.label}</span>}
+        </h3>
+        <p class="card-meta">
+          {placeLabel}<span class="sep">•</span>{CATEGORY_LABELS[gym.category] ?? gym.category}
+        </p>
+      </div>
+
+      <div class="card-right">
+        <div class="price price-membership">
+          {gym.has_price ? (
+            <>
+              <span class="n">{money(gym.all_in_monthly)}</span>
+              <span class="u">/mo all-in</span>
+            </>
+          ) : (
+            <span class="callfor">Call for pricing</span>
+          )}
+        </div>
+        <div class="price price-daypass" hidden>
+          {gym.day_pass !== null && gym.day_pass !== undefined ? (
+            <>
+              <span class="n">{money(gym.day_pass)}</span>
+              <span class="u">/visit</span>
+            </>
+          ) : (
+            <span class="callfor">Not published</span>
+          )}
+        </div>
+        <svg
+          class="chev"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          aria-hidden="true"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </div>
+    </summary>
+
+    <div class="detail">
+      {plan ? (
+        <>
+          <p class="plan-label">{plan.name}</p>
+          <div class="drow">
+            <span class="k">Monthly rate</span>
+            <span class="v">
+              {money(plan.monthly)}{gym.billing_period === 'monthly'
+                ? '/mo'
+                : gym.billing_period === '4-week'
+                  ? ' per 4 weeks'
+                  : ' per week'}
+            </span>
+          </div>
+          {gym.billing_period !== 'monthly' && (
+            <div class="drow">
+              <span class="k">Billed</span>
+              <span class="v">
+                {gym.billing_period === '4-week' ? '13x a year' : '52x a year'}
+              </span>
+            </div>
+          )}
+          <div class="drow">
+            <span class="k">Enrollment fee</span>
+            <span class="v">{plan.enroll_fee ? money(plan.enroll_fee) : 'None'}</span>
+          </div>
+          <div class="drow">
+            <span class="k">Annual fee</span>
+            <span class="v">{plan.annual_fee ? `${money(plan.annual_fee)}/yr` : 'None'}</span>
+          </div>
+          <div class="drow">
+            <span class="k">Commitment</span>
+            <span class="v">
+              {plan.commit_months === null
+                ? 'Not published'
+                : plan.commit_months === 0
+                  ? 'Month-to-month'
+                  : badge?.label}
+            </span>
+          </div>
+          <div class="drow total">
+            <span class="k">First-year total</span>
+            <span class="v">
+              {money(plan.first_year_total)} · {money(gym.all_in_monthly)}/mo all-in
+            </span>
+          </div>
+          {plan.note && <p class="note">{plan.note}</p>}
+          {plan.promo && plan.promo.note && <p class="note promo">{plan.promo.note}</p>}
+        </>
+      ) : (
+        <p class="note">{gym.pricing_note}</p>
+      )}
+
+      {gym.amenities.length > 0 && (
+        <ul class="amen">
+          {gym.amenities.map((a) => (
+            <li>{a}</li>
+          ))}
+        </ul>
+      )}
+
+      <div class="dfoot">
+        <span>
+          {verified
+            ? `Prices checked ${verified}${sourceDomain ? ` · from ${sourceDomain}` : ''}`
+            : 'Price not yet confirmed'}
+        </span>
+        <span class="dfoot-links">
+          <a href={gym.url}>Full details →</a>
+          <a href={reportHref}>Report a wrong price</a>
+        </span>
+      </div>
+    </div>
+  </details>
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    margin-bottom: 10px;
+    background: var(--bg);
+    transition:
+      border-color 0.12s,
+      box-shadow 0.12s;
+    overflow: hidden;
+  }
+
+  .card:hover,
+  .card.hl {
+    border-color: var(--orange);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .card-details {
+    width: 100%;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .card-top::-webkit-details-marker {
+    display: none;
+  }
+
+  .card-id {
+    min-width: 0;
+  }
+
+  .card-name {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .card-meta {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-top: 3px;
+  }
+
+  .card-meta .sep {
+    margin: 0 6px;
+    color: var(--line);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border-radius: 5px;
+    padding: 2px 7px;
+    margin-left: 8px;
+    vertical-align: 1px;
+    white-space: nowrap;
+  }
+
+  .tag.green {
+    background: var(--green-tint);
+    color: var(--green);
+  }
+
+  .tag.neutral {
+    background: var(--neutral-badge-bg);
+    color: var(--ink-soft);
+  }
+
+  .card-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+  }
+
+  .price {
+    text-align: right;
+  }
+
+  .price .n {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .price .u {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .callfor {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    display: block;
+    max-width: 7.5em;
+    line-height: 1.25;
+  }
+
+  .chev {
+    flex: none;
+    transition: transform 0.18s;
+    color: var(--ink-soft);
+  }
+
+  .card-details[open] .chev {
+    transform: rotate(180deg);
+  }
+
+  .detail {
+    border-top: 1px solid var(--line);
+    padding: 16px 18px;
+    background: var(--surface-sunk);
+  }
+
+  .plan-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .drow {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.86rem;
+    padding: 5px 0;
+  }
+
+  .drow .k {
+    color: var(--ink-soft);
+  }
+
+  .drow .v {
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .drow.total {
+    border-top: 1px dashed var(--line);
+    margin-top: 6px;
+    padding-top: 10px;
+  }
+
+  .drow.total .v {
+    color: var(--orange-dark);
+  }
+
+  .note {
+    font-size: 0.8rem;
+    color: var(--orange-dark);
+    background: var(--orange-tint);
+    border-radius: 7px;
+    padding: 8px 11px;
+    margin-top: 12px;
+  }
+
+  .amen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    list-style: none;
+  }
+
+  .amen li {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-xs);
+    padding: 4px 9px;
+  }
+
+  .amen li::before {
+    content: '✓ ';
+  }
+
+  .dfoot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+
+  .dfoot-links {
+    display: flex;
+    gap: 14px;
+  }
+
+  .dfoot a {
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 520px) {
+    .price .n {
+      font-size: 1.5rem;
+    }
+  }
+</style>

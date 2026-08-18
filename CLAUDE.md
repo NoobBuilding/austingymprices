@@ -78,9 +78,9 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
       "monthly": 55,                  // advertised monthly rate, USD
       "enroll_fee": 0,
       "annual_fee": 45,
-      "commit_months": 0,             // 0 = no contract / month-to-month
+      "commit_months": 0,             // 0 = no contract; null = terms NOT PUBLISHED
       "restricted": null,             // null | "student" | "youth" | "young-adult" |
-                                      // "senior" | "military" | "scope"
+                                      // "senior" | "military" | "household" | "scope"
       "note": "The $45/yr maintenance fee is charged 75 days after signup, then annually.",
       "is_default": true              // exactly one plan per gym; drives card price + map pin
     }
@@ -101,11 +101,20 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
 ```
 
 **`restricted` rules:** a nullable string marking a plan that a solo walk-in adult
-cannot simply buy. `"scope"` covers partial-access plans (EAAC's Strike Club is striking
-classes only). The value drives badge text on the detail page — "Students only",
+cannot simply buy. `"scope"` is reserved for partial-access plans (EAAC's Strike Club is
+striking classes only); `"household"` covers multi-person plans (YMCA's household tiers,
+Crux's 2-Person Crew). Where the plan name already says so — "Two Adult Household",
+"2 Person Crew" — render no badge rather than double-labelling. The value drives badge text on the detail page — "Students only",
 "Striking classes only" — and its truthiness drives the default-plan rule below.
 **Restricted plans always render in the plan table.** They are real options; they are
 just not the headline.
+
+**Badges render only from confirmed data — absence of data renders absence of badge.**
+This is general, not specific to commitment. `commit_months: null` means the gym does not
+publish its terms: **no badge renders at all** — not green, not neutral, nothing. The green
+"No contract" badge requires `commit_months` to be explicitly `0` or `1` from a confirmed
+source (the gym must carry a `verified_date`). Inferring "no contract" from silence is the
+same class of error as inventing a price.
 
 **Default-plan rule:** exactly one plan per gym carries `is_default`. It is the
 **cheapest all-in** plan among those where `restricted` is `null` **and**

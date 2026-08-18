@@ -64,7 +64,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
-      "restricted": "scope",
+      "restricted": "household",
       "note": "Household plan, one adult.",
       "is_default": false,
       "promo": {
@@ -78,7 +78,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
-      "restricted": "scope",
+      "restricted": "household",
       "note": "Two-adult plan.",
       "is_default": false,
       "promo": {
@@ -92,7 +92,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
-      "restricted": "scope",
+      "restricted": "household",
       "note": "Household plan, two adults.",
       "is_default": false,
       "promo": {
