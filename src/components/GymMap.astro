@@ -103,22 +103,6 @@ const pins = getAllGyms()
     font-weight: 600;
   }
 
-  /* Selected must be unmistakable against EVERY tier tint. Inverting to ink
-   * collided with tier 3, which is already ink — a tier-3 pin read as
-   * permanently selected. Selected now inverts to ORANGE, which no tier uses
-   * as a fill, and adds a heavy ring plus a scale bump so it reads as active
-   * even in a dense cluster of bubbles. */
-  :global(.pin.active) {
-    background: var(--orange);
-    border-color: var(--orange-dark);
-    color: #fff;
-    box-shadow:
-      0 0 0 4px rgba(191, 87, 0, 0.3),
-      0 3px 10px rgba(33, 29, 25, 0.25);
-    transform: scale(1.12);
-    z-index: 1000;
-  }
-
   /* Filtered out. */
   :global(.pin.dim) {
     opacity: 0.18;
@@ -137,6 +121,25 @@ const pins = getAllGyms()
     border-color: var(--ink-soft);
     color: var(--ink);
     font-weight: 700;
+  }
+
+  /* MUST come last. Selected must be unmistakable against every other pin
+   * state, and these are all single-specificity class pairs, so source order
+   * decides. Defined before .pin.cluster, a selected cluster kept the white
+   * cluster fill and showed only the ring — a faint halo instead of the full
+   * treatment. A selected cluster now gets exactly what a selected lone pin
+   * gets. Orange is the selected colour and nothing else uses it as a fill;
+   * ink means expensive (tier 3), never selected.
+   * scripts/check-map.mjs asserts this rule stays last. */
+  :global(.pin.active) {
+    background: var(--orange);
+    border-color: var(--orange-dark);
+    color: #fff;
+    box-shadow:
+      0 0 0 4px rgba(191, 87, 0, 0.3),
+      0 3px 10px rgba(33, 29, 25, 0.25);
+    transform: scale(1.12);
+    z-index: 1000;
   }
 
   :global(.leaflet-container) {

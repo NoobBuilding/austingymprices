@@ -138,6 +138,24 @@ check(
 check(/orange/.test(activeRule), 'selected inverts to orange, which no tier uses as a fill');
 check(/scale/.test(activeRule), 'selected adds a scale bump so it reads in a dense cluster');
 
+// Every pin state is a single-specificity class pair, so SOURCE ORDER decides
+// the winner. .pin.active sitting before .pin.cluster meant a selected cluster
+// kept the white cluster fill and showed only the ring.
+const idxActive = css.indexOf('.pin.active{');
+const idxCluster = css.indexOf('.pin.cluster{');
+const idxTier3 = css.indexOf('.pin.tier-3{');
+const idxCall = css.indexOf('.pin.callfor{');
+check(
+  idxActive > idxCluster && idxActive > idxTier3 && idxActive > idxCall,
+  '.pin.active is declared AFTER every other pin state, so selected always wins',
+  `active=${idxActive} cluster=${idxCluster} tier3=${idxTier3} callfor=${idxCall}`,
+);
+check(
+  bg(cssRule('.pin.cluster')) !== bg(activeRule),
+  'a selected cluster does not keep the plain cluster fill',
+  `cluster=${bg(cssRule('.pin.cluster'))} active=${bg(activeRule)}`,
+);
+
 console.log('\nAt most one bubble is ever selected');
 const groups2 = clusterPoints([mk('a', 0, 0, 15), mk('b', 10, 10, 259)], 44);
 const alone = [mk('c', 900, 900, 40)];

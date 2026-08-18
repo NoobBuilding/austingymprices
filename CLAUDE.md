@@ -413,6 +413,13 @@ exists; they are recorded now so they're inherited, not retrofitted.
    - **Pins**: price bubbles per the mockup, background-tinted by price tier — tier 1
      green-tint, tier 2 neutral/white, tier 3 ink. Unpriced gyms get a hollow/dashed
      bubble reading "Call": visible, but visually secondary.
+   - **Colour meanings on the map are exclusive and must stay that way.**
+     **Ink = expensive** (tier 3). **Orange = selected**, and nothing else on the map
+     uses orange as a fill. A selected cluster gets the identical treatment to a
+     selected lone pin — orange fill, white text, ring, scale bump — never a partial
+     version of it. Every pin state is a single-specificity class pair, so `.pin.active`
+     must be declared **last**; `scripts/check-map.mjs` asserts that ordering, because
+     both regressions here came from a later rule quietly winning.
    - **Clustering**: minimal. With 41 gyms individual pins should survive to fairly wide
      zoom. When clustering does trigger, the cluster label is the **price range** of its
      members ("$15–259"), never a count — a count tells you nothing you came for.
