@@ -322,6 +322,19 @@ exists; they are recorded now so they're inherited, not retrofitted.
   server-side validation.
 - Service-role keys are server-only, never in any bundle, rotated on any suspicion.
 
+**Definition of verified (client-side JS)**
+- `public/_headers` is a **Cloudflare Pages feature**. `astro dev` and `astro preview`
+  do **not** apply it, so the CSP is absent locally and present in production. Anything
+  the CSP would refuse — an inlined `<script>`, an inlined `<style>`, an `onclick=` —
+  passes every local check and then fails silently on the deployed site.
+- Therefore: **nothing involving client-side JS is "done" until it has been exercised on
+  the deployed `.pages.dev` URL with the browser console open.** Local dev passing is
+  necessary, not sufficient.
+- `npm run check:csp` scans the build output for anything the CSP would refuse and fails
+  the build. It runs in CI after `npm run build`. It is a backstop, not a replacement for
+  looking at the deployed page.
+- `npm run verify` runs the whole gate locally: lint → data validation → build → CSP check.
+
 **Observability & hygiene**
 - **Error boundaries + Sentry reporting:** Sentry on the client (the filter/map island) and
   in every scraper run. Map/filter JS wrapped so a JS failure degrades to the static list —

@@ -41,6 +41,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Catches CSP violations that only fail in production. public/_headers
+      # is a Cloudflare Pages feature and is NOT applied by astro dev or
+      # preview, so an inlined script passes every local check and is then
+      # refused by the browser on the deployed site.
+      - name: Check build output against the CSP
+        run: npm run check:csp
+
       # §8: build fails on high-severity vulnerabilities.
       - name: npm audit
         run: npm audit --audit-level=high

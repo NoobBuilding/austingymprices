@@ -269,6 +269,11 @@ const description =
   // sorted cheapest-first, and every accordion still opens (native <details>).
   // CLAUDE.md §8: no inline handlers, no innerHTML — this file is bundled to
   // an external script so the CSP stays script-src 'self'.
+  // Graceful degradation (CLAUDE.md §8): if anything in here throws, the page
+  // is still fully usable — all 41 cards are server-rendered, sorted
+  // cheapest-first, and every accordion is a native <details>. A broken filter
+  // must never take the content down with it.
+  try {
   const container = document.getElementById('cards');
   if (container) {
     const cards = Array.from(container.querySelectorAll('.card'));
@@ -373,5 +378,13 @@ const description =
         apply();
       });
     });
+
+    // Marks the filters live. Purely a signal for humans and for the
+    // post-deploy smoke check — nothing renders conditionally on it, so the
+    // page looks identical either way.
+    document.documentElement.dataset.filtersReady = 'true';
+  }
+  } catch (err) {
+    console.error('[austingymprices] filter init failed; static list still usable', err);
   }
 </script>

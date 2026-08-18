@@ -13,7 +13,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check": "astro check",
-    "validate:data": "node scripts/validate-data.mjs"
+    "validate:data": "node scripts/validate-data.mjs",
+    "check:csp": "node scripts/check-csp.mjs",
+    "verify": "npm run lint && npm run validate:data && npm run build && npm run check:csp"
   },
   "engines": {
     "node": ">=20.0.0"
