@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Outreach kit — austingymprices</title>
+<style>
+  :root{--orange:#BF5700;--orange-dark:#9E4800;--orange-tint:#FBF1E9;--ink:#211D19;
+        --ink-soft:#6B635B;--line:#ECE7E1;--green:#1E7A46;--green-tint:#E9F5EE}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font:15px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);
+       background:#fff;max-width:880px;margin:0 auto;padding:36px 22px 80px}
+  h1{font-size:1.7rem;letter-spacing:-.01em}
+  .lede{color:var(--ink-soft);margin-top:8px}
+  .counts{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 8px}
+  .counts span{background:var(--orange-tint);color:var(--orange-dark);border-radius:8px;
+       padding:6px 12px;font-size:.84rem;font-weight:600}
+  .filters{display:flex;gap:8px;margin:14px 0 26px;flex-wrap:wrap}
+  .filters button{border:1.5px solid var(--line);background:#fff;border-radius:999px;
+       padding:7px 15px;font:inherit;font-size:.84rem;font-weight:600;color:var(--ink-soft);cursor:pointer}
+  .filters button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+  .row{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+  .row header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  h2{font-size:1.05rem}
+  .need{font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+        border-radius:5px;padding:3px 8px;background:var(--orange-tint);color:var(--orange-dark);white-space:nowrap}
+  .needaddress{background:var(--green-tint);color:var(--green)}
+  .meta{font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+  .prior{font-size:.85rem;color:var(--ink-soft);background:#FCFAF8;border:1px solid var(--line);
+         border-radius:8px;padding:9px 12px;margin-top:10px}
+  .links{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;
+       border-radius:999px;padding:9px 16px;font-size:.85rem;font-weight:600}
+  .btn.ghost{background:#fff;color:var(--ink-soft);border:1.5px solid var(--line)}
+  .phone{font-size:.85rem;color:var(--ink-soft)}
+  .paste{margin-top:12px}
+  .paste summary{font-size:.85rem;color:var(--orange-dark);cursor:pointer;font-weight:600}
+  .paste .sub{font-size:.8rem;color:var(--ink-soft);margin:8px 0 4px}
+  textarea{width:100%;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+       border:1px solid var(--line);border-radius:8px;padding:10px;background:#FCFAF8;color:var(--ink)}
+  .note{margin-top:28px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<h1>Outreach kit</h1>
+<p class="lede">Every gym still missing a confirmed price, a street address, or both.
+Each row has a pre-filled email; where no public address was found, there is a
+paste-ready block for the gym's contact form.</p>
+
+<div class="counts">
+  <span>30 gyms to contact</span>
+  <span>27 need a price</span>
+  <span>17 need an address</span>
+  <span>14 need both</span>
+</div>
+
+<div class="filters">
+  <button class="on" data-f="all">All</button>
+  <button data-f="price">Price only</button>
+  <button data-f="address">Address only</button>
+  <button data-f="price + address">Both</button>
+</div>
+
+
+<article class="row" data-need="price">
+  <header>
+    <h2>[solidcore] Austin</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">Downtown · downtown · pilates</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Class-pack model; rates vary by studio.</p>
+  <p class="prior"><b>Address on file:</b> 204, Colorado Street, Austin, Texas, 78701</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://solidcore.co" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>10th Planet Jiu Jitsu Austin</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">East Austin · east-austin · bjj-mma</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. BJJ membership rates are rarely published.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://10thplanetaustin.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>24 Hour Fitness Austin Sport (Research Blvd)</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">Arboretum · the-domain · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Rates are not shown on the public club listing — they sit behind a point-of-sale redirect. Collect by hand or via the club's SEE PRICES flow (clubId 00202).</p>
+  <p class="prior"><b>Address on file:</b> 10616 Research Blvd, Austin, TX</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://24hourfitness.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    <span class="phone">(512) 794-9151</span>
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>24 Hour Fitness Hancock Center</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">Hancock · hyde-park · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Rates are not shown on the public club listing — they sit behind a point-of-sale redirect. Collect by hand or via the club's SEE PRICES flow (clubId 00372).</p>
+  <p class="prior"><b>Address on file:</b> 1000 East 41st Street, Austin, TX</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://24hourfitness.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    <span class="phone">(512) 458-2424</span>
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Anytime Fitness North Loop</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">North Loop · hyde-park · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Franchise pricing varies by club.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://anytimefitness.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Atomic Athlete</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">South Austin · south-soco · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Open gym plus classes; rates only partially public.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://atomic-athlete.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Barry's Austin</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">Downtown · downtown · crossfit-hiit</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Class-pack model; per §1 boutique studios get a day-pass row and a website link only in v1.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://barrys.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Black Swan Yoga (Downtown)</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">Downtown · downtown · yoga</p>
+  <p class="prior"><b>What we already know:</b> Donation-based — there is no fixed membership price. A $12–18 donation is suggested per class.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://blackswanyoga.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Castle Hill Fitness</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">12th &amp; Lamar · downtown · gym-classes</p>
+  <p class="prior"><b>What we already know:</b> Membership rates are not present in the page source we can read; they load dynamically. Collected by hand instead. A back-to-school promo on 3- and 6-month Premier Gym memberships was running when last checked.</p>
+  <p class="prior"><b>Address on file:</b> 1112 North Lamar Blvd, Austin, TX 78703</p>
+  <p class="links">
+    <a class="btn" href="mailto:hello@castlehillfitness.com?subject=Membership%20pricing%20question&body=Hi%20%E2%80%94%20I%E2%80%99m%20comparing%20gyms%20in%20the%20area%20before%20joining.%20Could%20you%20tell%20me%3A%0A%0A-%20Current%20monthly%20rate%20for%20a%20standard%20adult%20membership%0A-%20Any%20enrollment%2Finitiation%20fee%20and%20annual%20fee%0A-%20Contract%20length%20or%20month-to-month%0A-%20Day%20pass%20price%2C%20if%20you%20offer%20one%0A%0AThanks!%0AKerushan">Email hello@castlehillfitness.com</a>
+    <a class="btn ghost" href="https://castlehillfitness.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    <span class="phone">512-478-4567</span>
+  </p>
+  
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Club Pilates Austin</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">South Austin · south-soco · pilates</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Franchise; 4/8/unlimited packs vary by studio.</p>
+  <p class="prior"><b>Address on file:</b> 1011, East 5th Street, Austin, Texas, 78702</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://clubpilates.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>CorePower Yoga Austin</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">Downtown · downtown · yoga</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. All-access memberships and class packs vary by studio.</p>
+  <p class="prior"><b>Address on file:</b> Aldrich Street, Austin, Texas, 78723</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://corepoweryoga.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>CrossFit Austin</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">South Congress · south-soco · crossfit-hiit</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Class-based tiers.</p>
+  <p class="prior"><b>Address on file:</b> 8708 S Congress Ave, Austin, TX</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://crossfitaustin.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="address">
+  <header>
+    <h2>Crux Climbing Center South</h2>
+    <span class="need need-address">address</span>
+  </header>
+  <p class="meta">South Austin · south-soco · climbing</p>
+  <p class="prior"><b>What we already know:</b> Day pass is $26, plus $5 for gear rental (chalk bag, harness, shoes). $6 discount for students, teachers, under-18s, 65+, military and emergency personnel. Kids 5 and under $12. Class-only pass $18. Add-ons: gear rental $23/mo ($250/yr), long-term locker $10/mo.</p>
+  
+  <p class="links">
+    <a class="btn" href="mailto:memberships@cruxcc.com?subject=Membership%20pricing%20question&body=Hi%20%E2%80%94%20I%E2%80%99m%20comparing%20gyms%20in%20the%20area%20before%20joining.%20Could%20you%20tell%20me%3A%0A%0A-%20Current%20monthly%20rate%20for%20a%20standard%20adult%20membership%0A-%20Any%20enrollment%2Finitiation%20fee%20and%20annual%20fee%0A-%20Contract%20length%20or%20month-to-month%0A-%20Day%20pass%20price%2C%20if%20you%20offer%20one%0A-%20And%20your%20street%20address%20for%20my%20notes%0A%0AThanks!%0AKerushan">Email memberships@cruxcc.com</a>
+    <a class="btn ghost" href="https://cruxclimbingcenter.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Equinox Austin (SoCo)</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">SoCo · downtown · luxury</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Equinox does not publish rates; membership is consult-gated.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://equinox.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Equinox Domain</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">The Domain · the-domain · luxury</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Consult-gated. Confirm this location is open before listing.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://equinox.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>F45 Downtown</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">Downtown · downtown · crossfit-hiit</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Franchise pricing varies by location.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://f45training.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>FeV Iron Vault Gym</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">Downtown · downtown · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Lifting-focused gym; rates not public.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://fevgym.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Gold's Gym Austin (Burnet)</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">Burnet Road · hyde-park · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published on the club page. The join flow blocks automated checks, so this listing is collected by hand.</p>
+  <p class="prior"><b>Address on file:</b> 7301 Burnet Rd, Suite 300A, Austin, TX 78757</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://goldsgym.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    <span class="phone">512-222-6131</span>
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Gold's Gym Downtown</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">Downtown · downtown · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published online. The club site blocks automated checks (repeated timeouts, and the join flow returns a server error), so this listing is collected by hand.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://goldsgym.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Grassiron</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">Hyde Park · hyde-park · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Personal-training tiers reported at $189–299/mo in 2023 — too old to ship. Call to confirm.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://grassiron.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Kollective</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">South Austin · south-soco · luxury</p>
+  <p class="prior"><b>What we already know:</b> Rates of $399–500/mo have been reported but are unconfirmed, and membership runs through an application process. Call to confirm the current rate and initiation fee.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://kollective.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Korrect Fitness (formerly Onnit Gym)</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">South-East Austin · east-austin · gym-classes</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Rebranded from Onnit Gym in 2025 — confirm the current name and rates.</p>
+  <p class="prior"><b>Address on file:</b> 4401 Freidrich Ln, Austin, TX</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://korrectfitness.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="address">
+  <header>
+    <h2>Life Time Austin Downtown</h2>
+    <span class="need need-address">address</span>
+  </header>
+  <p class="meta">Downtown · downtown · luxury</p>
+  <p class="prior"><b>What we already know:</b> Day passes are sold but the price is not published online.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://lifetime.life" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    <span class="phone">737-218-7230</span>
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Lift ATX</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">Downtown · downtown · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> A ~$40/mo rate appears in local coverage but is unconfirmed against the gym's own site, so no number is shown. Call to confirm.</p>
+  <p class="prior"><b>Address on file:</b> 1005, Springdale Road, Austin, Texas, 78721</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://liftatx.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Orangetheory Austin</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">Mueller · mueller · crossfit-hiit</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Basic / Elite / Premier tiers vary by studio.</p>
+  <p class="prior"><b>Address on file:</b> 1911, Aldrich Street, Austin, Texas, 78723</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://orangetheory.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Planet Fitness E. Riverside</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">E. Riverside · east-austin · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Prices not published — every tier was in promotional state when checked. Awaiting a post-promo recheck before any number is shown as the standing rate.</p>
+  <p class="prior"><b>Address on file:</b> 1819, South Pleasant Valley Road, Austin, Texas, 78741</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://planetfitness.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Rumble Boxing South Austin</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">South Austin · south-soco · boxing</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Class-pack model.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://rumbleboxinggym.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price + address">
+  <header>
+    <h2>Studio Three</h2>
+    <span class="need need-priceaddress">price + address</span>
+  </header>
+  <p class="meta">Downtown · downtown · crossfit-hiit</p>
+  <p class="prior"><b>What we already know:</b> Pricing not published — call the gym. Class-pack model across three studios.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://studiothree.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="price">
+  <header>
+    <h2>Travis County Strength</h2>
+    <span class="need need-price">price</span>
+  </header>
+  <p class="meta">East Austin · east-austin · gym-weights</p>
+  <p class="prior"><b>What we already know:</b> Visit-pack rates circulating from 2023 ($80/4 visits, $160/8, $240 unlimited) are too old to ship. Call to confirm current rates.</p>
+  <p class="prior"><b>Address on file:</b> 813 Morrow St, Austin, TX 78757</p>
+  <p class="links">
+    
+    <a class="btn ghost" href="https://traviscountystrength.com" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<article class="row" data-need="address">
+  <header>
+    <h2>YMCA of Greater Austin</h2>
+    <span class="need need-address">address</span>
+  </header>
+  <p class="meta">Multiple branches · mueller · community</p>
+  <p class="prior"><b>What we already know:</b> Memberships range from $25 to $114/month. Financial assistance is available. A 30-day notice is required to cancel.</p>
+  
+  <p class="links">
+    
+    <a class="btn ghost" href="https://austinymca.org" target="_blank" rel="noopener noreferrer">Open website ↗</a>
+    
+  </p>
+  <details class="paste"><summary>No public email found — paste this into their contact form</summary>
+    <p class="sub">Subject: Membership pricing question</p>
+    <textarea readonly rows="11">Hi — I’m comparing gyms in the area before joining. Could you tell me:
+
+- Current monthly rate for a standard adult membership
+- Any enrollment/initiation fee and annual fee
+- Contract length or month-to-month
+- Day pass price, if you offer one
+- And your street address for my notes
+
+Thanks!
+Kerushan</textarea></details>
+</article>
+
+<p class="note">The email is written as what you are — someone comparing gyms before
+joining. Every question is one any prospective member asks, and the answers are
+public-facing rates. If a gym asks directly what it is for, tell them about the site;
+there is nothing here that needs hiding.</p>
+
+<script>
+  document.querySelectorAll('.filters button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.filters button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      var f = b.dataset.f;
+      document.querySelectorAll('.row').forEach(function (r) {
+        r.style.display = (f === 'all' || r.dataset.need === f) ? '' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>

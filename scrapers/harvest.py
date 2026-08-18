@@ -201,6 +201,37 @@ EXTRA_TARGETS = [
         "caveat": "clubid 1036 recovered from lafitness.com's own club-page URL "
                   "(title: 'LA Fitness | AUSTIN Gym | 4001 S LAMAR BLVD'). Not guessed.",
     },
+    # Booking/signup funnels for the boutique studios. Marketing pages never
+    # show rates; the join flow sometimes does. Every URL below is a GUESS at
+    # the funnel path — a 404 is a useful result, not a failure.
+    {"slug": "funnel-orangetheory", "covers": "Orangetheory Austin (seed row 30)",
+     "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
+     "url": "https://www.orangetheory.com/en-us/memberships/",
+     "confidence": "guess", "caveat": "Funnel path guessed."},
+    {"slug": "funnel-f45", "covers": "F45 Downtown (seed row 7)",
+     "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
+     "url": "https://f45training.com/studio/downtown-austin/",
+     "confidence": "guess", "caveat": "Studio slug guessed."},
+    {"slug": "funnel-clubpilates", "covers": "Club Pilates (seed row 39)",
+     "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
+     "url": "https://www.clubpilates.com/memberships",
+     "confidence": "guess", "caveat": "Funnel path guessed."},
+    {"slug": "funnel-solidcore", "covers": "[solidcore] Austin (seed row 8)",
+     "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
+     "url": "https://www.solidcore.co/pricing",
+     "confidence": "guess", "caveat": "Funnel path guessed."},
+    {"slug": "funnel-corepower", "covers": "CorePower Yoga Austin (seed row 38)",
+     "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
+     "url": "https://www.corepoweryoga.com/memberships-pricing",
+     "confidence": "guess", "caveat": "Funnel path guessed."},
+    {"slug": "funnel-barrys", "covers": "Barry's Austin (seed row 5)",
+     "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
+     "url": "https://www.barrys.com/pricing/",
+     "confidence": "guess", "caveat": "Funnel path guessed."},
+    {"slug": "funnel-studiothree", "covers": "Studio Three (seed row 6)",
+     "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
+     "url": "https://www.studiothree.com/pricing",
+     "confidence": "guess", "caveat": "Funnel path guessed."},
     {
         "slug": "lafitness-anderson-rates",
         "covers": "LA Fitness Anderson Lane — per-club signup rates",
@@ -284,7 +315,11 @@ def read_sheet(xlsx_path, sheet_name):
         if target is None:
             raise SystemExit("Sheet %r not found in %s" % (sheet_name, xlsx_path))
 
-        path = target if target.startswith("xl/") else "xl/" + target.lstrip("/")
+        # Rel targets may be relative ("worksheets/sheet2.xml") or absolute
+        # ("/xl/worksheets/sheet2.xml" — which is what openpyxl writes when it
+        # re-saves the workbook). Normalise both to a zip entry name.
+        target = target.lstrip("/")
+        path = target if target.startswith("xl/") else "xl/" + target
         sheet_xml = ET.fromstring(z.read(path))
 
     rows = []
