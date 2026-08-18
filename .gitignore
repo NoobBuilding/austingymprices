@@ -39,6 +39,9 @@ pip-wheel-metadata/
 
 # ── Scraper working files ─────────────────────────────────────────────
 # Raw Firecrawl responses are cached locally for debugging; never committed.
+# harvest_output/ is the one-time seed harvest — raw scraped pages, read by a
+# human then thrown away. Untrusted third-party content; it never enters git.
+scrapers/harvest_output/
 scrapers/.cache/
 scrapers/out/
 *.raw.html
