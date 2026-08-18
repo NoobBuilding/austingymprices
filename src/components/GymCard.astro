@@ -183,9 +183,14 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
       )}
 
       <div class="dfoot">
-        <span>
+        {/* A gym whose scrape has been failing for >14 days says so in the
+            warning style rather than presenting a stale number as current
+            (CLAUDE.md §6). */}
+        <span class={gym.stale ? 'stale' : ''}>
           {verified
-            ? `Prices checked ${verified}${sourceDomain ? ` · from ${sourceDomain}` : ''}`
+            ? gym.stale
+              ? `Prices last confirmed ${verified} — we have not been able to re-check since`
+              : `Prices checked ${verified}${sourceDomain ? ` · from ${sourceDomain}` : ''}`
             : 'Price not yet confirmed'}
         </span>
         <span class="dfoot-links">
@@ -457,6 +462,14 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
 
   .dfoot a {
     color: var(--ink-faint);
+  }
+
+  .dfoot .stale {
+    color: var(--orange-dark);
+    background: var(--orange-tint);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-weight: 600;
   }
 
   .terms {

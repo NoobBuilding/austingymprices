@@ -62,6 +62,9 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
     fail(`data_source must be "scrape" or "manual", got "${gym.data_source}"`);
   }
   if (!Array.isArray(gym.price_history)) fail('price_history must be an array');
+  if (typeof gym.stale !== 'boolean') fail('stale must be a boolean');
+  // A stale flag with no verified_date has nothing to be stale relative to.
+  if (gym.stale && !gym.verified_date) fail('is marked stale but has no verified_date');
 
   for (const entry of gym.price_history ?? []) {
     if (!entry.date || !entry.plan_name) fail('price_history entry missing date/plan_name');

@@ -105,7 +105,7 @@ def main():
                         help="parse and diff but write nothing")
     args = parser.parse_args()
 
-    names = args.targets or target_registry.LOW_COMPLEXITY
+    names = args.targets or target_registry.ALL_TARGETS
     if args.tier:
         names = [n for n in names if getattr(target_registry.load(n), "TIER", "monthly") == args.tier]
 

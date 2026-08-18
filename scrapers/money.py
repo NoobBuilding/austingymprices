@@ -66,11 +66,19 @@ def to_decimal(raw):
         raise ParseError("not a number: %r" % raw)
 
 
-def plausible(value):
-    return MIN_PLAUSIBLE <= value <= MAX_PLAUSIBLE
+def plausible(value, maximum=None):
+    """
+    A per-BILLING-PERIOD rate lives under MAX_PLAUSIBLE. Paid-in-full totals
+    legitimately run far higher ($950 for a year at Crux, $2,449 at EAAC), so
+    those callers pass their own ceiling. The corruption we defend against
+    inflates a figure by ~100x, so a context-appropriate ceiling still catches
+    it: a mangled $9.50 total would read as $950, but a mangled $950 reads as
+    $95,000.
+    """
+    return MIN_PLAUSIBLE <= value <= (maximum if maximum is not None else MAX_PLAUSIBLE)
 
 
-def repair_eaten_decimal(value, document):
+def repair_eaten_decimal(value, document, maximum=None):
     """
     A price like 3699 is almost certainly 36.99 with the point eaten. Accept
     the repair ONLY if the repaired figure appears verbatim elsewhere in the
@@ -83,14 +91,14 @@ def repair_eaten_decimal(value, document):
         return None
 
     candidate = Decimal("%s.%s" % (digits[:-2], digits[-2:]))
-    if not plausible(candidate):
+    if not plausible(candidate, maximum):
         return None
 
     corroboration = re.compile(r"\$\s*%s(?![0-9])" % re.escape(str(candidate)))
     return candidate if corroboration.search(document) else None
 
 
-def parse_price(raw_fragment, document, label="price"):
+def parse_price(raw_fragment, document, label="price", maximum=None):
     """
     Pull one price out of a fragment, using the whole document for
     corroboration. Raises ParseError rather than returning something doubtful.
@@ -101,10 +109,10 @@ def parse_price(raw_fragment, document, label="price"):
         raise ParseError("no price found for %s in %r" % (label, raw_fragment[:80]))
 
     value = to_decimal(match.group(1))
-    if plausible(value):
+    if plausible(value, maximum):
         return value
 
-    repaired = repair_eaten_decimal(value, normalize_markdown(document))
+    repaired = repair_eaten_decimal(value, normalize_markdown(document), maximum)
     if repaired is not None:
         return repaired
 

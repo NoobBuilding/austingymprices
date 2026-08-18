@@ -20,7 +20,9 @@
     "check:search": "node scripts/check-search.mjs",
     "check:tabs": "node scripts/check-tabs.mjs",
     "check:map": "node scripts/check-map.mjs",
-    "test:parsers": "python3 scrapers/tests/test_parsers.py"
+    "test:parsers": "python3 scrapers/tests/test_parsers.py",
+    "photos": "node scripts/fetch-photos.mjs",
+    "photos:check": "node scripts/fetch-photos.mjs --check"
   },
   "engines": {
     "node": ">=20.0.0"

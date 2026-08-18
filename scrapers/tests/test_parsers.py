@@ -137,6 +137,47 @@ EXPECTED = {
         "day_pass": 45,
         "min_plans": 3,
     },
+    # ── Medium-complexity targets ──────────────────────────────────────────
+    "crunch": {
+        "fixture": "crunch",
+        "default": ("Base (month-to-month)", 15.99),
+        "annual_fee": 10,
+        "commit": 0,
+        "day_pass": None,
+        "min_plans": 4,
+    },
+    "ymca": {
+        "fixture": "ymca",
+        "default": ("Adult", 75),
+        "annual_fee": 0,
+        "commit": 0,
+        "day_pass": None,
+        "min_plans": 6,
+    },
+    "crux": {
+        "fixture": "crux",
+        "default": ("Monthly Drafting", 94.99),
+        "annual_fee": 0,
+        "commit": 0,
+        "day_pass": 26,
+        "min_plans": 4,
+    },
+    "abp": {
+        "fixture": "abp",
+        "default": ("Adult (21 & Up)", 95),
+        "annual_fee": 0,
+        "commit": 0,
+        "day_pass": 25,
+        "min_plans": 3,
+    },
+    "lafitness": {
+        "fixture": "lafitness-anderson-rates",
+        "default": ("Basic (Club of Enrollment)", 31.99),
+        "annual_fee": 69,
+        "commit": 0,
+        "day_pass": None,
+        "min_plans": 3,
+    },
 }
 
 
@@ -198,11 +239,87 @@ def test_planetfitness():
     check(day_pass is None, "no day pass claimed")
 
 
+SECRET_PATTERNS = [
+    (r"\b(?:sk|pk)\.[A-Za-z0-9._-]{20,}", "Mapbox token"),
+    (r"\bAIza[0-9A-Za-z_-]{30,}", "Google API key"),
+    (r"\bfc-[A-Za-z0-9]{20,}", "Firecrawl key"),
+    (r"\bgh[pousr]_[A-Za-z0-9]{20,}", "GitHub token"),
+    (r"\bAKIA[0-9A-Z]{16}\b", "AWS access key"),
+    (r"-----BEGIN [A-Z ]*PRIVATE KEY", "private key"),
+]
+
+
+def test_fixture_hygiene():
+    """
+    Fixtures are other people's web pages, and web pages embed credentials.
+    The YMCA's page carried a live Mapbox token, which went into a fixture and
+    was caught only by GitHub push protection at the moment of pushing to a
+    PUBLIC repo. Committing someone else's working key is not our secret to
+    leak. This keeps that from depending on a server-side backstop.
+    """
+    import re as _re
+    print("\nFixture hygiene — no third-party credentials")
+    findings = []
+    for path in sorted(FIXTURES.glob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        for pattern, label in SECRET_PATTERNS:
+            if _re.search(pattern, text):
+                findings.append("%s: %s" % (path.name, label))
+    check(not findings, "no fixture contains a credential", "; ".join(findings))
+    check(
+        any("REDACTED" in p.read_text(encoding="utf-8") for p in FIXTURES.glob("*.md")),
+        "redaction markers are present, so redaction is visible rather than silent",
+    )
+
+
+def test_near_misses():
+    """
+    Cases where a plausible-looking regex returned a plausible-looking WRONG
+    number. These are the dangerous ones: nothing about $5 or $29.99 looks
+    corrupt, so only a test pinned to the real page catches them.
+    """
+    print("\nNear misses — plausible but wrong")
+
+    crux = fixture("crux")
+    plans, _ = targets.load("crux").parse(crux)
+    drafting = next(p for p in plans if p["name"] == "Monthly Drafting")
+    check(drafting["monthly"] == 94.99,
+          "Crux monthly drafting is $94.99, not the $5/mo FREEZE FEE in the prose above it",
+          str(drafting["monthly"]))
+
+    la = fixture("lafitness-anderson-rates")
+    plans, _ = targets.load("lafitness").parse(la)
+    default = next(p for p in plans if p["is_default"])
+    cheapest_sticker = min(plans, key=lambda p: p["monthly"])
+    check(default["monthly"] == 31.99,
+          "LA Fitness default is the $31.99 plan (cheapest ALL-IN)", str(default["monthly"]))
+    check(cheapest_sticker["monthly"] == 29.99,
+          "...even though $29.99 is the cheapest sticker", str(cheapest_sticker["monthly"]))
+    check(default is not cheapest_sticker,
+          "the all-in inversion is preserved: cheapest sticker != cheapest all-in")
+
+    abp_md = fixture("abp")
+    plans, _ = targets.load("abp").parse(abp_md)
+    adult = next(p for p in plans if p["is_default"])
+    check(adult["monthly"] == 95 and adult["promo"]["price"] == 69,
+          "ABP standing rate is $95 with $69 as the promo, never the other way round",
+          "standing=%s promo=%s" % (adult["monthly"], adult["promo"]["price"]))
+
+    ymca_md = fixture("ymca")
+    plans, _ = targets.load("ymca").parse(ymca_md)
+    default = next(p for p in plans if p["is_default"])
+    check(default["name"] == "Adult",
+          "YMCA default is the adult rate, not the cheaper age-restricted Student tier",
+          default["name"])
+
+
 def main():
     print("Parser tests — fixtures are the real harvested pages")
     test_money()
     test_targets()
     test_planetfitness()
+    test_near_misses()
+    test_fixture_hygiene()
     print("\n%d checks, %d failed" % (CHECKS, len(FAILURES)))
     if FAILURES:
         for f in FAILURES:

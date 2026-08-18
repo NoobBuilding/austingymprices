@@ -13,3 +13,14 @@ is exactly the failure it exists to prevent.
 They are inert markdown, never rendered and never served. Refresh a fixture
 only when its parser is being updated for a genuine page change, and say so in
 the commit — a fixture edited to make a test pass is a test deleted.
+
+## Credentials are redacted
+
+These are other people's web pages, and web pages embed keys. The YMCA's page
+carried a live Mapbox token; it reached a fixture and was stopped by GitHub
+push protection on the way into a **public** repo. Someone else's working
+credential is not ours to publish.
+
+Redacted values are replaced with a visible `REDACTED-*-TOKEN` marker rather
+than deleted, so the redaction is obvious in a diff. `test_fixture_hygiene()`
+scans every fixture on each run — do not rely on the server-side backstop.

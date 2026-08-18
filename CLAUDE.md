@@ -450,8 +450,18 @@ exists; they are recorded now so they're inherited, not retrofitted.
 5. Gym detail pages + region pages + JSON-LD + sitemap.
 6. Scrapers: lib + the 6 "Low complexity" targets first; Actions cron + PR flow; Sentry.
    (Low = planetfitness, lifetime, lacampeones, bigtex, hydepark, eaac.)
-7. Remaining 8 "Medium" scrapers; stale-flag handling; photo build step.
-   (Medium = crunch, goldsgym, 24hour, ymca, castlehill, crux, abp, lafitness.)
+7. Remaining "Medium" scrapers; stale-flag handling; photo build step.
+   Of the 8 Medium targets, **5 are scrapable** (crunch, ymca, crux, abp, lafitness)
+   and **3 are not**, confirmed by the harvest rather than assumed:
+   - **goldsgym** — every fetch times out at 120s and 300s, ordinary and stealth,
+     across two club URLs including an owner-verified one; the join flow returns
+     HTTP 500. The site refuses automated access.
+   - **castlehill** — rates are not in the page source at all; the membership
+     content renders client-side. The fetch returns nav and footer only.
+   - **24hour** — the public club listing carries no rates; prices sit behind a
+     point-of-sale redirect (`salesredirect.html?flow=POS&clubId=...`).
+   All three are `data_source: "manual"` and stay on the outreach list. No parser
+   work changes this, so none was written for them.
 8. FAQ / for-gym-owners pages; OG images; final a11y + Lighthouse pass (target ≥95 across the board).
 9. Deploy to Cloudflare Pages, wire domains + redirect, smoke test, ship.
 
