@@ -260,8 +260,10 @@ exists; they are recorded now so they're inherited, not retrofitted.
 3. Index page: list + filters (no map yet). Cards + accordion per mockup.
 4. Leaflet map island + pin/card sync. Mobile map toggle.
 5. Gym detail pages + region pages + JSON-LD + sitemap.
-6. Scrapers: lib + the 8 "Low complexity" targets first; Actions cron + PR flow; Sentry.
-7. Remaining 6 scrapers; stale-flag handling; photo build step.
+6. Scrapers: lib + the 6 "Low complexity" targets first; Actions cron + PR flow; Sentry.
+   (Low = planetfitness, lifetime, lacampeones, bigtex, hydepark, eaac.)
+7. Remaining 8 "Medium" scrapers; stale-flag handling; photo build step.
+   (Medium = crunch, goldsgym, 24hour, ymca, castlehill, crux, abp, lafitness.)
 8. FAQ / for-gym-owners pages; OG images; final a11y + Lighthouse pass (target ≥95 across the board).
 9. Deploy to Cloudflare Pages, wire domains + redirect, smoke test, ship.
 
