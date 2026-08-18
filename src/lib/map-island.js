@@ -60,6 +60,11 @@ export function initMap(container, pins, getState) {
   }).addTo(map);
 
   let markers = [];
+  // Which selection we have already brought into view, and whether the
+  // current one came from a pin click on this map (in which case the user is
+  // already looking at it and panning would be jarring).
+  let lastRevealed = null;
+  let selfInitiated = false;
 
   const clear = () => {
     for (const m of markers) m.remove();
@@ -166,6 +171,49 @@ export function initMap(container, pins, getState) {
     }
 
     for (const m of markers) m.addTo(map);
+
+    revealSelection(selected, groups);
+  }
+
+  /**
+   * Bring the selected gym into view. A selection made from the list is
+   * useless if its pin is off-frame or hard against the edge — which is
+   * exactly what happened with Crunch, sitting at 90% of the way to the
+   * viewport edge while a dark tier-3 pin held the centre.
+   *
+   * Pans only. Zoom changes only when the gym is merged into a cluster and
+   * needs resolving, per the spec.
+   */
+  function revealSelection(selected, groups) {
+    if (!selected || selected === lastRevealed) return;
+    if (selfInitiated) {
+      // Came from clicking this very pin; the user can see it already.
+      lastRevealed = selected;
+      selfInitiated = false;
+      return;
+    }
+
+    const pin = pins.find((p) => p.slug === selected);
+    if (!pin) return;
+    lastRevealed = selected;
+
+    const latlng = L.latLng(pin.lat, pin.lng);
+    const cluster = groups.find(
+      (g) => g.members.length > 1 && g.members.some((m) => m.pin.slug === selected),
+    );
+
+    if (cluster) {
+      // Merged into a cluster: zoom just enough to break it out, centred on
+      // the gym itself rather than the cluster centroid.
+      map.setView(latlng, Math.min(map.getZoom() + 2, 17), { animate: true });
+      return;
+    }
+
+    // Require the pin to be comfortably inside, not technically inside: a
+    // bubble hard against the edge reads as absent.
+    if (!map.getBounds().pad(-0.15).contains(latlng)) {
+      map.panTo(latlng, { animate: true, duration: 0.6 });
+    }
   }
 
   // The map never owns selection. It announces intent; the page updates the
@@ -173,6 +221,7 @@ export function initMap(container, pins, getState) {
   // holding their own copy is exactly how the card->pin direction went silently
   // dead, so there is only one copy now.
   function select(slug) {
+    selfInitiated = true;
     document.dispatchEvent(new CustomEvent('gym:select', { detail: { slug } }));
   }
 

@@ -413,6 +413,16 @@ exists; they are recorded now so they're inherited, not retrofitted.
    - **Pins**: price bubbles per the mockup, background-tinted by price tier — tier 1
      green-tint, tier 2 neutral/white, tier 3 ink. Unpriced gyms get a hollow/dashed
      bubble reading "Call": visible, but visually secondary.
+   - **A selection made from the list is brought into view.** Selecting a card pans
+     the map smoothly to the gym's pin when it is not comfortably inside the frame —
+     "comfortably" matters, because a bubble hard against the edge reads as absent.
+     Zoom changes only when the gym is merged into a cluster and needs resolving.
+     Clicking a pin does NOT pan: the user is already looking at it, and its
+     list-side equivalent is the existing scroll-to-card.
+   - **Pin ↔ gym matching is slug-keyed everywhere.** The list sorts cheapest-first
+     while the map iterates data order, so any position-based lookup would light up
+     the wrong gym. `scripts/check-map.mjs` asserts this with the two orderings
+     deliberately different.
    - **Colour meanings on the map are exclusive and must stay that way.**
      **Ink = expensive** (tier 3). **Orange = selected**, and nothing else on the map
      uses orange as a fill. A selected cluster gets the identical treatment to a

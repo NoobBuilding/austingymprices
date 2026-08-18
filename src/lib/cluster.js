@@ -63,3 +63,23 @@ export function countActive(groups, standalone, selectedSlug) {
   const inStandalone = standalone.filter((p) => p.pin.slug === selectedSlug).length;
   return inGroups + inStandalone;
 }
+
+/**
+ * Which bubble carries `active` for a selection: the slug of a lone pin, or
+ * the member slugs of the cluster holding it. Returns null when nothing is
+ * selected.
+ *
+ * Exists so the "the active pin is the selected gym" invariant can be tested
+ * with the map's ordering deliberately different from the list's — the list
+ * sorts cheapest-first while the map iterates data order, and a position-based
+ * lookup would silently light up the wrong gym.
+ */
+export function activeBubble(groups, standalone, selectedSlug) {
+  if (!selectedSlug) return null;
+  const cluster = groups.find((g) => g.members.some((m) => m.pin.slug === selectedSlug));
+  if (cluster) {
+    return { kind: 'cluster', slugs: cluster.members.map((m) => m.pin.slug) };
+  }
+  const lone = standalone.find((p) => p.pin.slug === selectedSlug);
+  return lone ? { kind: 'pin', slugs: [lone.pin.slug] } : null;
+}

@@ -92,7 +92,7 @@ check(
 
 // ── Clustering maths (pure, no DOM needed) ───────────────────────────────
 console.log('\nClustering');
-const { clusterPoints, clusterLabel, pinClasses, countActive } = await import('../src/lib/cluster.js');
+const { clusterPoints, clusterLabel, pinClasses, countActive, activeBubble } = await import('../src/lib/cluster.js');
 const mk = (slug, x, y, price) => ({ pin: { slug, tier: 2 }, price, point: { x, y } });
 
 const far = clusterPoints([mk('a', 0, 0, 10), mk('b', 500, 500, 99)], 44);
@@ -171,6 +171,58 @@ check(
   !pinClasses({ tier: 3, priced: true, selected: false }).includes('active'),
   'an unselected tier-3 pin is NOT marked selected (the reported bug)',
 );
+
+console.log('\nThe active pin is the SELECTED gym, with list order != map order');
+// Map iterates data order; the list sorts cheapest-first. If anything resolved
+// by position rather than slug, these two orderings would light the wrong pin.
+const mapOrder = [
+  mk('east-austin-athletic-club', 700, 100, 233),
+  mk('crunch-south-austin', 40, 700, 23),
+  mk('life-time-south', 300, 400, 259),
+];
+const listOrder = [...mapOrder].sort((a, b) => a.price - b.price).map((p) => p.pin.slug);
+check(
+  listOrder[0] === 'crunch-south-austin' && mapOrder[0].pin.slug !== 'crunch-south-austin',
+  'the fixture genuinely has list order != map order',
+  `list=${listOrder[0]} map=${mapOrder[0].pin.slug}`,
+);
+
+const spread = clusterPoints(mapOrder, 44);
+const lone = [];
+const chosen = activeBubble(spread, mapOrder, 'crunch-south-austin');
+check(chosen !== null, 'selecting a gym resolves to a bubble');
+check(
+  chosen.slugs.includes('crunch-south-austin'),
+  'the active bubble is the SELECTED gym, not the first or nearest one',
+  chosen.slugs.join(','),
+);
+check(
+  !chosen.slugs.includes('east-austin-athletic-club'),
+  'the dark tier-3 gym at the front of map order is NOT marked active',
+);
+check(countActive(spread, lone, 'crunch-south-austin') === 1, 'exactly one bubble is active');
+
+// And when it IS clustered, the cluster holding it is the one that lights up.
+const tight = clusterPoints(
+  [mk('a', 0, 0, 38), mk('crunch-south-austin', 8, 8, 23)], 44,
+);
+const clustered = activeBubble(tight, [], 'crunch-south-austin');
+check(clustered?.kind === 'cluster', 'a clustered selection resolves to its cluster');
+check(
+  clustered.slugs.includes('crunch-south-austin'),
+  'the cluster that lights up is the one containing the selected gym',
+);
+
+console.log('\nSelecting from the list brings the pin into view');
+const islandSrc = readFileSync('src/lib/map-island.js', 'utf8');
+check(/function revealSelection/.test(islandSrc), 'the map reveals the selection');
+check(/panTo\(/.test(islandSrc), 'it pans rather than jumping');
+check(/getBounds\(\)\.pad\(/.test(islandSrc),
+  'it requires the pin to be COMFORTABLY inside, not merely inside');
+check(/selfInitiated/.test(islandSrc),
+  'a pin click does not pan — the user is already looking at it');
+check(/setView\(latlng, Math\.min\(map\.getZoom\(\) \+ 2/.test(islandSrc),
+  'zoom changes only to resolve a cluster');
 
 // ── Selection is one piece of state, rendered by both views ──────────────
 console.log('\nPin <-> card selection sync');
