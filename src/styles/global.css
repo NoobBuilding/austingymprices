@@ -28,6 +28,16 @@ button {
   cursor: pointer;
 }
 
+/* The UA stylesheet's [hidden] { display: none } is a low-specificity rule
+ * that ANY author `display` declaration silently defeats. That is a real bug
+ * we shipped: .tag { display: inline-block } beat it, so setting
+ * element.hidden = true on the commitment badges had no visual effect and
+ * membership badges kept rendering on the Day passes tab. Make `hidden`
+ * authoritative so it cannot be accidentally overridden again. */
+[hidden] {
+  display: none !important;
+}
+
 a {
   color: var(--orange-dark);
 }

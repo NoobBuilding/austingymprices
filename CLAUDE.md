@@ -115,6 +115,13 @@ concept, and a "2-mo minimum" badge above a $10 headline reads as a contradictio
 Day-pass restrictions live in `day_pass_terms` as structured data so they render from the
 data rather than being buried in prose.
 
+**Show the math on multi-day passes.** Where a week/month/punchcard pass sits next to a
+single-day price, state what it includes *and* how it compares — "Week pass $35 — 7 days
+with sauna and 24/7 key-tag access; seven day passes would cost $70 and still exclude the
+sauna". The products usually differ, so an unexplained $35 beside $10/day reads as broken
+arithmetic. This is the same principle as all-in pricing: do the comparison for the reader
+rather than leaving them to guess at it.
+
 **`restricted` rules:** a nullable string marking a plan that a solo walk-in adult
 cannot simply buy. `"scope"` is reserved for partial-access plans (EAAC's Strike Club is
 striking classes only); `"household"` covers multi-person plans (YMCA's household tiers,

@@ -15,9 +15,10 @@
     "check": "astro check",
     "validate:data": "node scripts/validate-data.mjs",
     "check:csp": "node scripts/check-csp.mjs",
-    "verify": "npm run lint && npm run validate:data && npm run build && npm run check:csp && npm run check:search",
+    "verify": "npm run lint && npm run validate:data && npm run build && npm run check:csp && npm run check:search && npm run check:tabs",
     "smoke": "node scripts/smoke-deploy.mjs",
-    "check:search": "node scripts/check-search.mjs"
+    "check:search": "node scripts/check-search.mjs",
+    "check:tabs": "node scripts/check-tabs.mjs"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -32,6 +33,7 @@
     "eslint": "^9.39.5",
     "eslint-plugin-astro": "^1.7.0",
     "globals": "^17.11.0",
+    "jsdom": "^29.1.1",
     "typescript": "^6.0.3"
   }
 }

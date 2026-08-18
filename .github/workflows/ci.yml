@@ -53,6 +53,12 @@ jobs:
       - name: Check search behaviour
         run: npm run check:search
 
+      # Executes the real bundled client script against the real built HTML in
+      # jsdom. Static markup inspection cannot catch client-behaviour bugs, and
+      # two shipped in a row before this existed.
+      - name: Check tab-aware rendering
+        run: npm run check:tabs
+
       # §8: build fails on high-severity vulnerabilities.
       - name: npm audit
         run: npm audit --audit-level=high
