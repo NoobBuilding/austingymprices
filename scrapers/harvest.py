@@ -214,12 +214,15 @@ EXTRA_TARGETS = [
      "confidence": "guess", "caveat": "Studio slug guessed."},
     {"slug": "funnel-clubpilates", "covers": "Club Pilates (seed row 39)",
      "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
-     "url": "https://www.clubpilates.com/memberships",
-     "confidence": "guess", "caveat": "Funnel path guessed."},
+     "url": "https://www.clubpilates.com/location/williamcannon",
+     "confidence": "verified", "caveat": "Real studio page found via the site's "
+     "own location search. William Cannon (4220 W William Cannon Dr) is the "
+     "south-soco-fitting studio; Club Pilates has ~8 Austin studios."},
     {"slug": "funnel-solidcore", "covers": "[solidcore] Austin (seed row 8)",
      "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
-     "url": "https://www.solidcore.co/pricing",
-     "confidence": "guess", "caveat": "Funnel path guessed."},
+     "url": "https://solidcore.co/tx/austin/downtown/",
+     "confidence": "verified", "caveat": "Real studio page. 204 Colorado St, "
+     "78701 — matches the downtown seed row and the geocoded pin."},
     {"slug": "funnel-corepower", "covers": "CorePower Yoga Austin (seed row 38)",
      "pattern": "(not in sheet)", "complexity": "Medium", "notes": "join flow",
      "url": "https://www.corepoweryoga.com/memberships-pricing",

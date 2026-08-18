@@ -95,3 +95,24 @@ geocode whatever you approve.
 | black-swan-yoga-downtown | 913 E Cesar Chavez St | three Austin locations returned; none is the downtown studio |
 | studio-three-austin | 176 N Racine Ave. | Chicago — national site, WRONG city |
 | travis-county-strength | 813 Morrow Street | accepted — Austin zip confirmed, now geocoded |
+
+## Booking-funnel pass — decisions needed
+
+### Club Pilates — which studio is our row?
+Club Pilates has ~8 Austin studios. Our seed row says `region: south-soco`, but the
+name search geocoded it to the **East Austin** studio (1011 E 5th St). The studio
+that actually fits south-soco is **William Cannon**, whose own page publishes its
+coordinates directly:
+
+| | Address | Lat / Lng | Fits our region? |
+|---|---|---|---|
+| Currently pinned | 1011 E 5th St (East Austin) | 30.26346, -97.72694 | ✗ east-austin |
+| **Candidate** | 4220 W. William Cannon Dr, Suite 110, Austin TX 78749 | **30.222105, -97.83782** | ✓ south-soco |
+
+The William Cannon figures come from Club Pilates' own site, not a geocoder, so they
+are authoritative once you pick the studio. Tell me which studio the row represents
+and I will write it.
+
+### [solidcore] Downtown — pin confirmed
+The studio page gives **204 Colorado St, 78701**, which matches the coordinates the
+name search already produced. That pin is confirmed by two independent sources.

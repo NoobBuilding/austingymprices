@@ -16,6 +16,9 @@ const EMAILS = {
   'castle-hill-fitness': 'hello@castlehillfitness.com',
   'crunch-south-austin': 'manager@crunchsouthaustin.com',
   'crux-climbing-center-south': 'memberships@cruxcc.com',
+  // Recovered from the Club Pilates William Cannon studio page during the
+  // booking-funnel pass.
+  'club-pilates-austin': 'williamcannon@clubpilates.com',
 };
 const PHONES = {
   'castle-hill-fitness': '512-478-4567',
@@ -31,6 +34,8 @@ const PHONES = {
   'life-time-south': '512-891-4530',
   '24-hour-fitness-hancock': '(512) 458-2424',
   '24-hour-fitness-research-blvd': '(512) 794-9151',
+  'club-pilates-austin': '(512) 745-4529',
+  'solidcore-austin': '(512) 900-4740',
 };
 
 const gyms = readdirSync('data/gyms')
