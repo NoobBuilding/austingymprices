@@ -79,6 +79,8 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
       "enroll_fee": 0,
       "annual_fee": 45,
       "commit_months": 0,             // 0 = no contract / month-to-month
+      "restricted": null,             // null | "student" | "youth" | "young-adult" |
+                                      // "senior" | "military" | "scope"
       "note": "The $45/yr maintenance fee is charged 75 days after signup, then annually.",
       "is_default": true              // exactly one plan per gym; drives card price + map pin
     }
@@ -97,6 +99,21 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   ]
 }
 ```
+
+**`restricted` rules:** a nullable string marking a plan that a solo walk-in adult
+cannot simply buy. `"scope"` covers partial-access plans (EAAC's Strike Club is striking
+classes only). The value drives badge text on the detail page — "Students only",
+"Striking classes only" — and its truthiness drives the default-plan rule below.
+**Restricted plans always render in the plan table.** They are real options; they are
+just not the headline.
+
+**Default-plan rule:** exactly one plan per gym carries `is_default`. It is the
+**cheapest all-in** plan among those where `restricted` is `null` **and**
+`commit_months ≤ 2`. Cheapest *all-in*, never cheapest sticker — at LA Fitness the
+$29.99 plan costs $44/mo all-in while the $31.99 plan costs $38, because of a $99
+initiation fee. That inversion is the entire point of the site, so the default must be
+computed on the all-in figure or the headline number lies. Where no plan qualifies
+(e.g. a promo-only gym), the card falls back to the "call for pricing" state.
 
 **`billing_period` rules:** store the amount the gym actually bills, in the period it
 actually bills it — never silently convert. EAAC bills $215 every 4 weeks, which is 13
@@ -129,7 +146,8 @@ deleted, because the whole point is an auditable trail behind every number we sh
 - `first_year_total` = monthly × 12 + enroll_fee + annual_fee
 - Region median all-in (across default plans of gyms in that region) — powers the
   "$8 below the Hyde Park median ($67)" headline on detail pages
-- Price tier: 1 (< $40), 2 ($40–100), 3 ($100+) — computed on **all-in**, not sticker
+- Price tier: 1 (< $40), 2 ($40–100), 3 ($100+) — computed on **all-in**, not sticker,
+  and on the **normalized** monthly where `billing_period` is not `"monthly"`
 
 **Edge cases the schema must handle (from the seed list):**
 - Donation-based (Black Swan Yoga): `monthly: null`, `pricing_note` string shown instead

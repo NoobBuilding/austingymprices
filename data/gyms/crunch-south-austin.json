@@ -25,8 +25,9 @@
       "enroll_fee": 75,
       "annual_fee": 10,
       "commit_months": 12,
+      "restricted": null,
       "note": "Single-club access. Enrollment fee is $75 standing.",
-      "is_default": true,
+      "is_default": false,
       "promo": {
         "enroll_fee": 0.01,
         "note": "Join for 1¢ + 2 weeks free — enrollment fee reduced to $0.01."
@@ -38,8 +39,9 @@
       "enroll_fee": 75,
       "annual_fee": 10,
       "commit_months": 0,
+      "restricted": null,
       "note": "Single-club access, no commitment.",
-      "is_default": false,
+      "is_default": true,
       "promo": {
         "enroll_fee": 0.01,
         "note": "Join for 1¢ + 2 weeks free."
@@ -51,6 +53,7 @@
       "enroll_fee": 75,
       "annual_fee": 10,
       "commit_months": 0,
+      "restricted": null,
       "note": "Adds group fitness classes and multi-club access.",
       "is_default": false,
       "promo": {
@@ -64,6 +67,7 @@
       "enroll_fee": 75,
       "annual_fee": 10,
       "commit_months": 0,
+      "restricted": null,
       "note": "Adds HIIT classes, R&R services and unlimited guests.",
       "is_default": false,
       "promo": {

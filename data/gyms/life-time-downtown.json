@@ -27,6 +27,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": null,
       "note": "Published as a \"starting at\" rate — the entry tier. Life Time states dues, fees and charges may vary by location and change. No enrollment or annual fee is stated on the site; recorded as none but unconfirmed.",
       "is_default": true
     }

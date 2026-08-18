@@ -26,6 +26,7 @@
       "enroll_fee": 0,
       "annual_fee": 45,
       "commit_months": 2,
+      "restricted": null,
       "note": "Plus tax. Auto-renewal with a 2-month minimum. The $45/yr maintenance fee is charged 75 days after signup, then annually on that date.",
       "is_default": true
     },
@@ -35,6 +36,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 1,
+      "restricted": null,
       "note": "$70 paid upfront. Paid-in-full plans carry no annual maintenance fee.",
       "is_default": false
     },
@@ -44,6 +46,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 3,
+      "restricted": null,
       "note": "$190 paid upfront ($64/mo as published by the gym). No annual fee.",
       "is_default": false
     },
@@ -53,6 +56,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 6,
+      "restricted": null,
       "note": "$350 paid upfront ($59/mo as published by the gym). No annual fee.",
       "is_default": false
     },
@@ -62,6 +66,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 12,
+      "restricted": null,
       "note": "$630 paid upfront ($53/mo as published by the gym). No annual fee.",
       "is_default": false
     }

@@ -28,6 +28,7 @@
       "enroll_fee": 0,
       "annual_fee": 69,
       "commit_months": 0,
+      "restricted": null,
       "note": "Access to the club of enrollment only. Annual fee is billed 14 days after enrollment and every year thereafter. Last month's dues are collected upfront alongside the first month.",
       "is_default": true
     },
@@ -37,6 +38,7 @@
       "enroll_fee": 99,
       "annual_fee": 69,
       "commit_months": 0,
+      "restricted": null,
       "note": "Access to all LA Fitness and City Sports Clubs nationwide.",
       "is_default": false
     },
@@ -46,6 +48,7 @@
       "enroll_fee": 0,
       "annual_fee": 69,
       "commit_months": 0,
+      "restricted": null,
       "note": "Same nationwide access with no initiation fee, at a higher monthly rate.",
       "is_default": false
     }

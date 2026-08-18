@@ -22,6 +22,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": null,
       "note": "Standard adult rate across the 8 community fitness centers.",
       "is_default": true,
       "promo": {
@@ -35,6 +36,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "student",
       "note": "Age-restricted. Proof of enrollment required.",
       "is_default": false,
       "promo": {
@@ -48,6 +50,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "young-adult",
       "note": "Age-restricted, ages 19 to 26.",
       "is_default": false,
       "promo": {
@@ -61,6 +64,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "scope",
       "note": "Household plan, one adult.",
       "is_default": false,
       "promo": {
@@ -74,6 +78,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "scope",
       "note": "Two-adult plan.",
       "is_default": false,
       "promo": {
@@ -87,6 +92,7 @@
       "enroll_fee": 49,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "scope",
       "note": "Household plan, two adults.",
       "is_default": false,
       "promo": {

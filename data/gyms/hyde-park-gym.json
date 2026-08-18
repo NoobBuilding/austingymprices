@@ -22,6 +22,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": null,
       "note": "Plus sales tax. No time commitment and no initiation fee.",
       "is_default": true
     },
@@ -31,6 +32,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 3,
+      "restricted": null,
       "note": "$219 paid upfront. Plus sales tax.",
       "is_default": false
     },
@@ -40,6 +42,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 6,
+      "restricted": null,
       "note": "$379 paid upfront. Plus sales tax.",
       "is_default": false
     },
@@ -49,6 +52,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 12,
+      "restricted": null,
       "note": "$689 paid upfront. Plus sales tax.",
       "is_default": false
     }

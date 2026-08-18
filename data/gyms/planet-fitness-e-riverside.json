@@ -27,6 +27,7 @@
       "enroll_fee": null,
       "annual_fee": null,
       "commit_months": 0,
+      "restricted": null,
       "note": "PROMO-ONLY: the standing rate is not published. Every tier on the page carries an offer expiring August 30, 2026, so the promotional $10/mo, $59 startup and $0.00 annual fee cannot be promoted to standing. Recheck after the offer expires.",
       "is_default": true,
       "promo": {
@@ -43,6 +44,7 @@
       "enroll_fee": null,
       "annual_fee": null,
       "commit_months": 0,
+      "restricted": null,
       "note": "PROMO-ONLY — standing rate not published. Adds access to any club.",
       "is_default": false,
       "promo": {
@@ -59,6 +61,7 @@
       "enroll_fee": null,
       "annual_fee": null,
       "commit_months": 0,
+      "restricted": null,
       "note": "PROMO-ONLY — standing rate not published.",
       "is_default": false,
       "promo": {

@@ -24,6 +24,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": null,
       "note": "No contract.",
       "is_default": true
     },
@@ -33,6 +34,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 1,
+      "restricted": null,
       "note": "$99 single month, no autopay.",
       "is_default": false
     },
@@ -42,6 +44,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 3,
+      "restricted": null,
       "note": "$239 paid upfront.",
       "is_default": false
     },
@@ -51,6 +54,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 6,
+      "restricted": null,
       "note": "$460 paid upfront.",
       "is_default": false
     },
@@ -60,6 +64,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 12,
+      "restricted": null,
       "note": "$790 paid upfront.",
       "is_default": false
     }

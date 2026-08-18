@@ -19,6 +19,18 @@ const CATEGORIES = new Set([
   'yoga', 'boxing', 'bjj-mma', 'climbing', 'community',
 ]);
 const BILLING_PERIODS = new Set(['monthly', '4-week', 'weekly']);
+const RESTRICTED = new Set([
+  'student', 'youth', 'young-adult', 'senior', 'military', 'scope',
+]);
+const PERIODS_PER_YEAR = { monthly: 12, '4-week': 13, weekly: 52 };
+
+/** Mirrors src/lib/pricing.js. Duplicated so the validator stays dependency-free. */
+const allIn = (plan, period) =>
+  plan.monthly === null || plan.monthly === undefined
+    ? null
+    : (plan.monthly * PERIODS_PER_YEAR[period] +
+        (plan.enroll_fee ?? 0) +
+        (plan.annual_fee ?? 0)) / 12;
 const HISTORY_FIELDS = new Set([
   'monthly', 'enroll_fee', 'annual_fee', 'commit_months', 'day_pass',
 ]);
@@ -68,6 +80,42 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
   } else {
     const defaults = plans.filter((p) => p.is_default);
     if (defaults.length !== 1) fail(`${defaults.length} default plans, expected exactly 1`);
+
+    for (const plan of plans) {
+      if (plan.restricted !== null && !RESTRICTED.has(plan.restricted)) {
+        fail(`plan "${plan.name}" has restricted "${plan.restricted}", not in the enum`);
+      }
+    }
+
+    // CLAUDE.md §3 default-plan rule: cheapest all-in among unrestricted plans
+    // with commit_months <= 2. The default drives the card price and the map
+    // pin, so a stale flag here would put a wrong headline on the site.
+    const def = defaults[0];
+    if (def) {
+      const eligible = plans.filter(
+        (p) =>
+          p.monthly !== null && p.monthly !== undefined &&
+          p.restricted === null && (p.commit_months ?? 0) <= 2,
+      );
+      if (eligible.length > 0) {
+        const cheapest = eligible.reduce((best, p) =>
+          allIn(p, gym.billing_period) < allIn(best, gym.billing_period) ? p : best,
+        );
+        if (def.name !== cheapest.name) {
+          fail(
+            `default plan is "${def.name}" but the §3 rule selects "${cheapest.name}" ` +
+              `($${Math.round(allIn(cheapest, gym.billing_period))} vs ` +
+              `$${Math.round(allIn(def, gym.billing_period))} all-in)`,
+          );
+        }
+        if (def.restricted !== null) {
+          fail(`default plan "${def.name}" is restricted ("${def.restricted}")`);
+        }
+        if ((def.commit_months ?? 0) > 2) {
+          fail(`default plan "${def.name}" has commit_months ${def.commit_months} (> 2)`);
+        }
+      }
+    }
 
     for (const plan of plans) {
       if (!plan.name) fail('a plan is missing a name');

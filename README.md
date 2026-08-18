@@ -22,6 +22,32 @@ npm run dev          # http://localhost:4321
 | `npm run lint` | ESLint, including the `no-console` and no-`innerHTML` rules |
 | `npm run validate:data` | Check every `data/gyms/*.json` against the §3 schema |
 
+## Deploying (Cloudflare Pages)
+
+The site deploys to Cloudflare Pages. Connecting the repo is a one-time
+dashboard step — Pages' Git integration requires the Cloudflare↔GitHub OAuth
+handshake and cannot be created from the API.
+
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** →
+   **Connect to Git**
+2. Authorise GitHub, pick **NoobBuilding/austingymprices**
+3. Build settings:
+
+   | Setting | Value |
+   |---|---|
+   | Framework preset | Astro |
+   | Build command | `npm run build` |
+   | Build output directory | `dist` |
+   | Root directory | *(leave blank)* |
+   | Node version | 22 (read from `.nvmrc`) |
+
+4. Save and deploy. Every push to `main` then builds to the project's
+   `*.pages.dev` URL, and every PR gets a preview deployment.
+
+No environment variables are needed for the site build — it has no secrets
+(that is the point of §8). The custom domain stays disconnected until
+build-order step 9.
+
 ## Layout
 
 ```

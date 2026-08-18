@@ -26,6 +26,7 @@
       "enroll_fee": 45,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": null,
       "note": "$45 initiation fee, no cancellation fee. Access to all locations, unlimited yoga and fitness classes, two guest passes per month. Membership can be frozen for $5/mo.",
       "is_default": true
     },
@@ -35,6 +36,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 1,
+      "restricted": null,
       "note": "$115 paid upfront, non-refundable.",
       "is_default": false
     },
@@ -44,6 +46,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 3,
+      "restricted": null,
       "note": "$320 paid upfront, non-refundable. Can be frozen for $5/mo.",
       "is_default": false
     },
@@ -53,6 +56,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 12,
+      "restricted": null,
       "note": "$950 paid upfront, non-refundable. Saves $189 against monthly drafting, per the gym's own figure.",
       "is_default": false
     },
@@ -62,6 +66,7 @@
       "enroll_fee": 45,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "scope",
       "note": "$160/mo total for two people ($80 each), plus $45 initiation.",
       "is_default": false
     }

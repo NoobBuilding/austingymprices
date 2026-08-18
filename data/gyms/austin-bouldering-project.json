@@ -26,6 +26,7 @@
       "enroll_fee": 55,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": null,
       "note": "Month-to-month with easy cancellation. $55 activation fee is the standing rate.",
       "is_default": true,
       "promo": {
@@ -40,6 +41,7 @@
       "enroll_fee": 55,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "young-adult",
       "note": "Age-restricted, ages 14 to 20.",
       "is_default": false,
       "promo": {
@@ -54,6 +56,7 @@
       "enroll_fee": 55,
       "annual_fee": 0,
       "commit_months": 0,
+      "restricted": "youth",
       "note": "Age-restricted, 13 and under.",
       "is_default": false,
       "promo": {

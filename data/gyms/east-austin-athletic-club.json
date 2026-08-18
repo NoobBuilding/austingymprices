@@ -28,6 +28,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 1,
+      "restricted": null,
       "note": "Billed $215 every 4 weeks — 13 billing periods a year, not 12. 4-week minimum commitment for all new memberships.",
       "is_default": true
     },
@@ -37,6 +38,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 1,
+      "restricted": "scope",
       "note": "Billed $155 every 4 weeks. 8 large-group sessions per 4 weeks.",
       "is_default": false
     },
@@ -46,6 +48,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 1,
+      "restricted": "scope",
       "note": "Billed $28.50/week (~$114 per 4 weeks). Unlimited striking classes and boxing-area open gym. One week's notice to cancel.",
       "is_default": false
     },
@@ -55,6 +58,7 @@
       "enroll_fee": 0,
       "annual_fee": 0,
       "commit_months": 12,
+      "restricted": null,
       "note": "$2,449 paid upfront, which the club publishes as $189 per 4 weeks.",
       "is_default": false
     }
