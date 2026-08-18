@@ -134,11 +134,12 @@ URL_OVERRIDES = {
         "Sheet gives the bare domain. Membership path guessed; verify on site.",
     ),
     "lafitness": (
-        "https://www.lafitness.com/Pages/ClubHome.aspx?clubid=1234",
-        "guess",
-        "Sheet says 'lafitness.com club pages' and notes a zip-gated pricing "
-        "widget. The clubid is a PLACEHOLDER — this target will almost certainly "
-        "need a hand-found URL. Expect this one to fail usefully.",
+        "",
+        "unresolved",
+        "Sheet says only 'lafitness.com club pages' and notes a zip-gated pricing "
+        "widget. LA Fitness club pages are keyed by a numeric clubid — inventing "
+        "one risks silently harvesting a DIFFERENT club's prices, so this target "
+        "is left blank and skipped. Needs a hand-found Domain-area club URL.",
     ),
 }
 
