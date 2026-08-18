@@ -33,7 +33,9 @@
     }
   ],
   "day_pass": null,
+  "day_pass_qualifier": null,
   "day_pass_terms": [],
+  "day_pass_alternative": null,
   "pricing_note": "Day passes are sold but the price is not published online.",
   "stale": false,
   "price_history": []

@@ -80,6 +80,20 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
     if (gym.day_pass === null && gym.day_pass_terms.length > 0) {
       fail('has day_pass_terms but no day_pass price');
     }
+    // The card answers one question. Anything longer belongs on the detail page.
+    if (gym.day_pass_terms.length > 3) {
+      fail(`has ${gym.day_pass_terms.length} day_pass_terms; the card allows at most 3`);
+    }
+  }
+
+  if (gym.day_pass_qualifier !== null && typeof gym.day_pass_qualifier !== 'string') {
+    fail('day_pass_qualifier must be a string or null');
+  }
+  if (gym.day_pass_alternative !== null && typeof gym.day_pass_alternative !== 'string') {
+    fail('day_pass_alternative must be a string or null');
+  }
+  if (gym.day_pass === null && gym.day_pass_alternative !== null) {
+    fail('has a day_pass_alternative but no day_pass price');
   }
 
   // A lat without a lng (or vice versa) would place a pin in the ocean.

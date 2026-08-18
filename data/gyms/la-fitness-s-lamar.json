@@ -7,8 +7,8 @@
   "website": "https://lafitness.com",
   "pricing_url": "https://lafitness.com/Pages/clubhome.aspx?clubid=1036",
   "address": "4001 S Lamar Blvd, Austin, TX 78704",
-  "lat": null,
-  "lng": null,
+  "lat": 30.23699,
+  "lng": -97.791802,
   "known_for": null,
   "amenities": [
     "Lap pool",
@@ -64,7 +64,9 @@
     }
   ],
   "day_pass": null,
+  "day_pass_qualifier": null,
   "day_pass_terms": [],
+  "day_pass_alternative": null,
   "pricing_note": "No initial term — all plans auto-renew with no commitment. Prices exclude tax. LA Fitness states prices may vary by location or change without notice.",
   "stale": false,
   "price_history": []

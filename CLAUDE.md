@@ -88,11 +88,13 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "sub_locality": "North Loop",       // display-only neighbourhood, shown after the region
   "billing_period": "monthly",        // "monthly" (default) | "4-week" | "weekly"
   "day_pass": 15,                     // null if unknown/none
-  "day_pass_terms": [                 // structural, not prose — the Day passes tab
-    "Single use",                     // renders these directly
-    "Expires 24 hours after purchase",
+  "day_pass_qualifier": "+ tax",      // folded into the price line, or null
+  "day_pass_terms": [                 // MAX 3, and only if they materially change
+    "Single use, expires 24 hours",   // what you are buying
     "No sauna access"
   ],
+  "day_pass_alternative": null,       // AT MOST ONE, and only when it is a
+                                      // dramatically better deal for the same use case
   "price_history": [                  // append-only; never overwritten, never hand-edited
     {
       "date": "2026-08-18",           // date the change was observed
@@ -117,10 +119,19 @@ data rather than being buried in prose.
 
 **Show the math on multi-day passes.** Where a week/month/punchcard pass sits next to a
 single-day price, state what it includes *and* how it compares — "Week pass $35 — 7 days
-with sauna and 24/7 key-tag access; seven day passes would cost $70 and still exclude the
-sauna". The products usually differ, so an unexplained $35 beside $10/day reads as broken
-arithmetic. This is the same principle as all-in pricing: do the comparison for the reader
-rather than leaving them to guess at it.
+with sauna and 24/7 key-tag access, against $70 for seven day passes". The products usually
+differ, so an unexplained $35 beside $10/day reads as broken arithmetic. This is the same
+principle as all-in pricing: do the comparison for the reader rather than leaving them to
+guess at it.
+
+**Cards scan; detail pages explain.** The show-the-math rule above applies in full on the
+gym detail page, which is where someone deciding *between products* goes. A card answers
+one question, so the day-pass card carries only: the price line (with any qualifier folded
+in, "$15 + tax"), at most **three** restrictions and only where they materially change what
+you are buying, at most **one** alternative and only when it is a dramatically better deal
+for the same use case, then the membership line and "Full details →". Punchcards, class
+passes, multi-week options and the fuller comparison maths all belong on the detail page,
+not the card.
 
 **`restricted` rules:** a nullable string marking a plan that a solo walk-in adult
 cannot simply buy. `"scope"` is reserved for partial-access plans (EAAC's Strike Club is
@@ -388,7 +399,23 @@ exists; they are recorded now so they're inherited, not retrofitted.
    Nominatim returns a low-confidence match, **flag it for a manual pin-drop by the
    owner** rather than accepting a fuzzy hit — a wrong pin is the map equivalent of a
    wrong price. `lat`/`lng` stay `null` until confirmed; a null pin is simply not drawn.
-4. Leaflet map island + pin/card sync. Mobile map toggle.
+4. Leaflet map island + pin/card sync. Mobile map toggle. Requirements beyond the
+   mockup — we differentiate on information, not decoration:
+   - **Pins**: price bubbles per the mockup, background-tinted by price tier — tier 1
+     green-tint, tier 2 neutral/white, tier 3 ink. Unpriced gyms get a hollow/dashed
+     bubble reading "Call": visible, but visually secondary.
+   - **Clustering**: minimal. With 41 gyms individual pins should survive to fairly wide
+     zoom. When clustering does trigger, the cluster label is the **price range** of its
+     members ("$15–259"), never a count — a count tells you nothing you came for.
+   - **Tab-aware** (per the §3 rule): on the Day passes tab pins show the day-pass price;
+     gyms with no published pass fade to 25% and are excluded from cluster ranges.
+   - **Tiles**: CartoDB Positron, or Voyager if Positron reads too grey against our
+     palette. Free, no API key, keeps the CSP clean. Attribution rendered per their terms.
+   - **Pin ↔ card sync**: click a pin to highlight and scroll to its card; the active pin
+     inverts to ink. Filtered-out pins dim to ~18%.
+   - **Mobile**: map behind a bottom toggle, per the mockup.
+   - **Performance budget**: map JS lazy-loads below the fold or on toggle. The list must
+     render before any map asset arrives.
 5. Gym detail pages + region pages + JSON-LD + sitemap.
 6. Scrapers: lib + the 6 "Low complexity" targets first; Actions cron + PR flow; Sentry.
    (Low = planetfitness, lifetime, lacampeones, bigtex, hydepark, eaac.)

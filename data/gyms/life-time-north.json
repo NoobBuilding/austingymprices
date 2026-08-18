@@ -6,9 +6,9 @@
   "category": "luxury",
   "website": "https://lifetime.life",
   "pricing_url": "https://www.lifetime.life/locations/tx/austin-north/memberships.html",
-  "address": null,
-  "lat": null,
-  "lng": null,
+  "address": "North Ranch Road 620, Austin, Texas, 78717",
+  "lat": 30.47263,
+  "lng": -97.773288,
   "known_for": null,
   "amenities": [
     "Pool",
@@ -33,7 +33,9 @@
     }
   ],
   "day_pass": null,
+  "day_pass_qualifier": null,
   "day_pass_terms": [],
+  "day_pass_alternative": null,
   "pricing_note": "Day passes are sold but the price is not published online.",
   "stale": false,
   "price_history": []

@@ -6,9 +6,9 @@
   "category": "climbing",
   "website": "https://austinboulderingproject.com",
   "pricing_url": "https://austinboulderingproject.com/membership/",
-  "address": null,
-  "lat": null,
-  "lng": null,
+  "address": "979, Springdale Road, Austin, Texas, 78702",
+  "lat": 30.263268,
+  "lng": -97.696296,
   "known_for": null,
   "amenities": [
     "50,000 sq ft bouldering",
@@ -67,12 +67,12 @@
     }
   ],
   "day_pass": 25,
+  "day_pass_qualifier": null,
   "day_pass_terms": [
-    "Open-to-close access for one day",
-    "Includes climbing, fitness, yoga and all amenities",
-    "Does not include rental gear",
-    "$22 young adult (14–20), $18 youth (13 & under)"
+    "Open to close — climbing, fitness, yoga and all amenities",
+    "Does not include rental gear"
   ],
+  "day_pass_alternative": null,
   "pricing_note": "Day passes: $25 adult, $22 young adult, $18 youth. Rental gear is not included in a day pass.",
   "stale": false,
   "price_history": []

@@ -6,9 +6,9 @@
   "category": "gym-weights",
   "website": "https://hydeparkgym.com",
   "pricing_url": "https://www.hydeparkgym.com/membership-info",
-  "address": null,
-  "lat": null,
-  "lng": null,
+  "address": "4125, Guadalupe Street, Austin, Texas, 78751",
+  "lat": 30.307114,
+  "lng": -97.735228,
   "known_for": null,
   "amenities": [],
   "photo": null,
@@ -58,12 +58,9 @@
     }
   ],
   "day_pass": 15,
-  "day_pass_terms": [
-    "Single visit",
-    "Plus sales tax",
-    "10-visit punchcard $90 — $9 a visit against $15 single, valid 6 months",
-    "1-week pass $39 — under three day passes for seven days"
-  ],
+  "day_pass_qualifier": "+ tax",
+  "day_pass_terms": [],
+  "day_pass_alternative": null,
   "pricing_note": "Also offers a 10-visit punchcard for $90 (valid 6 months) and a 1-week pass for $39. All prices exclude sales tax.",
   "stale": false,
   "price_history": []

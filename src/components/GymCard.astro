@@ -204,7 +204,9 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
           <p class="plan-label">Day pass</p>
           <div class="drow">
             <span class="k">Single visit</span>
-            <span class="v">{money(gym.day_pass)}</span>
+            <span class="v">
+              {money(gym.day_pass)}{gym.day_pass_qualifier ? ` ${gym.day_pass_qualifier}` : ''}
+            </span>
           </div>
           {gym.day_pass_terms.length > 0 && (
             <ul class="terms">
@@ -212,6 +214,9 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
                 <li>{t}</li>
               ))}
             </ul>
+          )}
+          {gym.day_pass_alternative && (
+            <p class="alt">{gym.day_pass_alternative}</p>
           )}
           <p class="secondary">
             {gym.has_price
@@ -476,6 +481,15 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     left: 5px;
     color: var(--orange);
     font-weight: 700;
+  }
+
+  .alt {
+    margin-top: 12px;
+    font-size: 0.82rem;
+    color: var(--orange-dark);
+    background: var(--orange-tint);
+    border-radius: 7px;
+    padding: 8px 11px;
   }
 
   .secondary {

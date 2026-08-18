@@ -6,9 +6,9 @@
   "category": "gym-weights",
   "website": "https://crunch.com",
   "pricing_url": "https://www.crunch.com/locations/south-austin",
-  "address": null,
-  "lat": null,
-  "lng": null,
+  "address": "4625 W William Cannon Dr, Austin, TX 78749",
+  "lat": 30.221913,
+  "lng": -97.843352,
   "known_for": null,
   "amenities": [
     "Group fitness classes",
@@ -77,7 +77,9 @@
     }
   ],
   "day_pass": null,
+  "day_pass_qualifier": null,
   "day_pass_terms": [],
+  "day_pass_alternative": null,
   "pricing_note": "Annual fee is billed prorated at $10. Rates exclude tax and recurring processing fees.",
   "stale": false,
   "price_history": []

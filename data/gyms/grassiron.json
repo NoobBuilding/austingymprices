@@ -17,7 +17,9 @@
   "billing_period": "monthly",
   "plans": [],
   "day_pass": null,
+  "day_pass_qualifier": null,
   "day_pass_terms": [],
+  "day_pass_alternative": null,
   "pricing_note": "Personal-training tiers reported at $189–299/mo in 2023 — too old to ship. Call to confirm.",
   "stale": false,
   "price_history": []

@@ -6,9 +6,9 @@
   "category": "gym-weights",
   "website": "https://bigtexgym.com",
   "pricing_url": "https://www.bigtexgym.com/membership",
-  "address": null,
-  "lat": null,
-  "lng": null,
+  "address": "1921, Cedar Bend Drive, Austin, Texas, 78758",
+  "lat": 30.407616,
+  "lng": -97.697977,
   "known_for": "Serious lifting crowd, old-school and specialty equipment, loud floor, 24/7 key-tag access. Boxing area and infrared sauna on site.",
   "amenities": [
     "24/7 key-tag access",
@@ -72,11 +72,12 @@
     }
   ],
   "day_pass": 10,
+  "day_pass_qualifier": null,
   "day_pass_terms": [
     "Single use, expires 24 hours after purchase",
-    "No sauna access",
-    "Week pass $35 — 7 days with sauna and 24/7 key-tag access; seven day passes would cost $70 and still exclude the sauna"
+    "No sauna access"
   ],
+  "day_pass_alternative": "Week pass $35 — 7 days with sauna and 24/7 key-tag access, against $70 for seven day passes",
   "pricing_note": "Also offers a $35 week pass, a $45/mo service discount (military, police, fire, first responders) and a $135 3-month student plan, both in-person signup only. Day pass excludes sauna access.",
   "stale": false,
   "price_history": []
