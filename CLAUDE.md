@@ -251,6 +251,13 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   Self-host the fonts (no Google Fonts request at runtime — privacy + speed).
 - `known_for` is the owner's editorial voice, never generated. When it is `null`,
   render **nothing** — no placeholder, no empty box.
+- **Accessibility overrides "do not restyle."** The design system is fixed, with one
+  standing exception: where a mockup value fails WCAG AA, it gets corrected and the
+  correction is recorded at the token. This has happened once — `--ink-faint` was
+  `#A79D92` (2.66:1 on white, against the 4.5:1 AA needs for small text) and renders the
+  "Prices checked {date}" provenance line; it is now `#7A726A`, the lightest tone of the
+  same hue clearing 4.5:1 on both white and the sunk card surface. Precedent, not drift:
+  fix it, comment it at the token, and say so.
 - Voice: neutral and factual. No "contract traps," no snark at gyms. Fee surprises are
   stated plainly ("charged 75 days after signup"), not editorialized. "Known for" lines
   are descriptive, never derogatory.

@@ -1,0 +1,44 @@
+name: Lighthouse
+
+# Runs against the DEPLOYED site, not a local build. public/_headers is a
+# Cloudflare Pages feature, so the CSP and cache headers only exist in
+# production — and Lighthouse scores them. Auditing a local server would
+# measure something we do not ship.
+#
+# Deliberately NOT run on every push: Cloudflare takes a minute or two to
+# publish, so a push-triggered run would race the deploy and fail on the
+# previous build. Weekly, plus on demand.
+on:
+  schedule:
+    - cron: '20 10 * * 1'
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Base URL to audit
+        required: false
+        default: https://austingymprices.pages.dev
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: Lighthouse >= 95
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Audits one page of each template: the index with its filters and map,
+      # a gym detail page, a region page, and a static content page.
+      - name: Audit
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12.6.2
+        with:
+          urls: |
+            ${{ github.event.inputs.url || 'https://austingymprices.pages.dev' }}/
+            ${{ github.event.inputs.url || 'https://austingymprices.pages.dev' }}/gyms/big-tex-gym/
+            ${{ github.event.inputs.url || 'https://austingymprices.pages.dev' }}/regions/hyde-park/
+            ${{ github.event.inputs.url || 'https://austingymprices.pages.dev' }}/faq/
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

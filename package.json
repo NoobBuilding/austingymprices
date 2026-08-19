@@ -24,7 +24,8 @@
     "photos": "node scripts/fetch-photos.mjs",
     "photos:check": "node scripts/fetch-photos.mjs --check",
     "og": "node scripts/build-og.mjs",
-    "check:a11y": "node scripts/check-a11y.mjs"
+    "check:a11y": "node scripts/check-a11y.mjs",
+    "launch": "node scripts/launch-check.mjs"
   },
   "engines": {
     "node": ">=20.0.0"
