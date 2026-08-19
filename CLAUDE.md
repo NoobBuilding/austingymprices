@@ -13,18 +13,42 @@ Every gym's real membership cost (monthly rate + enrollment fee + annual fee + c
 terms) shown side by side on a searchable list + map. Prices pulled from each gym's own
 website, verified dates shown. Modeled on gympricing.com (NYC) but Austin-only.
 
-**V1 scope: 39 gyms, 7 regions, memberships + day passes. Nothing else.**
-(The seed sheet lists 40; row 36, EOS Fitness Parmer, does not open until 2027 and is
-excluded from v1 entirely — no "coming soon" placeholder ships.)
+**V1 scope: every Austin gym whose price we can definitively source, across
+6 regions, on three surfaces — Memberships, Classes & studios, Day passes —
+plus a side-by-side compare view.**
+
+~~Superseded: "39 gyms, 7 regions, memberships + day passes."~~ The seed sheet was a
+starter spec, not a census. A Google Places sweep of the region bounds found **381
+fitness businesses, 294 of them unlisted**, of which **140 publish a price we can
+source**. There are **6** regions (the seventh was the `all` filter chip being
+miscounted). The site now stands at **49 gyms, 31 with confirmed prices**, and the
+ambition is ~100 listed.
+
+~~Superseded: "class-pack pricing for boutique studios is out of v1."~~ The incoming
+inventory is heavily class businesses, and listing "$130/mo for 4 classes" beside
+"$23/mo unlimited access" breaks the sort and misleads in both directions. Studios get
+their own tab, judged in the unit they are actually sold in — **price per class**.
+See `access_model` in §3.
 
 Explicitly OUT of v1 (do not build, even partially):
 - User accounts, sign-in, favorites/hearts
 - Reviews or star ratings (Yelp owns that; we are the pricing site)
-- Gym-owner portal / "claim your listing"
+- Gym-owner portal / "claim your listing" — §10
 - Lead-gen ("have them reach out" style buttons)
-- Class-pack pricing for boutique studios (they get a day-pass row + website link only)
 - Crowdsourced equipment submissions (the UI slots exist; the write path does not)
 - Blog/content pages
+- Interrogative popups and budget-qualification surveys — **deliberately declined**, §10
+
+**Businesses excluded from listing** (recorded in `docs/recheck-ledger.md`, never
+silently dropped):
+- **Not yet open.** EOS Fitness Parmer (2027) and JETSET Pilates Arboretum, whose
+  page states billing begins 30 days after its Grand Opening and whose "Founders"
+  rates are launch promotions, not standing prices. No row, no "coming soon"
+  placeholder.
+- **Pure personal-training and recovery studios.** Forge Strength (8-session PT packs
+  at $999/$1498, no membership) and Generator Athlete Lab (a $65 assessment and
+  recovery passes). Listing them would put a $124.88/session rate beside F45 at
+  $23/class.
 
 ---
 
@@ -35,16 +59,25 @@ Explicitly OUT of v1 (do not build, even partially):
 | Framework  | **Astro** (static output)                          | Content site, SEO-first, minimal JS |
 | Interactivity | Vanilla JS or a single small island for filters/map | No React needed for v1; keep bundle tiny |
 | Map        | **Leaflet + OpenStreetMap tiles**                  | $0 forever; no API key to leak |
-| Data       | **JSON files in repo** (`/data/gyms/*.json`)       | 39 gyms needs no database |
+| Data       | **JSON files in repo** (`/data/gyms/*.json`)       | Even at ~100 gyms this needs no database |
 | Hosting    | **Cloudflare Pages**                               | Free tier, CDN, survives Reddit launch traffic |
-| Scrapers   | **Python scripts** in `/scrapers`, run by **GitHub Actions nightly cron**, calling the **Firecrawl API** (free tier: 1,000 credits/mo; we use ~420) | Scrapers commit updated JSON back to the repo via PR |
+| Scrapers   | **Python scripts** in `/scrapers`, run by **GitHub Actions cron on three cadence tiers** (§6 — *not* nightly), calling the **Firecrawl API** (free tier 1,000 credits/mo; budget ~40–60) | Scrapers open a PR with the JSON diff; a human merges |
+| Discovery  | **`scrapers/discover.py`** — Google Places enumeration inside the region circles, diffed against what we list, then a free HTTP probe that classifies each new site | Finds the gyms the seed list never had. Proposes only |
+| Events     | **Cloudflare D1** (`DB` binding) behind a Pages Function at `/api/event` | Anonymous counters; the outbound-click record cannot be rebuilt retroactively (§8) |
+| Analytics  | **Cloudflare Web Analytics** (dashboard toggle; CSP already allows it) | Cookie-free, no consent banner. Custom events go to `/api/event`, not a third party |
 | Domains    | austingymprices.com (primary), atxgymprices.com (301 redirect via Cloudflare Redirect Rule) | |
 | Email      | Cloudflare Email Routing → owner's inbox           | hello@ + reports@ forwarding |
 | Errors     | **Sentry** (client + scraper), free tier           | See §8 |
 
 Do not introduce: React/Next, Supabase, Tailwind (hand-rolled CSS per design system below),
-any paid service, any additional third-party script (analytics exception: one privacy-light
-option like Cloudflare Web Analytics or Plausible — no Google Analytics).
+any paid service, any additional third-party script. Cloudflare Web Analytics is the one
+allowed exception and is already wired; **anything requiring a cookie banner is the wrong
+tool by definition.**
+
+**D1 is not a retreat from "no backend".** It stores counters, never content: the site
+still renders entirely from JSON at build time, and the endpoint is write-only from the
+browser's side. Nothing the visitor sees depends on it, which is why a missing binding
+degrades to "not counting" rather than to a broken page.
 
 If a future phase adds a backend (accounts, crowdsourcing, owner portal), it will be
 Supabase — §8 includes the security rules for that day so they're on record now.
@@ -59,7 +92,8 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
 {
   "slug": "big-tex-gym",
   "name": "Big Tex Gym",
-  "region": "hyde-park",            // one of the 7 region ids below
+  "region": "hyde-park",            // one of the 6 region ids below
+  "access_model": "facility",        // "facility" (buy door access) | "classes" (buy sessions)
   "category": "gym-weights",         // gym-weights | gym-classes | luxury | crossfit-hiit |
                                      // pilates | yoga | boxing | bjj-mma | climbing | community
   "website": "https://bigtexgym.com",
@@ -82,8 +116,16 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
       "restricted": null,             // null | "student" | "youth" | "young-adult" |
                                       // "senior" | "military" | "household" | "scope"
       "note": "The $45/yr maintenance fee is charged 75 days after signup, then annually.",
-      "is_default": true              // exactly one plan per gym; drives card price + map pin
+      "is_default": true,             // exactly one plan per gym; drives card price + map pin
+      "classes_per_period": null,     // classes included per billing period; null = unlimited
+                                      // or not published. Drives the per-class figure
+      "cancellation_fee": null,       // contingent exit cost. RENDERS, never enters all-in
+      "promo": null                   // {price, enroll_fee, annual_fee, note, expires}, all optional
     }
+  ],
+  "class_packs": [                    // structured so the per-class figure can reach them
+    { "name": "10-class pack", "price": 330, "classes": 10,
+      "expires_days": 90, "promo": false }   // promo:true is EXCLUDED from per-class maths
   ],
   "accepts_classpass": null,          // true | false | null — null renders NOTHING
   "sub_locality": "North Loop",       // display-only neighbourhood, shown after the region
@@ -104,9 +146,17 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
       "old": 49,
       "new": 55
     }
-  ]
+  ],
+  "stale": false,                     // set by the scraper after >14 days of failure;
+                                      // the UI then says "Prices last confirmed {date}"
+  "intro_offer_url": null,            // §10 plumbing. https only. null renders NOTHING
+  "listing_tier": "standard"          // §10 plumbing. No rendering difference today
 }
 ```
+
+**Every field is required present.** `null` is a value meaning "not published"; a missing
+key is a bug and `npm run validate:data` fails the build on it. The distinction matters:
+`0` means the page says zero, `null` means the page does not say.
 
 **Card content is tab-aware.** The active tab defines the question the user is asking,
 and every element on the card answers *that* question. On the **Memberships** tab the card
@@ -202,6 +252,22 @@ Below that it would cut 41 gyms to two and read as a broken filter rather than a
 useful one. The gate is computed at build time, so the chip appears on its own the
 day the data supports it — no code change.
 
+**`day_pass_qualifier` / `day_pass_terms` / `day_pass_alternative` rules:** the qualifier
+folds into the price line (`"$15 + tax"`), never a second sentence. `day_pass_terms` is
+**at most three**, and only where they materially change what you are buying. Exactly
+**one** alternative, and only when it is a dramatically better deal for the same use case.
+Everything else — punchcards, class passes, multi-week options, the fuller comparison
+maths — belongs on the detail page. Cards scan; detail pages explain.
+
+**`stale` rules:** set by the scraper when a target has failed for more than 14 days.
+The UI then shows "Prices last confirmed {date}" in the warning style. A gym marked
+stale with no `verified_date` fails validation — there is nothing for it to be stale
+relative to.
+
+**`sub_locality` rules:** display-only neighbourhood, shown after the region
+("South / SoCo · South Lamar"). It is editorial, not geographic: it never affects
+filtering, the map, or which region a gym belongs to.
+
 **`price_history` rules:** on every scrape where any plan value changes, the scraper
 **appends** a `{date, plan_name, field, old, new}` entry rather than silently overwriting
 the plan. The current value still lives on the plan object — history is additive, not a
@@ -216,6 +282,8 @@ deleted, because the whole point is an auditable trail behind every number we sh
   "$8 below the Hyde Park median ($67)" headline on detail pages
 - Price tier: 1 (< $40), 2 ($40–100), 3 ($100+) — computed on **all-in**, not sticker,
   and on the **normalized** monthly where `billing_period` is not `"monthly"`
+- `from_per_class`, `class_tier`, `unlimited_monthly`, `has_class_price` — the Classes
+  tab economics, from `classes_per_period` and `class_packs`
 
 **Edge cases the schema must handle (from the seed list):**
 - Donation-based (Black Swan Yoga): `monthly: null`, `pricing_note` string shown instead
@@ -281,9 +349,38 @@ A gym with no confirmed price ships in the "call for pricing" state, never with 
    provenance footer ("Prices checked {date} · pulled from {domain}" + Report a wrong price).
 3. **`/regions/{region}` — region pages.** Same list/map filtered to region, with an
    H1 like "Gym prices in Hyde Park, Austin" and the region median stated in intro copy. SEO pages.
-4. **`/faq`** — data sourcing, update cadence, correction policy, "not affiliated with any gym."
-5. **`/for-gym-owners`** — static page: how to submit corrections (email), note that a
+4. **`/compare?gyms=slug,slug`** — side-by-side comparison, 2 to 4 gyms.
+   **The URL is the only state**, so a comparison is shareable and survives a reload.
+   Astro builds static output, so the page cannot be rendered per-query: every gym's
+   column is server-rendered and the client hides the ones the URL does not name. That is
+   what makes the no-JS state real content — it degrades to the full table, the same data
+   unfiltered, rather than to a blank page.
+   - Heading is **"Compare gyms"** with an "{N} selected" line. Gym names live in the
+     column headers only — an "X vs Y vs Z" headline turns a comparison into a billing.
+   - One neutral line states the spread ("Range: $23–59/mo all-in"). It anoints nothing.
+   - **Nothing is scored, ranked, recommended, or marked as a winner.** Alternating row
+     tint is applied per ROW precisely so it can never read as marking a column.
+   - Rows: all-in (big), advertised rate, enrollment, annual, commitment badge,
+     first-year total (receipt treatment), day pass, billing period where non-monthly,
+     amenity families, verified date. An unpriced gym's column says "Call for pricing"
+     rather than showing a grid of blanks that reads like zeros.
+   - **Amenities are a TRI-STATE, not ✓/—.** Only 13 of the gyms have any amenity list
+     recorded, so a dash for the rest would assert dozens of negatives nobody checked.
+     ✓ = listed, — = not listed *by a gym that lists things*, blank = no list recorded,
+     and the page says so in words.
+   - Compare **refuses to mix access models**: a facility is priced per month and a studio
+     per class, and putting both under one heading compares nothing.
+   - **`noindex`** and out of the sitemap: the useful URLs are query strings with a
+     combinatorial number of values and no search value.
+5. **`/faq`** — data sourcing, update cadence, correction policy, "not affiliated with any gym.
+6. **`/for-gym-owners`** — static page: how to submit corrections (email), note that a
    listing-management portal is planned. No forms in v1.
+   **Copy rule: promise the INVARIANT, not the ABSENCE.** "We will never take a referral
+   fee" is a promise about our business model that a future us might have to break;
+   **"no payment alters a listed price, a fee disclosure, or a ranking"** is a promise
+   about the product, and it is the one that actually protects the reader. If a
+   disclosed link or a sponsored label ever exists it will be marked as such, and it will
+   still not move a price or a rank.
 
 "Report a wrong price" everywhere = `mailto:reports@austingymprices.com` with subject
 prefilled (`?subject=Price correction: {gym name}`). No form endpoint in v1 = no injection surface.
@@ -323,6 +420,23 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   "Prices checked {date}" provenance line; it is now `#7A726A`, the lightest tone of the
   same hue clearing 4.5:1 on both white and the sunk card surface. Precedent, not drift:
   fix it, comment it at the token, and say so.
+- **Map legend** (bottom-right, above the attribution): tiny, quiet, and its swatches
+  **reuse the real pin classes**, so a key entry cannot drift from the thing it
+  describes. It overrides geometry only, never colour, and does so at higher specificity
+  so `.pin.active` can stay declared last. Hidden below 420px. Note this puts `.pin`
+  elements outside the marker pane — anything counting pins must scope to
+  `.leaflet-marker-pane`.
+- **Map display toggle** ("$ prices" / "dots"): prices is and stays the default, because
+  the price on the pin is the reason the map exists. Dots drop the numbers for
+  tier-tinted dots — a price on every pin invites writing a gym off before reading a word
+  about it, and location-first browsing deserves its own mode rather than a compromise.
+  Preference persists in `localStorage`, best-effort. The control is chrome, so it uses
+  **neither orange nor ink** — both meanings are reserved for pins.
+- **Compare page conventions:** a one-line disclaimer, never a paragraph — the table is
+  the content. The first-year total takes the accordion receipt's treatment
+  (orange-dark on orange-tint, existing tokens only), because it is the number the
+  all-in argument builds to and should look like a receipt's bottom line.
+  **No winner treatment of any kind.**
 - Voice: neutral and factual. No "contract traps," no snark at gyms. Fee surprises are
   stated plainly ("charged 75 days after signup"), not editorialized. "Known for" lines
   are descriptive, never derogatory.
@@ -353,6 +467,11 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
 
   Budget target: **~40–60 credits/month** against the 1,000 free, leaving ample headroom
   for re-runs, new targets, and the seasonal bump.
+  Note that a site's `User-agent: *` block can permit us while naming AI crawlers it
+  disallows — Rumble allows `*` but blocks `ClaudeBot`, `GPTBot` and
+  `CloudflareBrowserRenderingCrawler`. **We identify as ourselves.** Where it is unclear
+  which agent a third-party fetcher presents as, do not point it at that host.
+
 - Scrapers parse to the plan schema and open a **PR** with the JSON diff — never push to
   main. Human merges. A price change of >25% or a parse returning zero plans fails loudly
   (Sentry + failed check), does not write.
@@ -368,6 +487,47 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   corroborated raises `ParseError` and fails the run. A missing price is recoverable; a
   wrong one is the failure this site exists to prevent. Both cases are regression tests
   in `scrapers/tests/test_parsers.py`, which runs against the real harvested pages.
+**Parser and sourcing precedents, each earned the hard way:**
+
+- **Corroborated-decimal repair only.** An escaped footnote marker ate a decimal point
+  (`$3699` for $36.99 at Crunch) and bold markers split one number across two runs
+  (`**$32** **0**` for $320 at Crux). `scrapers/money.py` rejoins split runs
+  structurally and repairs an eaten decimal **only when the repaired figure appears
+  verbatim elsewhere on the page**. An implausible number that cannot be corroborated
+  raises `ParseError` and fails the run.
+- **Struck-through compare-at prices are not prices.** Korrect renders `$179` before
+  every tier in `class="price large strikethrough-small"`, and on two tiers it also
+  carries Webflow's `w-condition-invisible` so it is not even displayed. Read the markup,
+  not the text run.
+- **A promo never derives anything.** Promo plans and `class_packs` marked `promo: true`
+  are excluded from all-in maths, medians, tiers, map pins and the per-class figure.
+  Club Pilates' "3 classes for $79 this month" would otherwise have set their per-class
+  rate at $26.33 instead of the standing $35 — a wrong number the day the offer ends.
+- **Pre-opening businesses are not listed.** EOS Fitness Parmer (2027) and JETSET
+  Arboretum, whose page says billing begins 30 days after its Grand Opening. Founders and
+  Pre-Opening rates are launch promotions; treating them as standing prices would ship a
+  discount as a price for a gym that does not exist yet.
+- **Pure personal-training and recovery studios are out of scope** (§1), even when they
+  publish figures. Forge Strength's $999 is an 8-session PT pack, not a membership.
+- **A soft 404 is a 404.** 24 Hour Fitness's `/salez24/membership` returns HTTP 200 with
+  the page title `404 | 24 Hour Fitness`. Check what came back, not just the status.
+- **Bot walls are respected, never fought.** A Cloudflare managed challenge means STOP on
+  that target and record it — [solidcore], Planet Fitness `/offers`, and Gold's `/join/`
+  (which loads fine but is a checkout shell containing "Please verify that you are not a
+  robot"). No stealth proxies, no fingerprint spoofing, no CAPTCHA solving, regardless of
+  approved credits. `scrapers/discover.py` requires BOTH a real Cloudflare marker AND a
+  refusing status (401/403/429/503) before calling something walled — a bare `captcha`
+  match once mislabelled 139 ordinary sites with contact-form reCAPTCHA as bot walls,
+  which would have written off half the city.
+
+**Walled site → human transcription.** Where we will not or cannot read a page, the owner
+reads it and transcribes. `docs/price-transcription.md` is the paste-friendly sheet, and
+**a transcribed price carries exactly the same provenance burden as a scraped one**: one
+block per plan, with `source_url` and `date_read` mandatory. A row missing either does not
+get written — the same rule that stops a scraper writing an unverified number. `date_read`
+becomes the gym's `verified_date` and is displayed in public as "Prices checked {date}",
+so it must be the day the page was actually read.
+
 - Respect robots.txt; identify with a honest User-Agent
   (`austingymprices.com price checker; reports@austingymprices.com`); one request per
   target per run; no auth-wall or paywall circumvention; scrape only public pricing pages.
@@ -377,15 +537,34 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
 ## 7. Repo layout
 
 ```
-/data/gyms/*.json        # source of truth, one file per gym
-/data/regions.json       # region ids, display names, map label positions
-/docs/austin-gym-seed-list.xlsx
-/docs/mockups/           # the three HTML mockups (reference only, not served)
-/scrapers/               # python, lib.py + targets/
-/src/                    # astro site
-/public/photos/          # owner-submitted photos only; Places photos fetched at build
-.github/workflows/scrape.yml
-CLAUDE.md                # this file
+/data/gyms/*.json           # source of truth, one file per gym
+/data/regions.json          # region ids, display names, map labels, AND search circles
+                            #   (centre + radius) used by discovery and the map camera
+/docs/
+  austin-gym-seed-list.xlsx # the original starter spec, not a census
+  mockups/                  # the three HTML mockups (reference only, not served)
+  discovery-report.md       # Places sweep, region-grouped, Downtown first. PROPOSES only
+  harvest-queue.md          # probe-confirmed pricing URLs awaiting owner approval
+  harvest-findings*.md      # per-gym findings tables awaiting owner review
+  recheck-ledger.md         # excluded businesses + the condition to revisit each
+  price-transcription.md    # paste-friendly sheet for owner-read (walled) prices
+  launch-checklist.md       # the gates, including the launch-day sequence
+  geocoding-report.md       # Nominatim confidence per gym
+/scrapers/
+  lib.py, money.py          # shared client, guardrails, defensive number parsing
+  targets/                  # one module per scraper target
+  harvest.py                # one-time seed harvest (never the nightly pipeline)
+  discover.py               # Places enumeration -> diff -> probe -> classify
+  geocode.py                # Nominatim, 1 req/sec, cached
+/functions/api/event.js     # Cloudflare Pages Function: anonymous event counter
+/migrations/0001_events.sql # D1 schema. The function never creates the table
+/src/                       # astro site (pages, components, lib)
+/scripts/                   # verify gate: lint, validate, csp, search, tabs, map,
+                            #   compare, a11y, launch report, smoke
+/public/photos/             # owner-submitted photos only; Places photos fetched at build
+/public/_headers            # CSP + security headers (Cloudflare Pages feature)
+.github/workflows/          # ci.yml, scrape.yml, lighthouse.yml
+CLAUDE.md                   # this file
 ```
 
 ---
@@ -436,6 +615,33 @@ exists; they are recorded now so they're inherited, not retrofitted.
   server-side validation.
 - Service-role keys are server-only, never in any bundle, rotated on any suspicion.
 
+**Event counting — privacy by schema, not by promise (`/api/event`)**
+- The table is `(day, event, subject, count)` and **nothing else**. There is no visitor
+  column, no session column, no IP column: the data cannot be joined back to a person
+  because nothing about a person is written down. That is a stronger guarantee than a
+  policy, because it does not depend on anyone keeping it.
+- No cookie is set or read; nothing is stored in the browser; there is deliberately no
+  session concept, because **a session is an identifier by another name**.
+- The event name and subject come from **whitelists the server re-checks** — an endpoint
+  accepting arbitrary strings is a free write primitive pointed at our own storage. The
+  date is server-assigned so a client cannot choose which day to write to. A same-origin
+  guard stops another site inflating a gym's numbers from a visitor's browser.
+- **Rate limited in the function** (60/min per IP), not as a WAF rule: it lives in the
+  repo, deploys with the code, and cannot be silently absent on a fresh environment. The
+  IP is a key only — never stored, never logged, gone with the request.
+- **Failure is silent for the visitor and loud for the operator.** `sendBeacon` never
+  blocks a click-through, and every path answers **204** (a non-2xx would log a console
+  error on a page that promises none) — but each one names itself in an
+  **`X-Event-Status`** header: `stored`, `no-binding`, `unknown-event`, `bad-subject`,
+  `bad-json`, `cross-origin`, `rate-limited`, `write-failed:<reason>`. Identical 204s once
+  made "stored fine" indistinguishable from "silently dropped" for a full debugging
+  session. `GET /api/event` returns `{"bound": true|false}`.
+- The function **never creates the table**; `migrations/0001_events.sql` is a separate
+  step. **Cloudflare Pages applies bindings at deployment creation** — a "Retry
+  deployment" does not reliably pick up a new binding, and a binding added to the wrong
+  environment looks identical to a correct one in the dashboard. Only a fresh deployment
+  proves it, which is what the health check exists to confirm.
+
 **Definition of verified (client-side JS)**
 - `public/_headers` is a **Cloudflare Pages feature**. `astro dev` and `astro preview`
   do **not** apply it, so the CSP is absent locally and present in production. Anything
@@ -467,21 +673,34 @@ exists; they are recorded now so they're inherited, not retrofitted.
 
 ---
 
-## 9. Build order
+## 9. Current state and what remains
 
-1. Repo scaffold, Astro, design tokens, fonts, CI (lint + audit), branch protection, `_headers`.
-2. Data schema + loader; convert seed xlsx rows with confirmed prices into `/data/gyms/*.json`.
-3. Index page: list + filters (no map yet). Cards + accordion per mockup.
-4a. **Address collection + geocoding pass, all 41 gyms.** Addresses come from each
-   gym's own site footer/contact page during normal scrapes where possible; the owner
-   fills the stragglers. Geocode with **Nominatim** (OpenStreetMap's free geocoder) —
-   zero key, zero cost, same rationale as Leaflet/OSM. Observe its usage policy:
-   **max 1 request/second**, honest identifying User-Agent, cache results. Where
-   Nominatim returns a low-confidence match, **flag it for a manual pin-drop by the
-   owner** rather than accepting a fuzzy hit — a wrong pin is the map equivalent of a
-   wrong price. `lat`/`lng` stay `null` until confirmed; a null pin is simply not drawn.
-4. Leaflet map island + pin/card sync. Mobile map toggle. Requirements beyond the
-   mockup — we differentiate on information, not decoration:
+Reframed from a build order: the numbered plan is complete through step 8 and the
+project is now in data-gathering and launch preparation. **The map and interaction
+contract below is normative, not historical** — it is the specification, not a record of
+what was built.
+
+### Ledger
+
+**49 gyms listed, 31 with confirmed prices** (as of 2026-08-19). Per-region coverage and
+the outstanding queues are printed by `node scripts/launch-check.mjs`. Downtown is the
+weakest region and the most visible, so it leads the cherry-picking order.
+
+### Done
+
+Repo scaffold, design tokens, self-hosted fonts, CI, `_headers`; data schema, loader and
+validator; index list with filters, pagination and accordion cards; Leaflet map island;
+gym detail pages, region pages, JSON-LD, sitemap; 11 scraper targets with the PR flow and
+Sentry; FAQ and for-gym-owners; OG images; accessibility pass; favicon;
+**Classes & studios tab**; **compare view**; **discovery pipeline**;
+**event counting on D1**; **Founder Campaign codified**.
+
+### The map and interaction contract (normative)
+
+Requirements beyond the mockup — we differentiate on information, not decoration.
+**The map FRAMES; the list FILTERS.** They answer different questions and must never
+share a mechanism.
+
    - **Pins**: price bubbles per the mockup, background-tinted by price tier — tier 1
      green-tint, tier 2 neutral/white, tier 3 ink. Unpriced gyms get a hollow/dashed
      bubble reading "Call": visible, but visually secondary.
@@ -599,52 +818,67 @@ exists; they are recorded now so they're inherited, not retrofitted.
      `fitBounds` over everything would zoom out until central Austin, where almost every
      gym is, became unreadable. Outliers stay reachable by panning or zooming out; they
      do not get to set the frame.
-5. Gym detail pages + region pages + JSON-LD + sitemap.
-6. Scrapers: lib + the 6 "Low complexity" targets first; Actions cron + PR flow; Sentry.
-   (Low = planetfitness, lifetime, lacampeones, bigtex, hydepark, eaac.)
-7. Remaining "Medium" scrapers; stale-flag handling; photo build step.
-   Of the 8 Medium targets, **5 are scrapable** (crunch, ymca, crux, abp, lafitness)
-   and **3 are not**, confirmed by the harvest rather than assumed:
-   - **goldsgym** — every fetch times out at 120s and 300s, ordinary and stealth,
-     across two club URLs including an owner-verified one; the join flow returns
-     HTTP 500. The site refuses automated access.
-   - **castlehill** — rates are not in the page source at all; the membership
-     content renders client-side. The fetch returns nav and footer only.
-   - **24hour** — the public club listing carries no rates; prices sit behind a
-     point-of-sale redirect (`salesredirect.html?flow=POS&clubId=...`).
-   All three are `data_source: "manual"` and stay on the outreach list. No parser
-   work changes this, so none was written for them.
-8. FAQ / for-gym-owners pages; OG images; final a11y + Lighthouse pass (target ≥95 across the board).
-9. Deploy to Cloudflare Pages, wire domains + redirect, smoke test, ship.
+### In flight
 
-**Definition of done for launch: there is no confirmed-price threshold.**
-We launch on *what we can definitively source*, not on a count. The earlier
-"≥33 of 41" gate was written when the seed list was assumed to be the census;
-it is not — see the discovery sweep below — and a fixed number would either
-block a launch that is ready or invite padding the data to clear a bar. What
-must be true: **every shipped number is traceable to a source**, zero console
-errors, works without JS, Lighthouse ≥95, and the owner has clicked through
-every gym page once.
+- **Discovery cherry-pick.** `docs/discovery-report.md` holds 294 candidates; 140 publish
+  a sourceable price. `docs/harvest-queue.md` holds probe-confirmed pricing URLs awaiting
+  approval. Four of the first seven Downtown finds are still unharvested.
+- **Outreach and transcription.** `docs/price-transcription.md` for walled sites;
+  Anytime Fitness, CrossFit Austin and 10th Planet have forms submitted.
+- **Gaps recorded in `docs/recheck-ledger.md`**: Flow Pilates publishes only an intro
+  offer; OPTML publishes no class counts; FeV Iron Vault's site is down and may be closed;
+  Kollective's seed URL is wrong.
 
-`scripts/launch-check.mjs` therefore **reports rather than gates**: confirmed
-count, per-region coverage, and the sizes of the transcription and outreach
-queues. It exits non-zero only on a real defect — a number we cannot trace, a
-broken build — never on a count.
+### Launch sequence (order matters)
 
-**Consult-gated brands stay listed.** Equinox, Kollective, Orangetheory,
-Barry's and the rest ship in the "call for pricing" state permanently if need
-be. People search for those names; being the site that says "they don't
-publish it" is *itself* the answer a price-transparency site owes them. They
-are not launch blockers and never were.
+1. `npm run verify` green; owner clicks through every gym page once.
+2. **Enable Cloudflare Web Analytics** (dashboard toggle — the CSP already allows it).
+3. **Confirm the D1 binding on the serving deployment** (`GET /api/event` →
+   `{"bound":true}`), then **`DELETE FROM events;`** to clear test writes and start the
+   real baseline.
+4. **Flip the domain**: austingymprices.com live, atxgymprices.com 301, hello@ and
+   reports@ routing verified end to end.
+5. **Remove the `main` ruleset bypass** — protection is active but carries a
+   `RepositoryRole` bypass with mode `always`, which is why direct pushes land. Removing
+   it is what makes §8's "branch protection from day 1" fully true.
+6. **Reddit post and the Founder Campaign together**, after the domain flip and after the
+   gym pages are live on the real domain. §10 and Gate 4b.
 
-**Growth, not a gate:** the ambition is ~100 gyms listed. `scrapers/discover.py`
-enumerates fitness businesses inside the region bounds via Google Places, diffs
-them against what we list, probes each new site for a fetchable price, and
-classifies it SCRAPEABLE / HUMAN-READABLE / GATED / NO-SITE. It **proposes** —
-`docs/discovery-report.md` is a review sheet, and nothing enters `/data` without
-the owner. Bias the picks toward scrapeable independents, category gaps and
-Downtown density: a gym whose price we can source and re-check forever is worth
-more than a brand name we have to beg for once a year.
+**Definition of done for launch: there is no confirmed-price threshold.** We launch on
+what we can definitively source. `scripts/launch-check.mjs` reports coverage and exits
+non-zero only on a real defect — a gym claiming a price with no `verified_date` behind it.
+What must be true: every shipped number is traceable to a source, zero console errors on
+the deployed site, works without JS, Lighthouse ≥95.
+
+**Consult-gated brands stay listed** in the "call for pricing" state permanently if need
+be. People search those names, and "they don't publish it" is itself the answer a
+price-transparency site owes them.
+
+---
+
+## 9b. Working protocol
+
+How this project is run. It is here because a new thread inherits the rules, not the
+habits.
+
+- **The owner reviews every findings report before anything is written to `/data`.**
+  Harvests, sweeps and transcriptions produce a report; the owner cherry-picks; only then
+  do rows land. Nothing about a gym's price enters the repo on an agent's own judgement.
+- **One consolidated message per round-trip.** Batch the work, batch the report. Partial
+  answers and progress narration cost more than they inform.
+- **Every report states the ledger** — confirmed / total listed — so the project never has
+  to guess where it stands.
+- **Product questions go to the owner and are never decided unilaterally.** Scope, tone,
+  what counts as a gym, what a rule should be: those are the owner's. Implementation
+  detail is not.
+- **Verification on the deployed URL is part of done**, and it is the owner's step. Local
+  green is necessary and not sufficient (§8).
+- **Measure before fixing.** Reproduce a reported bug and confirm the mechanism before
+  changing code; report honestly when it does not reproduce, and say what was checked.
+- **An assertion must pin the rule, not the day's data.** Several checks in this repo were
+  written against a fact that later changed legitimately — "nothing merges at any zoom",
+  "all cards visible after Clear filters" — and each had to be rewritten to assert the
+  invariant instead. Prefer the invariant.
 
 ---
 
@@ -652,6 +886,11 @@ more than a brand name we have to beg for once a year.
 
 Nothing here gets built, or partially built, in v1. It is written down so that v1's
 data model stays compatible with it.
+
+**Promoted out of this section and shipped in v1:** the **compare view** (§4) and
+**class-pack pricing for studios** (§1, §3). Both were originally out of scope; both were
+pulled forward because the data made them necessary rather than because they were nice to
+have. `price_history` remains the groundwork for the deals feed below.
 
 - **Deals feed + price-drop email alerts + price history charts**, built on scrape diffs;
   potential promo-placement revenue layer once traffic exists.
@@ -711,6 +950,22 @@ data model stays compatible with it.
   about a gym nobody visited is a lie told at scale, and it reads as one. The
   owner sends every message.
 
+- **Gym-owner portal.** The "claim your listing" surface: an authenticated owner
+  correcting their own prices, uploading photos, and managing the media feed below.
+  `listing_tier` is its free/enhanced hook, planted empty. Inherits every **[phase-2]**
+  rule in §8 the day it arrives — RLS default-deny, server-derived identity, rate limits
+  on every write path.
+- **LLM-assisted pricing-URL discovery.** The single most expensive lesson of the
+  discovery sweep was that **"consult-gated" verdicts were mostly wrong-URL verdicts**:
+  [solidcore] publishes its full price list at `/membership-perks?siteId=…`, which no
+  path-guessing heuristic would ever reach, and Barry's, CorePower and Studio Three were
+  all written off from guessed or root URLs. `discover.py` currently tries a fixed list
+  of paths (`/membership`, `/pricing`, `/rates`, `/join`…) and a widget signature. A
+  model reading a site's own navigation and sitemap to *propose* the pricing URL would
+  find what path patterns cannot. It proposes only — the fetch, the parse and the
+  human review stay exactly as they are.
+  *(Recorded here from the sweep's evidence; if this was already scoped differently,
+  correct the framing.)*
 - **Barbell brand mark** — a minimal horizontal barbell (a bar with two plates)
   as an underline accent beneath the wordmark, and possibly a flanking treatment
   in the hero only. **Launch polish, not v1.** The header wordmark and the
