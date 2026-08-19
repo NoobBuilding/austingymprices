@@ -258,4 +258,100 @@ console.log(
     ? '\nOK — tab-aware rendering behaves.'
     : `\n${failures.length} check(s) FAILED.`,
 );
+// ── Pagination ───────────────────────────────────────────────────────────
+// The unfiltered list opens at one page; any active filter shows every match,
+// because filtering IS the narrowing tool. The map must see all of it either
+// way — pagination uses a class precisely so `hidden` keeps meaning "filtered
+// out", which is what the map reads.
+console.log('\nPagination');
+// Earlier sections leave filters applied; pagination only engages on the
+// unfiltered list, so start from a clean slate.
+window.document
+  .getElementById('clear-filters')
+  ?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+const PAGE_SIZE = 12;
+const showAllBtn = window.document.getElementById('show-all');
+const allCards = () => $('.card');
+const paged = () => allCards().filter((c) => c.classList.contains('beyond-fold'));
+const visibleCards = () => allCards().filter((c) => !c.hidden);
+
+check(Boolean(showAllBtn), 'the show-all expander exists');
+check(
+  visibleCards().length - paged().length === PAGE_SIZE,
+  'the unfiltered list opens at one page',
+  `${visibleCards().length - paged().length} shown of ${visibleCards().length}`,
+);
+check(!showAllBtn.hidden, 'the expander is offered when there is more to show');
+check(
+  paged().every((c) => !c.hidden),
+  'paginated cards are NOT marked hidden — the map still draws their pins',
+);
+
+// Filtering must switch pagination off entirely.
+window.document.querySelector('#regions .chip[data-region="downtown"]')?.dispatchEvent(
+  new window.MouseEvent('click', { bubbles: true }),
+);
+check(
+  paged().length === 0,
+  'a region chip shows every match, with no pagination',
+  `${paged().length} folded`,
+);
+check(showAllBtn.hidden, 'and the expander goes away while filtered');
+
+window.document.getElementById('clear-filters')?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+check(paged().length > 0, 'clearing filters returns to one page');
+
+showAllBtn.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+check(paged().length === 0, 'the expander reveals the whole list');
+check(showAllBtn.hidden, 'and retires itself');
+
+window.document.querySelector('#regions .chip[data-region="downtown"]')?.dispatchEvent(
+  new window.MouseEvent('click', { bubbles: true }),
+);
+window.document.getElementById('clear-filters')?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+check(
+  paged().length === 0,
+  'expansion is sticky — the list does not fold back up on the next filter change',
+);
+
+// ── Compare picker discoverability ───────────────────────────────────────
+console.log('\nCompare picker');
+const pill = window.document.getElementById('cmp-pill');
+const pillLabel = window.document.getElementById('cmp-label');
+const boxes = $('.cmp-box');
+check(Boolean(pill) && Boolean(pillLabel), 'the pill and its label exist');
+check(
+  $('.cmp-word').length === allCards().length,
+  'every compare control is LABELLED, not a bare checkbox',
+  `${$('.cmp-word').length} labelled`,
+);
+check(
+  $('.cmp-word')[0]?.textContent.trim().toLowerCase() === 'compare',
+  'and the label says what it does',
+);
+check(pill.hidden, 'the pill starts hidden at zero picks');
+
+const pick = (i) => {
+  boxes[i].checked = true;
+  boxes[i].dispatchEvent(new window.Event('change', { bubbles: true }));
+};
+pick(0);
+check(!pill.hidden, 'the pill appears on the FIRST pick, so the mechanic teaches itself');
+check(
+  /pick 1 more/i.test(pillLabel.textContent),
+  'and it says what to do next rather than showing a dead count',
+  pillLabel.textContent.trim(),
+);
+check(!pill.hasAttribute('href'), 'at one pick it is a prompt, not a link to nowhere');
+check(pill.getAttribute('aria-disabled') === 'true', 'and it reports itself disabled');
+
+pick(1);
+check(/Compare \(2\)/.test(pillLabel.textContent), 'two picks reads as a count', pillLabel.textContent.trim());
+check(
+  /^\/compare\?gyms=[^,]+,[^,]+$/.test(pill.getAttribute('href') ?? ''),
+  'and now links to the comparison',
+  pill.getAttribute('href'),
+);
+check(pill.getAttribute('aria-disabled') === 'false', 'and is no longer disabled');
+
 process.exit(failures.length === 0 ? 0 : 1);

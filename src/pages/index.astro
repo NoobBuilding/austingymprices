@@ -103,6 +103,12 @@ const description =
       <div id="cards">
         {sorted.map((gym) => <GymCard gym={gym} compare />)}
       </div>
+      {/* Pagination is progressive enhancement ONLY. Every card above is
+          server-rendered, so with JS off the full list is simply there — this
+          button never appears and nothing is hidden. */}
+      <button type="button" class="show-all" id="show-all" hidden>
+        Show all <span id="show-all-n">{gyms.length}</span> gyms ↓
+      </button>
       <div class="empty" id="empty" hidden>
         <p>No gyms match those filters.</p>
         <button type="button" id="clear-filters" class="clear-btn">Clear filters</button>
@@ -118,8 +124,11 @@ const description =
 
   {/* Appears only at 2+ picks. A real <a>, so it can be opened in a new tab,
       copied, and shared — the compare URL is the whole state. */}
+  {/* Appears on the FIRST pick, not the second: at one gym it says what to do
+      next, so the mechanic teaches itself on first touch instead of the pill
+      staying invisible until the user has already guessed the rule. */}
   <a class="cmp-pill" id="cmp-pill" href="/compare" hidden>
-    Compare (<span id="cmp-count">0</span>)
+    <span id="cmp-label">Compare</span>
   </a>
 </Base>
 
@@ -329,6 +338,32 @@ const description =
     gap: 12px;
   }
 
+  /* Beyond the first page. A CLASS, never the `hidden` attribute: `hidden`
+     means "filtered out" and the map reads it to decide which pins to draw.
+     Paginating with it would silently empty the map. */
+  :global(#cards .card.beyond-fold) {
+    display: none;
+  }
+
+  .show-all {
+    display: block;
+    width: 100%;
+    margin: 4px 0 8px;
+    padding: 13px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface-sunk);
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .show-all:hover {
+    border-color: var(--orange);
+    color: var(--orange-dark);
+  }
+
   .clear-btn {
     border: 1.5px solid var(--orange);
     background: var(--orange-tint);
@@ -363,6 +398,17 @@ const description =
 
   .cmp-pill:hover {
     background: var(--orange-dark);
+  }
+
+  /* One pick: a prompt rather than a button. Quieter, and not clickable. */
+  .cmp-pill.waiting {
+    background: var(--ink-soft);
+    cursor: default;
+    font-weight: 600;
+  }
+
+  .cmp-pill.waiting:hover {
+    background: var(--ink-soft);
   }
 
   .cmp-hint {
@@ -413,6 +459,8 @@ const description =
     const activity = document.getElementById('activity');
     const sortEl = document.getElementById('sort');
     const noContractBtn = document.getElementById('nocontract');
+    const showAllBtn = document.getElementById('show-all');
+    const showAllCount = document.getElementById('show-all-n');
     // Only present once enough gyms are confirmed; every use is null-guarded.
     const classpassBtn = document.getElementById('classpass');
 
@@ -441,6 +489,39 @@ const description =
       swap('.detail-membership', daypass);
       swap('.detail-daypass', !daypass);
       swap('.membership-only', daypass);
+    }
+
+    // ── Pagination ─────────────────────────────────────────────────────────
+    // The unfiltered list is long enough to bury the map and the filter row, so
+    // it opens at one page. The moment ANY filter narrows the list, pagination
+    // stops: filtering IS the narrowing tool, and hiding matches behind a
+    // button on top of it would hide the very thing the user just asked for.
+    const PAGE_SIZE = 12;
+    let showAll = false;
+
+    const isUnfiltered = () =>
+      state.region === 'all' &&
+      state.tier === 'all' &&
+      state.activity === 'all' &&
+      !state.noContract &&
+      !state.classpass &&
+      state.q.trim() === '';
+
+    function applyPagination(visible) {
+      // `beyond-fold` is a class, never the `hidden` attribute — the map reads
+      // `hidden` to decide which pins to draw, so paginating with it would
+      // empty the map. Pins always show everything.
+      const paginate = isUnfiltered() && !showAll && visible.length > PAGE_SIZE;
+      visible.forEach((card, i) => {
+        card.classList.toggle('beyond-fold', paginate && i >= PAGE_SIZE);
+      });
+      for (const card of cards) {
+        if (card.hidden) card.classList.remove('beyond-fold');
+      }
+      if (showAllBtn) {
+        showAllBtn.hidden = !paginate;
+        if (showAllCount) showAllCount.textContent = String(visible.length);
+      }
     }
 
     function applySelection() {
@@ -482,6 +563,8 @@ const description =
 
       if (countEl) countEl.textContent = String(shown);
       if (emptyEl) emptyEl.hidden = shown !== 0;
+
+      applyPagination(visible);
 
       // The map follows the list rather than filtering independently, so the
       // two can never disagree about what is shown.
@@ -557,6 +640,15 @@ const description =
       if (activity) activity.value = 'all';
       apply();
       search?.focus();
+    });
+
+    showAllBtn?.addEventListener('click', () => {
+      // Sticky: once the whole list has been asked for, it does not fold back
+      // up on the next filter change. Re-collapsing what someone deliberately
+      // opened reads as the page fighting them.
+      showAll = true;
+      apply();
+      showAllBtn.hidden = true;
     });
 
     classpassBtn?.addEventListener('click', () => {
@@ -707,7 +799,7 @@ const description =
     // and it is built fresh on every change. Nothing is persisted, because a
     // stale selection surfacing on a later visit is a small lie about intent.
     const pillEl = document.getElementById('cmp-pill');
-    const countEl2 = document.getElementById('cmp-count');
+    const pillLabel = document.getElementById('cmp-label');
     const boxes = Array.from(container.querySelectorAll('.cmp-box'));
     const picks = [];
 
@@ -720,10 +812,21 @@ const description =
         box.disabled = full && !box.checked;
         box.closest('.cmp-pick')?.classList.toggle('capped', box.disabled);
       }
-      if (countEl2) countEl2.textContent = String(picks.length);
+      if (pillLabel) {
+        pillLabel.textContent =
+          picks.length < MIN_COMPARE
+            ? `Compare — pick ${MIN_COMPARE - picks.length} more`
+            : `Compare (${picks.length})`;
+      }
       if (pillEl) {
-        pillEl.hidden = picks.length < MIN_COMPARE;
-        pillEl.href = compareHref(picks);
+        pillEl.hidden = picks.length === 0;
+        const ready = picks.length >= MIN_COMPARE;
+        // At one pick the pill is a prompt, not a destination. Dropping the
+        // href stops it being a link to a comparison that cannot exist yet.
+        if (ready) pillEl.setAttribute('href', compareHref(picks));
+        else pillEl.removeAttribute('href');
+        pillEl.setAttribute('aria-disabled', String(!ready));
+        pillEl.classList.toggle('waiting', !ready);
       }
     }
 

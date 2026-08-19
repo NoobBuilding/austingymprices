@@ -561,9 +561,34 @@ exists; they are recorded now so they're inherited, not retrofitted.
 8. FAQ / for-gym-owners pages; OG images; final a11y + Lighthouse pass (target ≥95 across the board).
 9. Deploy to Cloudflare Pages, wire domains + redirect, smoke test, ship.
 
-**Definition of done for launch:** ≥33 of 41 gyms with confirmed prices ("Need price" ≤ 8),
-every shipped number traceable to a source, zero console errors, works without JS,
-Lighthouse ≥95, and the owner has clicked through every gym page once.
+**Definition of done for launch: there is no confirmed-price threshold.**
+We launch on *what we can definitively source*, not on a count. The earlier
+"≥33 of 41" gate was written when the seed list was assumed to be the census;
+it is not — see the discovery sweep below — and a fixed number would either
+block a launch that is ready or invite padding the data to clear a bar. What
+must be true: **every shipped number is traceable to a source**, zero console
+errors, works without JS, Lighthouse ≥95, and the owner has clicked through
+every gym page once.
+
+`scripts/launch-check.mjs` therefore **reports rather than gates**: confirmed
+count, per-region coverage, and the sizes of the transcription and outreach
+queues. It exits non-zero only on a real defect — a number we cannot trace, a
+broken build — never on a count.
+
+**Consult-gated brands stay listed.** Equinox, Kollective, Orangetheory,
+Barry's and the rest ship in the "call for pricing" state permanently if need
+be. People search for those names; being the site that says "they don't
+publish it" is *itself* the answer a price-transparency site owes them. They
+are not launch blockers and never were.
+
+**Growth, not a gate:** the ambition is ~100 gyms listed. `scrapers/discover.py`
+enumerates fitness businesses inside the region bounds via Google Places, diffs
+them against what we list, probes each new site for a fetchable price, and
+classifies it SCRAPEABLE / HUMAN-READABLE / GATED / NO-SITE. It **proposes** —
+`docs/discovery-report.md` is a review sheet, and nothing enters `/data` without
+the owner. Bias the picks toward scrapeable independents, category gaps and
+Downtown density: a gym whose price we can source and re-check forever is worth
+more than a brand name we have to beg for once a year.
 
 ---
 
@@ -574,6 +599,12 @@ data model stays compatible with it.
 
 - **Deals feed + price-drop email alerts + price history charts**, built on scrape diffs;
   potential promo-placement revenue layer once traffic exists.
+- **Barbell brand mark** — a minimal horizontal barbell (a bar with two plates)
+  as an underline accent beneath the wordmark, and possibly a flanking treatment
+  in the hero only. **Launch polish, not v1.** The header wordmark and the
+  favicon "A" do not change: the favicon is sized so its counter survives at
+  16px, and a barbell at that size is a grey smudge. Any mark that cannot hold
+  up at 16px belongs beside the wordmark, never inside the icon.
 - **Gym-owner media feed** — an Instagram-style scrollable strip of photos and short
   video on each gym detail page, uploaded by the gym owner. Ships **with the owner
   portal**, not before: it is owner-published content, so it needs an authenticated

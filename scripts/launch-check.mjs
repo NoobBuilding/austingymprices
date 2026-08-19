@@ -11,7 +11,9 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-const THRESHOLD = 33;
+// No threshold. We launch on what we can definitively source, not on a count
+// (CLAUDE.md §9). This script REPORTS coverage; it exits non-zero only on a
+// real defect — a number we cannot trace — never on how many gyms are priced.
 
 const gyms = readdirSync('data/gyms')
   .filter((f) => f.endsWith('.json'))
@@ -85,20 +87,41 @@ console.log('  - hello@ and reports@ email routing TESTED with a real send');
 console.log('  - Lighthouse workflow run against the live URL');
 console.log('  - Owner has clicked through every gym page');
 
-const short = THRESHOLD - priced.length;
 console.log('');
-if (short > 0) {
+console.log(`Coverage — ${priced.length} of ${gyms.length} gyms carry a confirmed price.`);
+
+// Per-region coverage. A city-wide count can look healthy while a whole region
+// is empty, and an empty region page is a worse first impression than a short
+// one.
+const regionIds = [...new Set(gyms.map((g) => g.region))].sort();
+console.log('\nPer region:');
+for (const id of regionIds) {
+  const inRegion = gyms.filter((g) => g.region === id);
+  const withPrice = inRegion.filter((g) => priced.includes(g));
+  const bar = '#'.repeat(withPrice.length).padEnd(Math.max(inRegion.length, 1), '.');
   console.log(
-    `NOT READY — ${priced.length} of ${gyms.length} priced, ${short} short of the ` +
-      `${THRESHOLD} the definition of done requires.`,
+    `  ${id.padEnd(13)} ${String(withPrice.length).padStart(2)}/${String(inRegion.length).padEnd(2)}  ${bar}`,
   );
-  console.log('\nUnpriced gyms:');
+}
+
+// The queues. These are collection problems, not code problems, and naming
+// them as queues is what stops them reading as failures.
+console.log('\nQueues:');
+console.log(`  awaiting a price      ${unpriced.length}`);
+console.log('  transcription sheet   docs/price-transcription.md');
+console.log('  outreach              docs/outreach.html (pre-filled email per gym)');
+
+if (unpriced.length > 0) {
+  console.log('\nAwaiting a price:');
   for (const g of unpriced) console.log(`  ${g.name}`);
-  console.log(
-    '\nThis is a collection problem, not a code problem. docs/outreach.html has ' +
-      'a pre-filled email per gym.',
-  );
+}
+
+// Traceability IS the gate. A gym claiming a confirmed price with no date to
+// stand behind it is the one data defect that must never ship.
+const untraceable = priced.filter((g) => !g.verified_date);
+if (untraceable.length > 0) {
+  console.log('\nDEFECT — priced but with no verified_date to trace it to:');
+  for (const g of untraceable) console.log(`  ${g.name}`);
   process.exit(1);
 }
-console.log(`READY on data — ${priced.length} of ${gyms.length} priced, threshold ${THRESHOLD}.`);
-console.log('Work the manual list above, then connect the domain.');
+console.log('\nEvery shipped price is traceable to a source and a date.');

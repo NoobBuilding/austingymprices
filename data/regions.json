@@ -3,36 +3,84 @@
     "id": "downtown",
     "name": "Downtown",
     "h1": "Gym prices in Downtown Austin",
-    "map_label": { "x": 176, "y": 452 }
+    "map_label": {
+      "x": 176,
+      "y": 452
+    },
+    "search": {
+      "lat": 30.2672,
+      "lng": -97.7431,
+      "radius_m": 2000
+    }
   },
   {
     "id": "east-austin",
     "name": "East Austin",
     "h1": "Gym prices in East Austin",
-    "map_label": { "x": 392, "y": 300 }
+    "map_label": {
+      "x": 392,
+      "y": 300
+    },
+    "search": {
+      "lat": 30.262,
+      "lng": -97.718,
+      "radius_m": 2600
+    }
   },
   {
     "id": "south-soco",
     "name": "South / SoCo",
     "h1": "Gym prices in South Austin and SoCo",
-    "map_label": { "x": 170, "y": 660 }
+    "map_label": {
+      "x": 170,
+      "y": 660
+    },
+    "search": {
+      "lat": 30.23,
+      "lng": -97.78,
+      "radius_m": 4000
+    }
   },
   {
     "id": "hyde-park",
     "name": "Hyde Park",
     "h1": "Gym prices in Hyde Park, Austin",
-    "map_label": { "x": 160, "y": 140 }
+    "map_label": {
+      "x": 160,
+      "y": 140
+    },
+    "search": {
+      "lat": 30.305,
+      "lng": -97.73,
+      "radius_m": 2600
+    }
   },
   {
     "id": "mueller",
     "name": "Mueller",
     "h1": "Gym prices in Mueller, Austin",
-    "map_label": { "x": 404, "y": 140 }
+    "map_label": {
+      "x": 404,
+      "y": 140
+    },
+    "search": {
+      "lat": 30.2989,
+      "lng": -97.7043,
+      "radius_m": 2000
+    }
   },
   {
     "id": "the-domain",
     "name": "The Domain",
     "h1": "Gym prices near The Domain, Austin",
-    "map_label": { "x": 30, "y": 40 }
+    "map_label": {
+      "x": 30,
+      "y": 40
+    },
+    "search": {
+      "lat": 30.401,
+      "lng": -97.725,
+      "radius_m": 3000
+    }
   }
 ]

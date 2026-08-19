@@ -30,6 +30,10 @@ const rows = priceRows(money);
   <main class="wrap">
     <nav class="crumb"><a href="/">← All Austin gyms</a></nav>
     <h1 id="compare-title">Compare gyms</h1>
+    <p class="selected" id="compare-selected" hidden><span id="compare-n">0</span> selected</p>
+    {/* States the spread and anoints nothing. A "cheapest" highlight would be
+        us picking for the reader; the range is a fact about the set. */}
+    <p class="range" id="compare-range" hidden></p>
     <p class="lede" id="compare-lede">
       Every figure below is the gym's own published number. Nothing here is
       ranked or recommended — the point is to put the maths next to each other
@@ -117,12 +121,30 @@ const rows = priceRows(money);
   .fallback { font-size: .86rem; color: var(--ink-soft); background: var(--surface-sunk); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 14px; margin-bottom: 18px; }
   .fallback a { color: var(--orange-dark); }
 
+  .selected { font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); margin-top: 6px; }
+  .range { font-size: .95rem; font-weight: 600; color: var(--ink); margin-top: 4px; }
+
   /* Wide tables scroll inside their own box; the page never scrolls sideways. */
   .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); }
-  .cmp { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  .cmp { border-collapse: separate; border-spacing: 0; width: 100%; font-size: .88rem; }
   .cmp th, .cmp td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  .rowhead { position: sticky; left: 0; background: var(--bg); font-weight: 600; color: var(--ink-soft); white-space: nowrap; font-size: .8rem; }
-  .gymhead { min-width: 168px; }
+
+  /* Each gym is a boxed column, not a floating stack of numbers: a vertical
+     rule between columns is what makes "which figures belong together"
+     readable at a glance. */
+  .cmp td, .cmp th.gymhead { border-left: 1px solid var(--line); }
+
+  /* Alternating tint on the attribute rows. Applied to the ROW, so it can
+     never be mistaken for marking a column as better. */
+  .cmp tbody tr:nth-child(even) td,
+  .cmp tbody tr:nth-child(even) .rowhead { background: var(--surface-sunk); }
+
+  .rowhead { position: sticky; left: 0; z-index: 2; background: var(--bg); font-weight: 600; color: var(--ink-soft); white-space: nowrap; font-size: .8rem; }
+
+  /* The gym name follows you down a long table — otherwise, by the time you
+     reach "first-year total" you no longer know whose column you are reading. */
+  .gymhead { min-width: 178px; position: sticky; top: 0; z-index: 3; background: var(--bg); box-shadow: inset 0 -1px 0 var(--line); }
+  .cmp thead th.rowhead { z-index: 4; }
   .gymhead a { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: .02em; color: var(--ink); display: block; }
   .where { display: block; font-size: .72rem; color: var(--ink-soft); font-weight: 500; }
   .promo { display: inline-block; margin-top: 5px; font-size: .68rem; font-weight: 700; background: var(--orange-tint); color: var(--orange-dark); border-radius: 5px; padding: 2px 6px; }
@@ -176,12 +198,30 @@ const rows = priceRows(money);
           row.hidden = !states.includes('yes');
         }
 
-        const names = wanted.map(
-          (s) => table.querySelector(`th.gymhead[data-slug="${CSS.escape(s)}"] a`)?.textContent,
-        );
-        const title = document.getElementById('compare-title');
-        if (title) title.textContent = `Compare ${names.filter(Boolean).join(' vs ')}`;
-        document.title = `${names.filter(Boolean).join(' vs ')} — Austin Gym Prices`;
+        // The heading stays "Compare gyms". Gym names live in the column
+        // headers, where they label their own data — repeating them as a
+        // bold "X vs Y vs Z" headline turned a comparison into a billing.
+        const selected = document.getElementById('compare-selected');
+        const countEl = document.getElementById('compare-n');
+        if (countEl) countEl.textContent = String(wanted.length);
+        if (selected) selected.hidden = false;
+
+        // Neutral spread. Reads the rendered all-in cells rather than
+        // recomputing, so it can never disagree with the table above it.
+        const allIn = wanted
+          .map((s) => table.querySelector(`tr[data-row="all_in"] td[data-slug="${CSS.escape(s)}"] .v`))
+          .map((cell) => Number((cell?.textContent ?? '').replace(/[^0-9.]/g, '')))
+          .filter((n) => Number.isFinite(n) && n > 0);
+        const rangeEl = document.getElementById('compare-range');
+        if (rangeEl && allIn.length >= 2) {
+          const lo = Math.min(...allIn);
+          const hi = Math.max(...allIn);
+          rangeEl.textContent =
+            lo === hi ? `All ${allIn.length} at $${lo}/mo all-in`
+                      : `Range: $${lo}–${hi}/mo all-in`;
+          rangeEl.hidden = false;
+        }
+
         const fallback = document.getElementById('compare-fallback');
         if (fallback) fallback.hidden = true;
       }

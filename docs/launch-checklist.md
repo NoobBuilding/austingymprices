@@ -10,11 +10,20 @@ Run `node scripts/launch-check.mjs` for the machine-checkable parts.
 
 ## Gate 1 — data (the actual blocker)
 
-The definition of done in CLAUDE.md §9 is **≥33 of 41 gyms with confirmed
-prices**. This is the only launch gate that code cannot move.
+**There is no confirmed-price threshold.** We launch on what we can
+definitively source. The old "≥33 of 41" bar assumed the seed list was the
+census; it is not, and a fixed number would either block a launch that is ready
+or invite padding the data to clear it. What cannot move is traceability: every
+number we print must have a source.
 
-- [ ] **≥33 of 41 gyms priced.** Current count is printed by
-      `node scripts/launch-check.mjs`.
+- [ ] **Read the coverage report**, do not chase a number:
+      `node scripts/launch-check.mjs` prints confirmed count, per-region
+      coverage, and the transcription/outreach queues. It fails only on a real
+      defect, never on a count.
+- [ ] Consult-gated brands (Equinox, Kollective, Orangetheory, Barry's…)
+      **stay listed** in the "call for pricing" state. People search those
+      names, and "they don't publish it" is itself the answer we owe them.
+      They are not blockers.
 - [ ] Every shipped number traceable to a source — a gym's own page, or a
       collection call. No estimates, no national averages.
 - [ ] `known_for` written for the gyms that have one. Null renders nothing, so

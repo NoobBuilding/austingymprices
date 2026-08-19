@@ -85,6 +85,9 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
         data-slug={gym.slug}
         aria-label={`Compare ${gym.name}`}
       />
+      {/* The word is the whole point: a bare checkbox in a card corner is
+          mystery UI. Labelled, it explains itself before it is touched. */}
+      <span class="cmp-word" aria-hidden="true">Compare</span>
     </label>
   )}
 
@@ -298,12 +301,25 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     z-index: 2;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
+    gap: 5px;
+    padding: 4px 9px 4px 7px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: var(--bg);
     cursor: pointer;
-    opacity: 0.4;
-    transition: opacity 0.12s;
+    opacity: 0.75;
+    transition:
+      opacity 0.12s,
+      border-color 0.12s;
+  }
+
+  .cmp-word {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    line-height: 1;
   }
 
   .cmp-pick:hover,
@@ -320,9 +336,15 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     margin: 0;
   }
 
-  /* A checked box stays legible even when the card is not hovered. */
+  /* A checked chip stays legible even when the card is not hovered. */
   .cmp-pick:has(.cmp-box:checked) {
     opacity: 1;
+    border-color: var(--orange);
+    background: var(--orange-tint);
+  }
+
+  .cmp-pick:has(.cmp-box:checked) .cmp-word {
+    color: var(--orange-dark);
   }
 
   /* At the cap, the remaining boxes read as unavailable rather than broken. */

@@ -146,6 +146,63 @@ check(
   'the page explains in words what a blank means',
 );
 
+console.log('\nHeading and column treatment');
+check(
+  doc.getElementById('compare-title')?.textContent.trim() === 'Compare gyms',
+  'the heading is "Compare gyms" — gym names belong in the column headers',
+  doc.getElementById('compare-title')?.textContent.trim(),
+);
+check(
+  !/\bvs\b/i.test(doc.getElementById('compare-title')?.textContent ?? ''),
+  'no "X vs Y vs Z" headline — a comparison is not a billing',
+);
+check(Boolean(doc.getElementById('compare-selected')), 'an "{N} selected" line exists');
+check(doc.getElementById('compare-selected')?.hasAttribute('hidden'),
+  'and stays hidden until a selection exists');
+check(Boolean(doc.getElementById('compare-range')), 'the neutral range line exists');
+check(
+  doc.getElementById('compare-range')?.hasAttribute('hidden'),
+  'and is hidden until there is a spread to state',
+);
+// Astro emits page styles to a hashed stylesheet, so read what actually ships
+// rather than the HTML — an assertion against the wrong file passes forever.
+const { readdirSync: readdir } = await import('node:fs');
+const { join: joinPath } = await import('node:path');
+const compareCss = readdir('dist/_astro')
+  .filter((f) => f.endsWith('.css'))
+  .map((f) => readFileSync(joinPath('dist/_astro', f), 'utf8'))
+  .join('\n');
+// Astro scopes selectors with [data-astro-cid-*] and the minifier rewrites
+// :nth-child(even) to (2n), so match on the declarations rather than on the
+// selector text exactly as authored.
+// A selector can appear in several blocks (`.rowhead` alone, and again inside
+// the alternating-tint rule), so ask whether ANY block pairs the selector with
+// the declaration rather than trusting the first match.
+const cssBlocks = (needle) =>
+  compareCss.split('}').filter((block) => block.includes(needle));
+const declaredOn = (needle, decl) => cssBlocks(needle).some((b) => decl.test(b));
+
+check(
+  declaredOn('.gymhead', /border-left:\s*1px solid/),
+  'columns are boxed with a vertical rule',
+);
+check(
+  declaredOn('.gymhead[', /position:sticky/),
+  'the gym-name header is sticky, so you never lose whose column you are reading',
+);
+check(
+  declaredOn('.rowhead[', /position:sticky/),
+  'the attribute label stays put on horizontal scroll',
+);
+// The tint must be on the ROW. A per-column tint would read as marking a
+// column better, which is exactly what this page refuses to do.
+const tint = [...cssBlocks('nth-child(2n)'), ...cssBlocks('nth-child(even)')].join('}');
+check(Boolean(tint), 'attribute rows alternate tint');
+check(
+  /tbody[^{]*tr[^{]*nth-child\(2n\)|tbody[^{]*tr[^{]*nth-child\(even\)/.test(tint),
+  'the alternating tint is per ROW, so it can never read as anointing a column',
+);
+
 console.log('\nSEO: compare URLs stay out of the index');
 check(
   /noindex/.test(doc.querySelector('meta[name="robots"]')?.content ?? ''),
