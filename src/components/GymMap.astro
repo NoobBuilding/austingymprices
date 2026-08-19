@@ -115,19 +115,33 @@ const pins = getAllGyms()
     pointer-events: none;
   }
 
-  /* Cluster label is the PRICE RANGE of its members, never a count. */
-  :global(.pin.cluster) {
+  /* A merged bubble stands on gyms that are effectively at the same address.
+     It reads "$38 +1": the cheapest price it is covering, and how many more are
+     underneath. Never a range, never a bare count. Click to fan it open. */
+  :global(.pin.merged) {
     background: #fff;
     border-color: var(--ink-soft);
     color: var(--ink);
     font-weight: 700;
+    box-shadow:
+      2px 2px 0 -1px #fff,
+      2px 2px 0 0 var(--ink-soft),
+      0 2px 5px rgba(33, 29, 25, 0.14);
+  }
+
+  /* Fanned open: the members of a merged bubble, pushed out around the point
+     they share. Ringed so the group they came from stays legible. */
+  :global(.pin.fanned) {
+    box-shadow:
+      0 0 0 2px rgba(107, 99, 91, 0.35),
+      0 2px 5px rgba(33, 29, 25, 0.18);
   }
 
   /* ── Dots mode ────────────────────────────────────────────────────────
    * Location-first browsing: tier tint survives, the number does not. A price
    * on every pin invites writing a gym off before reading a word about it.
    * These rules only resize and round the same bubble, so every state rule
-   * above (tier tint, dim, nopass, cluster) still applies unchanged — and
+   * above (tier tint, dim, nopass, merged) still applies unchanged — and
    * .pin.active below still wins the colours it sets. */
   :global(.pin.dot) {
     width: 14px;
@@ -138,9 +152,9 @@ const pins = getAllGyms()
     box-shadow: 0 1px 3px rgba(33, 29, 25, 0.28);
   }
 
-  /* A cluster dot is bigger, because "more than one gym here" is the one thing
-   * a dot still has to say once the price range is gone. */
-  :global(.pin.dot.cluster) {
+  /* A merged dot is bigger, because "more than one gym here" is the one thing
+   * a dot still has to say once the price is gone. */
+  :global(.pin.dot.merged) {
     width: 18px;
     height: 18px;
     border-width: 2px;
@@ -184,11 +198,63 @@ const pins = getAllGyms()
     box-shadow: inset 0 0 0 1px var(--line);
   }
 
+  /* Legend. Deliberately small and quiet — it explains the map, it is not part
+     of it. Sits above the attribution in the bottom-right stack. */
+  :global(.map-legend) {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 7px 9px;
+    display: grid;
+    gap: 4px;
+    box-shadow: 0 1px 4px rgba(33, 29, 25, 0.1);
+  }
+
+  :global(.legend-row) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* The swatch reuses the real pin classes, so a legend entry can never drift
+     from the thing it claims to describe — restyle a pin and the key follows.
+     Overrides only geometry, never colour.
+     Three classes on purpose: .pin.active is (0,2,0) and MUST stay declared
+     last, so an equal-specificity override here would lose and the "Selected"
+     swatch would arrive scaled and glowing. Winning on specificity instead
+     leaves that ordering rule untouched. */
+  :global(.map-legend .pin.legend-chip) {
+    width: 15px;
+    height: 11px;
+    min-width: 15px;
+    padding: 0;
+    border-radius: 6px;
+    font-size: 0;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+    z-index: auto;
+  }
+
+  :global(.legend-label) {
+    font: 600 10px var(--font-body);
+    color: var(--ink-soft);
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  @media (max-width: 420px) {
+    /* A phone-width map has no room for both the key and the pins it explains. */
+    :global(.map-legend) {
+      display: none;
+    }
+  }
+
   /* MUST come last. Selected must be unmistakable against every other pin
    * state, and these are all single-specificity class pairs, so source order
-   * decides. Defined before .pin.cluster, a selected cluster kept the white
-   * cluster fill and showed only the ring — a faint halo instead of the full
-   * treatment. A selected cluster now gets exactly what a selected lone pin
+   * decides. Defined before .pin.merged, a selected merged bubble kept the
+   * white merged fill and showed only the ring — a faint halo instead of the
+   * full treatment. A selected merged bubble now gets what a selected lone pin
    * gets. Orange is the selected colour and nothing else uses it as a fill;
    * ink means expensive (tier 3), never selected.
    * scripts/check-map.mjs asserts this rule stays last. */

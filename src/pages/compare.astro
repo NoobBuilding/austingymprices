@@ -1,0 +1,194 @@
+---
+/**
+ * Compare view (CLAUDE.md §4).
+ *
+ * The URL is the only state: /compare?gyms=slug,slug. Astro builds static
+ * output, so the page cannot be rendered per-query — instead every gym's column
+ * is server-rendered here and the client hides the ones the URL does not name.
+ * That is what makes the no-JS state real content rather than a blank page: it
+ * degrades to the full table, which is the same data, unfiltered.
+ *
+ * The ethic is the FAQ's: **present the math, never score it.** No winner is
+ * highlighted, no total is ranked, no "best value" is asserted. Where a gym has
+ * no confirmed price its whole column says so, rather than showing a grid of
+ * blanks that reads like zeros.
+ */
+import Base from '../layouts/Base.astro';
+import { getAllGyms, getRegion } from '../lib/gyms.js';
+import { AMENITY_FAMILIES, MAX_COMPARE, amenityState, priceRows } from '../lib/compare.js';
+
+const gyms = getAllGyms();
+const money = (n) => `$${Number.isInteger(n) ? n : Number(n).toFixed(2)}`;
+const rows = priceRows(money);
+---
+
+<Base
+  title="Compare gym prices — Austin Gym Prices"
+  description="Put Austin gyms side by side: all-in monthly cost, fees, commitment and first-year total."
+  noindex
+>
+  <main class="wrap">
+    <nav class="crumb"><a href="/">← All Austin gyms</a></nav>
+    <h1 id="compare-title">Compare gyms</h1>
+    <p class="lede" id="compare-lede">
+      Every figure below is the gym's own published number. Nothing here is
+      ranked or recommended — the point is to put the maths next to each other
+      and let you read it.
+    </p>
+
+    {/* Shown only when JS is off or the URL names nothing valid: the table
+        below is then the whole list rather than a comparison. */}
+    <p class="fallback" id="compare-fallback">
+      Showing every gym. Pick 2–{MAX_COMPARE} on the
+      <a href="/">main list</a> to compare them side by side.
+    </p>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th scope="row" class="rowhead">Gym</th>
+            {gyms.map((g) => (
+              <th scope="col" class="gymhead" data-slug={g.slug}>
+                <a href={g.url}>{g.name}</a>
+                <span class="where">{getRegion(g.region)?.name ?? ''}</span>
+                {g.promo && <span class="promo">Promo: {g.promo.note ?? 'limited offer'}</span>}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr data-row={row.key} class={row.headline ? 'headline' : ''}>
+              <th scope="row" class="rowhead">{row.label}</th>
+              {gyms.map((g) => {
+                const value = row.value(g);
+                return (
+                  <td data-slug={g.slug}>
+                    {!g.has_price && row.key === 'all_in' && (
+                      <span class="callfor">Call for pricing</span>
+                    )}
+                    {/* null renders NOTHING — never 0, never "N/A" (§3). */}
+                    {g.has_price && value !== null && <span class="v">{value}</span>}
+                    {!g.has_price && row.key !== 'all_in' && value !== null && (
+                      <span class="v">{value}</span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+
+          {AMENITY_FAMILIES.map(([label, keywords]) => (
+            <tr data-row={`amenity:${label}`} class="amenity">
+              <th scope="row" class="rowhead">{label}</th>
+              {gyms.map((g) => {
+                const state = amenityState(g, keywords);
+                return (
+                  <td data-slug={g.slug} data-state={state}>
+                    {state === 'yes' && <span class="yes" aria-label="Listed">✓</span>}
+                    {state === 'no' && <span class="no" aria-label="Not listed">—</span>}
+                    {state === 'unknown' && <span class="unk" aria-label="Not recorded"></span>}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="foot">
+      A <b>✓</b> means the gym lists it on its own site and <b>—</b> means it
+      does not. A blank means we have no amenity list for that gym at all — not
+      that it lacks the facility. Prices are the gym's published figures on the
+      date shown; fees and commitments come from the same page.
+      <a href="/faq">How we source this</a>.
+    </p>
+  </main>
+</Base>
+
+<style>
+  .wrap { max-width: var(--wrap-split); margin: 0 auto; padding: 34px 24px 80px; }
+  .crumb { font-size: .82rem; margin-bottom: 16px; }
+  .crumb a { color: var(--orange-dark); }
+  h1 { font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; text-transform: uppercase; letter-spacing: .02em; }
+  .lede { font-size: .95rem; color: var(--ink-soft); margin: 8px 0 18px; max-width: 62ch; }
+  .fallback { font-size: .86rem; color: var(--ink-soft); background: var(--surface-sunk); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 14px; margin-bottom: 18px; }
+  .fallback a { color: var(--orange-dark); }
+
+  /* Wide tables scroll inside their own box; the page never scrolls sideways. */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); }
+  .cmp { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  .cmp th, .cmp td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .rowhead { position: sticky; left: 0; background: var(--bg); font-weight: 600; color: var(--ink-soft); white-space: nowrap; font-size: .8rem; }
+  .gymhead { min-width: 168px; }
+  .gymhead a { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: .02em; color: var(--ink); display: block; }
+  .where { display: block; font-size: .72rem; color: var(--ink-soft); font-weight: 500; }
+  .promo { display: inline-block; margin-top: 5px; font-size: .68rem; font-weight: 700; background: var(--orange-tint); color: var(--orange-dark); border-radius: 5px; padding: 2px 6px; }
+  /* Headline rows are BIGGER, not better — size marks importance, never a
+     winner. Nothing on this page ranks a column (§4). */
+  .headline .v { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; }
+  tr[data-row="all_in"] .v { color: var(--ink); }
+  .callfor { color: var(--ink-soft); font-style: italic; font-size: .84rem; }
+  .amenity td { text-align: center; }
+  .amenity .rowhead { font-weight: 500; }
+  .yes { color: var(--green); font-weight: 700; }
+  .no { color: var(--ink-faint); }
+  .foot { font-size: .78rem; color: var(--ink-soft); margin-top: 16px; max-width: 72ch; line-height: 1.6; }
+  .foot a { color: var(--orange-dark); }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 24px 16px 60px; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+
+<script>
+  // The URL is the only state. Read it, keep the named columns, drop the rest.
+  // With JS off none of this runs and the full table stands, which is why the
+  // page is server-rendered with every gym rather than an empty shell.
+  import { MAX_COMPARE, parseCompareParam } from '../lib/compare.js';
+
+  try {
+    const table = document.querySelector('.cmp');
+    if (table) {
+      const known = new Set(
+        [...table.querySelectorAll('th.gymhead')].map((th) => th.dataset.slug),
+      );
+      const wanted = parseCompareParam(
+        new URLSearchParams(window.location.search).get('gyms'),
+        known,
+      );
+
+      if (wanted.length > 0) {
+        const keep = new Set(wanted);
+        for (const cell of table.querySelectorAll('[data-slug]')) {
+          cell.hidden = !keep.has(cell.dataset.slug);
+        }
+
+        // An amenity row nobody in this comparison lists is noise, so it goes.
+        // With JS off every row shows, which is correct for the full table.
+        for (const row of table.querySelectorAll('tr.amenity')) {
+          const states = wanted.map(
+            (s) => row.querySelector(`td[data-slug="${CSS.escape(s)}"]`)?.dataset.state,
+          );
+          row.hidden = !states.includes('yes');
+        }
+
+        const names = wanted.map(
+          (s) => table.querySelector(`th.gymhead[data-slug="${CSS.escape(s)}"] a`)?.textContent,
+        );
+        const title = document.getElementById('compare-title');
+        if (title) title.textContent = `Compare ${names.filter(Boolean).join(' vs ')}`;
+        document.title = `${names.filter(Boolean).join(' vs ')} — Austin Gym Prices`;
+        const fallback = document.getElementById('compare-fallback');
+        if (fallback) fallback.hidden = true;
+      }
+      document.documentElement.dataset.compareReady = String(MAX_COMPARE);
+    }
+  } catch (err) {
+    // A broken filter must never take the table down with it.
+    console.error('[austingymprices] compare filter failed; full table still usable', err);
+  }
+</script>

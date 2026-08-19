@@ -8,9 +8,12 @@ interface Props {
   canonicalPath?: string;
   /** OG card basename in /og, without extension. Defaults to the site card. */
   ogImage?: string;
+  /** Keep the page out of the index. Used by /compare, whose useful URLs are
+   *  query strings with a combinatorial number of values and no search value. */
+  noindex?: boolean;
 }
 
-const { title, description, canonicalPath, ogImage } = Astro.props;
+const { title, description, canonicalPath, ogImage, noindex } = Astro.props;
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
 const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
 ---
@@ -23,6 +26,7 @@ const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
 
     {/* SVG first for browsers that take it (sharp at any size, one file);
         favicon.ico is the fallback and is deliberately NOT declared with a

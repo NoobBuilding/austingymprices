@@ -73,7 +73,7 @@ check(
 );
 
 console.log('\nPin styling');
-for (const cls of ['.pin', '.pin.tier-1', '.pin.tier-3', '.pin.callfor', '.pin.cluster', '.pin.dim', '.pin.nopass', '.pin.active']) {
+for (const cls of ['.pin', '.pin.tier-1', '.pin.tier-3', '.pin.callfor', '.pin.merged', '.pin.fanned', '.pin.dim', '.pin.nopass', '.pin.active']) {
   const escaped = cls.replace(/\./g, '\\.');
   check(new RegExp(escaped.replace(/\\\./g, '\\.')).test(css), `${cls} style is present`);
 }
@@ -90,35 +90,107 @@ check(
   'Leaflet CSS is attached from our own origin at runtime',
 );
 
-// ── Clustering maths (pure, no DOM needed) ───────────────────────────────
-console.log('\nClustering');
-const { clusterPoints, clusterLabel, pinClasses, countActive, activeBubble } = await import('../src/lib/cluster.js');
+// ── Placement maths (pure, no DOM needed) ────────────────────────────────
+// 41 gyms is not NYC: every pin shows its own price at every zoom. Crowding is
+// solved by nudging bubbles apart; only effectively co-located pins merge.
+console.log('\nPlacement — nudge, do not merge');
+const {
+  mergeCoLocated, mergedLabel, groupKey, nudgeApart, fanOffsets,
+  pinClasses, countActive, activeBubble,
+} = await import('../src/lib/cluster.js');
 const mk = (slug, x, y, price) => ({ pin: { slug, tier: 2 }, price, point: { x, y } });
 
-const far = clusterPoints([mk('a', 0, 0, 10), mk('b', 500, 500, 99)], 44);
-check(far.length === 2, 'distant pins stay separate', `${far.length} groups`);
+const MERGE_PX = 8;
+const crowded = mergeCoLocated([mk('a', 0, 0, 15), mk('b', 25, 4, 259)], MERGE_PX);
+check(crowded.length === 2, 'pins 25px apart do NOT merge — they crowd, they are not co-located', `${crowded.length} groups`);
 
-const near = clusterPoints([mk('a', 0, 0, 15), mk('b', 10, 10, 259), mk('c', 5, 5, 40)], 44);
-check(near.length === 1, 'nearby pins merge into one group', `${near.length} groups`);
-const prices = near[0].members.map((m) => m.price);
-check(
-  Math.min(...prices) === 15 && Math.max(...prices) === 259,
-  'cluster spans the price RANGE of its members, not a count',
-  `$${Math.min(...prices)}–${Math.max(...prices)}`,
-);
-check(
-  near[0].members.some((m) => m.pin.slug === 'b'),
-  'a selected gym inside a cluster is findable, so the cluster can wear the active state',
-);
+const spread = mergeCoLocated([mk('a', 0, 0, 10), mk('b', 500, 500, 99)], MERGE_PX);
+check(spread.length === 2, 'distant pins stay separate', `${spread.length} groups`);
+
+const stacked = mergeCoLocated([mk('a', 0, 0, 38), mk('b', 3, 2, 55), mk('c', 1, 1, 120)], MERGE_PX);
+check(stacked.length === 1, 'effectively co-located pins DO merge', `${stacked.length} group`);
+check(stacked[0].members.length === 3, 'the merged group holds all three', `${stacked[0].members.length}`);
+
 const fmt = (n) => `$${n}`;
+const label = mergedLabel(stacked[0].members, fmt);
+check(label === '$38 +1'.replace('+1', '+2'), 'merged label is CHEAPEST price + how many more', label);
+check(!/–|—/.test(label), 'merged label is never a price RANGE (ranges are gone)', label);
+check(/^\$\d/.test(label), 'merged label leads with a price, never a bare count', label);
+check(!/\b\d+\s*(gyms?|pins?)\b/i.test(label), 'merged label is not a count of gyms');
 check(
-  clusterLabel(near[0].members, fmt) === '$15–259',
-  'cluster label is the price range',
-  clusterLabel(near[0].members, fmt),
+  mergedLabel(mergeCoLocated([mk('a', 0, 0, 38), mk('b', 2, 2, 55)], MERGE_PX)[0].members, fmt) === '$38 +1',
+  'two stacked gyms read "$38 +1"',
 );
 check(
-  !/\b\d+\s*(gyms?|pins?)\b/i.test(clusterLabel(near[0].members, fmt)),
-  'cluster label is never a count',
+  mergedLabel([mk('a', 0, 0, 41)], fmt) === '$41',
+  'a group of one is just its price, with no "+0"',
+);
+
+check(
+  groupKey(stacked[0]) === 'a|b|c',
+  'a merged group has a stable slug-keyed identity, so an expansion survives a re-render',
+  groupKey(stacked[0]),
+);
+check(
+  groupKey({ members: [mk('c', 0, 0, 1), mk('a', 0, 0, 2)] }) === groupKey({ members: [mk('a', 0, 0, 2), mk('c', 0, 0, 1)] }),
+  'the key does not depend on member order',
+);
+
+console.log('\nNudging — readable without lying about location');
+const overlapping = [
+  { x: 100, y: 100, w: 60, h: 26 },
+  { x: 110, y: 104, w: 60, h: 26 },
+];
+const shifts = nudgeApart(overlapping, { padding: 3, maxShift: 18 });
+const sep = (a, b, sa, sb) => ({
+  dx: Math.abs(b.x + sb.dx - (a.x + sa.dx)),
+  dy: Math.abs(b.y + sb.dy - (a.y + sa.dy)),
+});
+const after = sep(overlapping[0], overlapping[1], shifts[0], shifts[1]);
+check(
+  after.dx >= (60 + 60) / 2 + 3 - 0.01 || after.dy >= 26 + 3 - 0.01,
+  'two overlapping bubbles end up clear of each other',
+  `dx=${after.dx.toFixed(1)} dy=${after.dy.toFixed(1)}`,
+);
+check(
+  after.dy > Math.abs(overlapping[1].y - overlapping[0].y),
+  'wide short bubbles separate VERTICALLY — the cheaper axis',
+  `dy ${Math.abs(overlapping[1].y - overlapping[0].y)} -> ${after.dy.toFixed(1)}`,
+);
+check(
+  shifts.every((s) => Math.hypot(s.dx, s.dy) <= 18 * Math.SQRT2 + 0.01),
+  'no bubble is displaced past the cap — a pin that wanders is lying about location',
+  shifts.map((s) => `${s.dx.toFixed(1)},${s.dy.toFixed(1)}`).join(' | '),
+);
+check(
+  nudgeApart([{ x: 0, y: 0, w: 40, h: 26 }, { x: 400, y: 400, w: 40, h: 26 }], {})
+    .every((s) => s.dx === 0 && s.dy === 0),
+  'bubbles that do not overlap are not moved at all',
+);
+const coincident = nudgeApart([{ x: 5, y: 5, w: 40, h: 26 }, { x: 5, y: 5, w: 40, h: 26 }], {});
+check(
+  coincident[0].dy !== coincident[1].dy || coincident[0].dx !== coincident[1].dx,
+  'exactly coincident boxes still get pushed apart deterministically',
+  JSON.stringify(coincident),
+);
+check(
+  JSON.stringify(nudgeApart(overlapping, { padding: 3, maxShift: 18 })) === JSON.stringify(shifts),
+  'nudging is deterministic — same boxes in, same offsets out',
+);
+
+const fan = fanOffsets(3, 30);
+check(fan.length === 3, 'a fan produces one offset per member');
+check(
+  fan.every((f) => Math.abs(Math.hypot(f.dx, f.dy) - 30) < 0.01),
+  'every fanned member sits at the fan radius',
+);
+check(
+  new Set(fan.map((f) => `${f.dx.toFixed(2)},${f.dy.toFixed(2)}`)).size === 3,
+  'fanned members do not land on top of each other',
+);
+check(
+  fanOffsets(1, 30)[0].dx === 0 && fanOffsets(1, 30)[0].dy === 0,
+  'a single member is not fanned anywhere',
 );
 
 console.log('\nSelected state is unmistakable against every tier');
@@ -171,24 +243,24 @@ check(/scale/.test(activeRule), 'selected adds a scale bump so it reads in a den
 // the winner. .pin.active sitting before .pin.cluster meant a selected cluster
 // kept the white cluster fill and showed only the ring.
 const idxActive = css.indexOf('.pin.active{');
-const idxCluster = css.indexOf('.pin.cluster{');
+const idxMerged = css.indexOf('.pin.merged{');
 const idxTier3 = css.indexOf('.pin.tier-3{');
 const idxCall = css.indexOf('.pin.callfor{');
 check(
-  idxActive > idxCluster && idxActive > idxTier3 && idxActive > idxCall,
+  idxActive > idxMerged && idxActive > idxTier3 && idxActive > idxCall,
   '.pin.active is declared AFTER every other pin state, so selected always wins',
-  `active=${idxActive} cluster=${idxCluster} tier3=${idxTier3} callfor=${idxCall}`,
+  `active=${idxActive} merged=${idxMerged} tier3=${idxTier3} callfor=${idxCall}`,
 );
 check(
-  bg(cssRule('.pin.cluster')) !== bg(activeRule),
-  'a selected cluster does not keep the plain cluster fill',
-  `cluster=${bg(cssRule('.pin.cluster'))} active=${bg(activeRule)}`,
+  bg(cssRule('.pin.merged')) !== bg(activeRule),
+  'a selected merged bubble does not keep the plain merged fill',
+  `merged=${bg(cssRule('.pin.merged'))} active=${bg(activeRule)}`,
 );
 
 console.log('\nAt most one bubble is ever selected');
-const groups2 = clusterPoints([mk('a', 0, 0, 15), mk('b', 10, 10, 259)], 44);
+const groups2 = mergeCoLocated([mk('a', 0, 0, 15), mk('b', 3, 3, 259)], MERGE_PX);
 const alone = [mk('c', 900, 900, 40)];
-check(countActive(groups2, alone, 'b') === 1, 'a gym inside a cluster marks exactly one bubble');
+check(countActive(groups2, alone, 'b') === 1, 'a gym inside a merged bubble marks exactly one bubble');
 check(countActive(groups2, alone, 'c') === 1, 'a lone gym marks exactly one bubble');
 check(countActive(groups2, alone, null) === 0, 'no selection marks nothing');
 check(countActive(groups2, alone, 'nonexistent') === 0, 'an unknown slug marks nothing');
@@ -216,9 +288,9 @@ check(
   `list=${listOrder[0]} map=${mapOrder[0].pin.slug}`,
 );
 
-const spread = clusterPoints(mapOrder, 44);
+const mapGroups = mergeCoLocated(mapOrder, MERGE_PX);
 const lone = [];
-const chosen = activeBubble(spread, mapOrder, 'crunch-south-austin');
+const chosen = activeBubble(mapGroups, mapOrder, 'crunch-south-austin');
 check(chosen !== null, 'selecting a gym resolves to a bubble');
 check(
   chosen.slugs.includes('crunch-south-austin'),
@@ -229,17 +301,15 @@ check(
   !chosen.slugs.includes('east-austin-athletic-club'),
   'the dark tier-3 gym at the front of map order is NOT marked active',
 );
-check(countActive(spread, lone, 'crunch-south-austin') === 1, 'exactly one bubble is active');
+check(countActive(mapGroups, lone, 'crunch-south-austin') === 1, 'exactly one bubble is active');
 
 // And when it IS clustered, the cluster holding it is the one that lights up.
-const tight = clusterPoints(
-  [mk('a', 0, 0, 38), mk('crunch-south-austin', 8, 8, 23)], 44,
-);
-const clustered = activeBubble(tight, [], 'crunch-south-austin');
-check(clustered?.kind === 'cluster', 'a clustered selection resolves to its cluster');
+const tight = mergeCoLocated([mk('a', 0, 0, 38), mk('crunch-south-austin', 3, 3, 23)], MERGE_PX);
+const stackedSel = activeBubble(tight, [], 'crunch-south-austin');
+check(stackedSel?.kind === 'merged', 'a stacked selection resolves to its merged bubble');
 check(
-  clustered.slugs.includes('crunch-south-austin'),
-  'the cluster that lights up is the one containing the selected gym',
+  stackedSel.slugs.includes('crunch-south-austin'),
+  'the merged bubble that lights up is the one containing the selected gym',
 );
 
 console.log('\nSelecting from the list brings the pin into view');
@@ -251,7 +321,7 @@ check(/getBounds\(\)\.pad\(/.test(islandSrc),
 check(/selfInitiated/.test(islandSrc),
   'a pin click does not pan — the user is already looking at it');
 check(/setView\(latlng, Math\.min\(map\.getZoom\(\) \+ 2/.test(islandSrc),
-  'zoom changes only to resolve a cluster');
+  'zoom changes only to split a merged bubble');
 
 // ── Selection is one piece of state, rendered by both views ──────────────
 console.log('\nPin <-> card selection sync');
@@ -260,8 +330,8 @@ const mainSrc = readFileSync(join('dist', mainScript.replace(/^\//, '')), 'utf8'
 
 check(!/activeSlug/.test(mapSrc), 'the map keeps no private copy of the selection');
 check(
-  /holdsSelection|cluster active/.test(readFileSync('src/lib/map-island.js', 'utf8')),
-  'a cluster containing the selected gym wears the active state',
+  /holdsSelection/.test(readFileSync('src/lib/map-island.js', 'utf8')),
+  'a merged bubble containing the selected gym wears the active state',
 );
 check(
   /gym:select/.test(mapSrc) && /gym:select/.test(mainSrc),
@@ -371,94 +441,189 @@ check(
 // helpers, which render() does not call.
 console.log('\nreal render() — pin classes as actually emitted');
 const { JSDOM } = await import('jsdom');
-const dom = new JSDOM('<!doctype html><html><body><div id="map"></div></body></html>', {
-  pretendToBeVisual: true,
-  url: 'https://austingymprices.pages.dev/',
-});
-const { window: win } = dom;
-Object.defineProperty(win.HTMLElement.prototype, 'clientWidth', { get: () => 800, configurable: true });
-Object.defineProperty(win.HTMLElement.prototype, 'clientHeight', { get: () => 700, configurable: true });
-win.HTMLElement.prototype.getBoundingClientRect = () => ({
-  x: 0, y: 0, width: 800, height: 700, top: 0, left: 0, right: 800, bottom: 700, toJSON() {},
-});
-for (const k of ['window', 'document', 'HTMLElement', 'Element', 'Node', 'SVGElement',
-  'CustomEvent', 'Event', 'requestAnimationFrame', 'cancelAnimationFrame',
-  'getComputedStyle', 'DOMParser', 'location', 'navigator']) {
-  Object.defineProperty(globalThis, k, { value: win[k], writable: true, configurable: true });
-}
-Object.defineProperty(globalThis, 'window', { value: win, writable: true, configurable: true });
 
+function bootMap(payload) {
+  const dom = new JSDOM('<!doctype html><html><body><div id="map"></div></body></html>', {
+    pretendToBeVisual: true,
+    url: 'https://austingymprices.pages.dev/',
+  });
+  const { window: w } = dom;
+  Object.defineProperty(w.HTMLElement.prototype, 'clientWidth', { get: () => 800, configurable: true });
+  Object.defineProperty(w.HTMLElement.prototype, 'clientHeight', { get: () => 700, configurable: true });
+  w.HTMLElement.prototype.getBoundingClientRect = () => ({
+    x: 0, y: 0, width: 800, height: 700, top: 0, left: 0, right: 800, bottom: 700, toJSON() {},
+  });
+  for (const k of ['window', 'document', 'HTMLElement', 'Element', 'Node', 'SVGElement',
+    'CustomEvent', 'Event', 'requestAnimationFrame', 'cancelAnimationFrame',
+    'getComputedStyle', 'DOMParser', 'location', 'navigator']) {
+    Object.defineProperty(globalThis, k, { value: w[k], writable: true, configurable: true });
+  }
+  Object.defineProperty(globalThis, 'window', { value: w, writable: true, configurable: true });
+  return { window: w, payload };
+}
+
+const { window: win } = bootMap(pins);
 const { initMap } = await import('../src/lib/map-island.js');
 const mapState = { visible: new Set(pins.map((p) => p.slug)), mode: 'membership', selected: null };
 const api = initMap(win.document.getElementById('map'), pins, () => mapState);
 
+// Pins live in the marker pane. The LEGEND deliberately reuses the real pin
+// classes for its swatches so a key entry can never drift from the thing it
+// describes — which means a bare `span.pin` query would count the key as pins.
+const PIN_SEL = '.leaflet-marker-pane span.pin';
 const bubbles = () =>
-  [...win.document.querySelectorAll('span.pin')].map((el) => ({
+  [...win.document.querySelectorAll(PIN_SEL)].map((el) => ({
     label: el.textContent || el.getAttribute('aria-label') || '',
     cls: el.className,
     active: el.classList.contains('active'),
-    cluster: el.classList.contains('cluster'),
+    merged: el.classList.contains('merged'),
     dot: el.classList.contains('dot'),
   }));
 
 check(bubbles().length > 0, 'render() emits pins', `${bubbles().length} bubbles`);
+check(
+  win.document.querySelectorAll('.map-legend .pin').length > 0 &&
+    ![...win.document.querySelectorAll(PIN_SEL)].some((el) => el.closest('.map-legend')),
+  'legend swatches reuse pin classes but are NOT counted as pins',
+);
 check(bubbles().every((b) => !b.active), 'nothing is active when nothing is selected');
 check(api.getDisplay() === 'prices', 'prices is the DEFAULT display mode', api.getDisplay());
 
-// Pick a gym that genuinely shares a cluster at the default zoom, from the real
-// data — no fixture. This is the pair behind the report ($23 Crunch merged with
-// $259 Life Time South).
-const realCluster = bubbles().find((b) => b.cluster && b.label.includes('–'));
-check(Boolean(realCluster), 'the real payload produces a cluster at the default zoom', realCluster?.label);
-const clusterLow = Number((realCluster?.label.match(/\$(\d+)/) || [])[1]);
-const inCluster = pins.find((p) => p.allIn === clusterLow);
-check(Boolean(inCluster), 'a real gym sits inside that cluster', inCluster?.slug);
-
-// Selecting from the list: render() runs, then revealSelection zooms to break
-// the cluster open, exactly as it does in the browser.
-mapState.selected = inCluster.slug;
-win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
-const afterSelect = bubbles();
+// THE POINT OF THE REDESIGN: 41 gyms is not NYC. Nothing merges in the real
+// data, at any zoom, so every gym shows its own price.
 check(
-  afterSelect.filter((b) => b.active).length === 1,
-  'selecting from the list marks exactly one bubble active',
-  `${afterSelect.filter((b) => b.active).length}`,
+  bubbles().every((b) => !b.merged),
+  'the real payload merges NOTHING at the default zoom — every pin shows its own price',
+  bubbles().filter((b) => b.merged).map((b) => b.label).join(', ') || 'no merged bubbles',
 );
-check(
-  afterSelect.find((b) => b.active)?.label === `$${inCluster.allIn}`,
-  'the active bubble is the SELECTED gym',
-  afterSelect.find((b) => b.active)?.label,
-);
-check(api.map.getZoom() > 12, 'a clustered selection zooms just enough to resolve it', `zoom ${api.map.getZoom()}`);
-
-// Now zoom back out so the selection is inside a cluster again. This is the
-// state in the report: cluster drawn, selection held inside it.
+for (const z of [11, 12, 14, 16]) {
+  api.map.setZoom(z);
+  api.render();
+  check(
+    bubbles().every((b) => !b.merged),
+    `no merged bubbles at zoom ${z}`,
+    bubbles().filter((b) => b.merged).map((b) => b.label).join(', ') || 'none',
+  );
+}
 api.map.setZoom(12);
 api.render();
-const held = bubbles().find((b) => b.cluster && b.label.includes('–') && b.label.startsWith(`$${inCluster.allIn}`));
-check(Boolean(held), 'zooming back out re-merges the selected gym into a cluster', held?.label);
 check(
-  held?.active === true,
-  'a cluster HOLDING the selection wears .active (the reported bug)',
-  held?.cls,
-);
-check(
-  bubbles().filter((b) => b.active).length === 1,
-  'still exactly one active bubble once merged',
+  bubbles().filter((b) => b.label !== 'Call').every((b) => /^\$[\d.]+$/.test(b.label)),
+  'every priced bubble shows a plain price — no ranges, no "+N"',
+  bubbles().find((b) => b.label !== 'Call' && !/^\$[\d.]+$/.test(b.label))?.label ?? 'all plain',
 );
 
-// The lifecycle regression, end to end through the real render: the selection
-// must survive a different card being closed.
+// Selecting from the list.
+const target = pins.find((p) => p.allIn !== null);
+mapState.selected = target.slug;
+win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+check(
+  bubbles().filter((b) => b.active).length === 1,
+  'selecting from the list marks exactly one bubble active',
+  `${bubbles().filter((b) => b.active).length}`,
+);
+check(
+  bubbles().find((b) => b.active)?.label === `$${target.allIn}`,
+  'the active bubble is the SELECTED gym',
+  bubbles().find((b) => b.active)?.label,
+);
+
+// The accordion regression, end to end through the real render.
 mapState.selected = nextSelection({
   slug: 'some-other-gym',
   open: false,
-  current: inCluster.slug,
+  current: target.slug,
 });
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
 check(
   bubbles().filter((b) => b.active).length === 1,
   'the accordion retiring a card does NOT blank the map (the reported repro)',
 );
+
+// ── Merged bubbles, through the real render ──────────────────────────────
+// Nothing in the live data is co-located, so this uses a payload that is: two
+// gyms at effectively the same address, which is the only case that may merge.
+console.log('\nMerged bubbles — co-located gyms only');
+const coLocated = [
+  { slug: 'plaza-a', name: 'Plaza A', lat: 30.2711, lng: -97.7437, allIn: 38, dayPass: 10, tier: 1 },
+  { slug: 'plaza-b', name: 'Plaza B', lat: 30.27111, lng: -97.74371, allIn: 55, dayPass: 12, tier: 2 },
+  { slug: 'far-away', name: 'Far Away', lat: 30.35, lng: -97.80, allIn: 120, dayPass: null, tier: 3 },
+];
+const { window: win2 } = bootMap(coLocated);
+const state2 = { visible: new Set(coLocated.map((p) => p.slug)), mode: 'membership', selected: null };
+const api2 = initMap(win2.document.getElementById('map'), coLocated, () => state2);
+const bub2 = () =>
+  [...win2.document.querySelectorAll(PIN_SEL)].map((el) => ({
+    label: el.textContent || el.getAttribute('aria-label') || '',
+    cls: el.className,
+    active: el.classList.contains('active'),
+    merged: el.classList.contains('merged'),
+    fanned: el.classList.contains('fanned'),
+    el,
+  }));
+
+const mergedBubble = bub2().find((b) => b.merged);
+check(Boolean(mergedBubble), 'two co-located gyms merge into one bubble', mergedBubble?.label);
+check(mergedBubble?.label === '$38 +1', 'the merged bubble reads cheapest + count', mergedBubble?.label);
+check(bub2().length === 2, 'the far-away gym is untouched', `${bub2().length} bubbles`);
+
+// A merged bubble holding the selection goes orange, and stays merged.
+state2.selected = 'plaza-b';
+win2.document.dispatchEvent(new win2.CustomEvent('filters:changed', { detail: {} }));
+const afterSel = bub2().find((b) => b.merged);
+check(
+  afterSel?.active === true,
+  'a merged bubble CONTAINING the selection wears .active',
+  afterSel?.cls,
+);
+check(
+  bub2().filter((b) => b.active).length === 1,
+  'still exactly one active bubble',
+);
+
+// Clicking expands it into its members.
+state2.selected = null;
+api2.map.setZoom(12);
+api2.render();
+bub2().find((b) => b.merged).el.parentElement.click();
+const fanned = bub2();
+check(
+  fanned.filter((b) => b.fanned).length === 2,
+  'clicking a merged bubble fans it open into its members',
+  fanned.map((b) => b.label).join(', '),
+);
+check(
+  fanned.some((b) => b.label === '$38') && fanned.some((b) => b.label === '$55'),
+  'each fanned member shows its own price',
+  fanned.map((b) => b.label).join(', '),
+);
+check(!fanned.some((b) => b.merged), 'the merged bubble is gone while expanded');
+
+// Clicking a fanned member selects it and KEEPS the fan open — you are
+// comparing two gyms at one address, and collapsing mid-comparison is hostile.
+state2.selected = 'plaza-b';
+win2.document.dispatchEvent(new win2.CustomEvent('filters:changed', { detail: {} }));
+check(
+  bub2().filter((b) => b.fanned).length === 2,
+  'selecting a fanned member keeps the fan open',
+);
+check(
+  bub2().filter((b) => b.active).length === 1 &&
+    bub2().find((b) => b.active)?.label === '$55',
+  'the selected fanned member is the one that goes orange',
+  bub2().find((b) => b.active)?.label,
+);
+
+// Clicking the map background puts it away — otherwise the only exit is
+// zooming until the group splits, which nobody would think to try.
+api2.map.fire('click');
+check(
+  bub2().some((b) => b.merged) && !bub2().some((b) => b.fanned),
+  'clicking the map background collapses the fan',
+  bub2().map((b) => b.label).join(', '),
+);
+state2.selected = null;
+win2.document.dispatchEvent(new win2.CustomEvent('filters:changed', { detail: {} }));
 
 // ── Display modes ────────────────────────────────────────────────────────
 console.log('\nMap display modes');
@@ -477,10 +642,27 @@ check(
   dots.filter((b) => b.active).length === 1 && dots.find((b) => b.active)?.dot === true,
   'selection survives the display switch and is still the one active pin',
 );
+// Dots mode changes what a bubble prints, never which bubbles exist — so the
+// real payload merges nothing here either, and a co-located pair still merges.
 check(
-  dots.some((b) => b.cluster),
-  'clusters still exist in dots mode',
+  dots.every((b) => !b.merged),
+  'dots mode merges nothing in the real payload, same as prices mode',
 );
+api2.setDisplay('dots');
+const mergedDot = [...win2.document.querySelectorAll(PIN_SEL)].find((el) =>
+  el.classList.contains('merged'),
+);
+check(
+  Boolean(mergedDot) && mergedDot.classList.contains('dot'),
+  'a co-located pair still merges in dots mode, as a merged dot',
+  mergedDot?.className,
+);
+check(
+  mergedDot?.getAttribute('aria-label') === '$38 +1',
+  'the merged dot keeps "cheapest + count" as its accessible name',
+  mergedDot?.getAttribute('aria-label'),
+);
+api2.setDisplay('prices');
 api.setDisplay('prices');
 check(
   [...win.document.querySelectorAll('span.pin')].some((el) => /^\$/.test(el.textContent)),

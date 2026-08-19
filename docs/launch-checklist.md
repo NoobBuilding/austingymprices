@@ -37,14 +37,25 @@ All of these run in CI on every push. Green is required, not advisory.
 
 ## Gate 3 — secrets and automation
 
-- [ ] `FIRECRAWL_API_KEY` in repo secrets (Settings → Secrets and variables →
+- [x] `FIRECRAWL_API_KEY` in repo secrets (Settings → Secrets and variables →
       Actions). Without it the scrape workflow fails at the fetch step.
-- [ ] `SENTRY_DSN` in repo secrets. Optional — the scrapers degrade to
+- [x] `SENTRY_DSN` in repo secrets. Optional — the scrapers degrade to
       quiet-but-working without it — but §8 wants it.
-- [ ] Scrape workflow dry-run succeeds: Actions → Scrape prices → Run workflow
-      → `dry_run: true`. Do this **before** the first real run.
+- [x] Scrape workflow dry-run succeeds: Actions → Scrape prices → Run workflow
+      → `dry_run: true`. Weekly dry-run green, cron armed.
 - [ ] First real scrape opens a PR, and the diff looks right. No bot can merge
       it; that is deliberate.
+- [ ] **Remove the ruleset bypass on `main` — AT LAUNCH, not before.**
+      `main protection` is active (deletion, non-fast-forward, PR, and the
+      `Lint, validate, build` + `Scraper audit` checks) but carries a
+      `RepositoryRole` bypass with mode `always`, which is why direct pushes
+      still land. That bypass is deliberate while the site is being built in
+      batches and is the reason §8's "branch protection from day 1" is only
+      half true today. At launch, drop the bypass so the required checks
+      actually gate `main`:
+      `gh api -X PUT repos/NoobBuilding/austingymprices/rulesets/<id> -f bypass_actors='[]'`
+      (or Settings → Rules → main protection → remove the bypass actor).
+      Verify by attempting a direct push and watching it be refused.
 
 ## Gate 4 — the domain (owner, manual, last)
 

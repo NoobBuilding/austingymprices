@@ -66,8 +66,14 @@ console.log('Punctuation and spacing normalisation');
 expect('golds', ['golds-gym-downtown', 'golds-gym-burnet']);
 expect('golds gym', ['golds-gym-downtown', 'golds-gym-burnet']);
 expect("gold's", ['golds-gym-downtown', 'golds-gym-burnet']);
-expect('solidcore', ['solidcore-austin']);
-expect('[solidcore]', ['solidcore-austin']);
+// Three Austin studios, split per the 24 Hour Fitness precedent, so a brand
+// search must return all of them rather than one arbitrary location.
+expect('solidcore', [
+  'solidcore-domain-northside', 'solidcore-downtown', 'solidcore-the-triangle',
+]);
+expect('[solidcore]', [
+  'solidcore-domain-northside', 'solidcore-downtown', 'solidcore-the-triangle',
+]);
 expect('lifetime', ['life-time-downtown', 'life-time-north', 'life-time-south']);
 expect('life time', ['life-time-downtown', 'life-time-north', 'life-time-south']);
 expect('big tex', ['big-tex-gym']);

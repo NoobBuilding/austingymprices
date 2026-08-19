@@ -2,13 +2,19 @@
  * Map island. Imported dynamically so no Leaflet byte is fetched until the
  * map is actually wanted (CLAUDE.md §9 step 4 performance budget).
  *
- * Clustering is hand-rolled rather than pulled from a plugin, for two reasons:
- * the spec wants clustering to stay minimal so individual pins survive to a
- * fairly wide zoom, and the cluster label must be the PRICE RANGE of its
- * members rather than a count — a count tells you nothing you came for.
+ * Placement is hand-rolled rather than pulled from a plugin because the rule is
+ * unusual: with 41 gyms we want almost NO merging. Every pin shows its own
+ * price at every zoom; crowding is solved by nudging bubbles apart, and only
+ * effectively co-located pins collapse into one bubble reading "$38 +1".
  */
 import L from 'leaflet';
-import { clusterLabel, clusterPoints } from './cluster.js';
+import {
+  fanOffsets,
+  groupKey,
+  mergeCoLocated,
+  mergedLabel,
+  nudgeApart,
+} from './cluster.js';
 
 /**
  * Leaflet's stylesheet is attached at runtime rather than imported, because a
@@ -32,9 +38,22 @@ function ensureLeafletCss() {
 const DEFAULT_CENTER = [30.2711, -97.7437];
 const DEFAULT_ZOOM = 12;
 
-// Pins closer together than this many pixels merge. Deliberately small so
-// clustering stays rare.
-const CLUSTER_PX = 44;
+// Pins closer together than this many pixels are treated as the same place —
+// the same plaza, a shared building. Deliberately tiny: anything further apart
+// is a crowding problem, and crowding is solved by nudging, not by hiding a
+// price. With the current data this merges nothing at any zoom, which is the
+// intended outcome rather than an accident.
+const MERGE_PX = 8;
+
+// Crowding. Bubbles are pushed apart along the cheaper axis, and never further
+// than MAX_NUDGE_PX from the gym's true point — past that they are allowed to
+// overlap, because a pin that wanders to stay readable is lying about where the
+// gym is.
+const NUDGE_PAD_PX = 3;
+const MAX_NUDGE_PX = 18;
+
+// How far members fan out when a merged bubble is expanded.
+const FAN_RADIUS_PX = 30;
 
 const money = (n) => `$${Number.isInteger(n) ? n : Number(n).toFixed(2)}`;
 
@@ -88,6 +107,9 @@ export function initMap(container, pins, getState) {
 
   let markers = [];
   let display = readDisplay();
+  // Which merged bubble, if any, is currently fanned open. Keyed by its member
+  // slugs so the expansion survives a re-render and a pan.
+  let expandedKey = null;
   // Which selection we have already brought into view, and whether the
   // current one came from a pin click on this map (in which case the user is
   // already looking at it and panning would be jarring).
@@ -110,7 +132,17 @@ export function initMap(container, pins, getState) {
    * assign via innerHTML. Prices are numbers today, but the rule in §8 exists
    * so that a gym-supplied string can never reach an HTML sink by accident.
    */
-  function bubble(label, className, latlng, onClick) {
+  /** Rendered size of a bubble, needed before it exists so crowding can be
+   *  resolved across the whole set in one pass. */
+  function bubbleSize(label, className) {
+    if (display === 'dots') {
+      const s = className.includes('merged') ? 18 : 14;
+      return { w: s, h: s };
+    }
+    return { w: label.length * 8 + 20, h: 26 };
+  }
+
+  function bubble(label, className, latlng, onClick, offset = { dx: 0, dy: 0 }) {
     const dots = display === 'dots';
     const el = document.createElement('span');
     el.className = dots ? `${className} dot` : className;
@@ -126,14 +158,16 @@ export function initMap(container, pins, getState) {
     }
     else el.textContent = label;
 
-    const size = dots ? (className.includes('cluster') ? 18 : 14) : label.length * 8 + 20;
-    const height = dots ? size : 26;
+    const { w, h } = bubbleSize(label, className);
+    // The MARKER stays at the gym's true coordinates; only the icon's anchor
+    // moves. Nudging is a drawing decision, never a change to where we claim
+    // the gym is.
     const marker = L.marker(latlng, {
       icon: L.divIcon({
         html: el,
         className: '',
-        iconSize: [size, height],
-        iconAnchor: [size / 2, height / 2],
+        iconSize: [w, h],
+        iconAnchor: [w / 2 - offset.dx, h / 2 - offset.dy],
       }),
       keyboard: false,
     });
@@ -161,15 +195,26 @@ export function initMap(container, pins, getState) {
       };
     });
 
-    const clusterable = points.filter((p) => p.shown && !p.noPass && p.price !== null);
-    const standalone = points.filter((p) => !p.shown || p.noPass || p.price === null);
+    const mergeable = points.filter((p) => p.shown && !p.noPass && p.price !== null);
+    const quiet = points.filter((p) => !p.shown || p.noPass || p.price === null);
 
-    const groups = clusterPoints(clusterable, CLUSTER_PX);
+    const groups = mergeCoLocated(mergeable, MERGE_PX);
+
+    // An expansion that no longer matches any group — because zooming split it
+    // apart — is stale and must not keep a phantom fan alive.
+    if (expandedKey && !groups.some((g) => groupKey(g) === expandedKey)) {
+      expandedKey = null;
+    }
+
+    // Describe every bubble first. Nothing is added to the map until crowding
+    // has been resolved across the whole set at once.
+    const placed = [];
 
     for (const group of groups) {
+      const key = groupKey(group);
+
       if (group.members.length === 1) {
-        const { pin, price } = group.members[0];
-        const label = money(price);
+        const { pin, price, point } = group.members[0];
         const cls = [
           'pin',
           `tier-${pin.tier ?? 2}`,
@@ -177,22 +222,52 @@ export function initMap(container, pins, getState) {
         ]
           .filter(Boolean)
           .join(' ');
-        markers.push(bubble(label, cls, [pin.lat, pin.lng], () => select(pin.slug)));
-      } else {
-        const label = clusterLabel(group.members, money);
-        const centre = map.layerPointToLatLng(L.point(group.point.x, group.point.y));
-        const holdsSelection = group.members.some((m) => m.pin.slug === selected);
-        markers.push(
-          bubble(label, `pin cluster${holdsSelection ? ' active' : ''}`, centre, () => {
-            map.setView(centre, Math.min(map.getZoom() + 2, 18));
-          }),
-        );
+        placed.push({
+          label: money(price), cls, latlng: [pin.lat, pin.lng], point,
+          fan: { dx: 0, dy: 0 }, nudge: true, onClick: () => select(pin.slug),
+        });
+        continue;
       }
+
+      if (expandedKey === key) {
+        // Fanned open: each member is its own bubble at its own coordinates,
+        // separated by the fan because they are only pixels apart in reality.
+        const fans = fanOffsets(group.members.length, FAN_RADIUS_PX);
+        group.members.forEach((m, i) => {
+          const cls = [
+            'pin',
+            `tier-${m.pin.tier ?? 2}`,
+            'fanned',
+            selected === m.pin.slug ? 'active' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+          placed.push({
+            label: money(m.price), cls, latlng: [m.pin.lat, m.pin.lng], point: m.point,
+            fan: fans[i], nudge: false, onClick: () => select(m.pin.slug),
+          });
+        });
+        continue;
+      }
+
+      // Merged: the cheapest price plus how many more are underneath it.
+      const holdsSelection = group.members.some((m) => m.pin.slug === selected);
+      placed.push({
+        label: mergedLabel(group.members, money),
+        cls: `pin merged${holdsSelection ? ' active' : ''}`,
+        latlng: map.layerPointToLatLng(L.point(group.point.x, group.point.y)),
+        point: group.point,
+        fan: { dx: 0, dy: 0 },
+        nudge: true,
+        onClick: () => {
+          expandedKey = expandedKey === key ? null : key;
+          render();
+        },
+      });
     }
 
-    for (const p of standalone) {
+    for (const p of quiet) {
       const priced = p.price !== null && p.price !== undefined;
-      const label = priced ? money(p.price) : 'Call';
       const cls = [
         'pin',
         priced ? `tier-${p.pin.tier ?? 2}` : 'callfor',
@@ -202,15 +277,37 @@ export function initMap(container, pins, getState) {
       ]
         .filter(Boolean)
         .join(' ');
-      markers.push(
-        bubble(
-          label,
-          cls,
-          [p.pin.lat, p.pin.lng],
-          p.shown && !p.noPass ? () => select(p.pin.slug) : null,
-        ),
-      );
+      placed.push({
+        label: priced ? money(p.price) : 'Call',
+        cls,
+        latlng: [p.pin.lat, p.pin.lng],
+        point: p.point,
+        fan: { dx: 0, dy: 0 },
+        // Filtered-out and no-pass pins are near-invisible. They neither claim
+        // space nor get to shove a readable pin off its gym.
+        nudge: p.shown && !p.noPass,
+        onClick: p.shown && !p.noPass ? () => select(p.pin.slug) : null,
+      });
     }
+
+    // Crowding, resolved once over everything that is actually visible.
+    const nudgeIndex = placed.map((b, i) => (b.nudge ? i : -1)).filter((i) => i >= 0);
+    const boxes = nudgeIndex.map((i) => {
+      const { w, h } = bubbleSize(placed[i].label, placed[i].cls);
+      return { x: placed[i].point.x + placed[i].fan.dx, y: placed[i].point.y + placed[i].fan.dy, w, h };
+    });
+    const shifts = nudgeApart(boxes, { padding: NUDGE_PAD_PX, maxShift: MAX_NUDGE_PX });
+    const offsetFor = new Map(nudgeIndex.map((i, n) => [i, shifts[n]]));
+
+    placed.forEach((b, i) => {
+      const shift = offsetFor.get(i) ?? { dx: 0, dy: 0 };
+      markers.push(
+        bubble(b.label, b.cls, b.latlng, b.onClick, {
+          dx: b.fan.dx + shift.dx,
+          dy: b.fan.dy + shift.dy,
+        }),
+      );
+    });
 
     for (const m of markers) m.addTo(map);
 
@@ -223,14 +320,14 @@ export function initMap(container, pins, getState) {
    * exactly what happened with Crunch, sitting at 90% of the way to the
    * viewport edge while a dark tier-3 pin held the centre.
    *
-   * Pans only. Zoom changes only when the gym is merged into a cluster and
-   * needs resolving, per the spec.
+   * Pans only. Zoom changes only when the gym is stacked under a merged
+   * bubble and needs splitting out, per the spec.
    */
   function revealSelection(selected, groups) {
     if (!selected) {
       // Selection cleared. Forget what we last revealed, or re-selecting the
       // same gym is treated as "already in view" and never brought back —
-      // including never zooming to resolve the cluster it is hiding inside.
+      // including never zooming to split the stack it is hiding inside.
       lastRevealed = null;
       selfInitiated = false;
       return;
@@ -254,13 +351,15 @@ export function initMap(container, pins, getState) {
     lastRevealed = selected;
 
     const latlng = L.latLng(pin.lat, pin.lng);
-    const cluster = groups.find(
+    const merged = groups.find(
       (g) => g.members.length > 1 && g.members.some((m) => m.pin.slug === selected),
     );
 
-    if (cluster) {
-      // Merged into a cluster: zoom just enough to break it out, centred on
-      // the gym itself rather than the cluster centroid.
+    if (merged) {
+      // Stacked under a merged bubble. Members are within MERGE_PX of each
+      // other, so a single zoom step multiplies that gap fourfold and splits
+      // them — centred on the gym itself, not the stack's midpoint. The merged
+      // bubble wears the selected orange until it does.
       map.setView(latlng, Math.min(map.getZoom() + 2, 17), { animate: true });
       return;
     }
@@ -327,6 +426,50 @@ export function initMap(container, pins, getState) {
     },
   });
   map.addControl(new DisplayControl());
+
+  /**
+   * Legend. Tiny, bottom-right, above the attribution. It exists because the
+   * map encodes three separate meanings in colour — price tier, "no published
+   * price", and "selected" — and an unlabelled colour code is a puzzle rather
+   * than information. Built with DOM APIs, so no inline anything (§8).
+   */
+  const LEGEND = [
+    ['tier-1', 'Under $40'],
+    ['tier-2', '$40–100'],
+    ['tier-3', '$100+'],
+    ['callfor', 'No published price'],
+    ['active', 'Selected'],
+  ];
+
+  const Legend = L.Control.extend({
+    options: { position: 'bottomright' },
+    onAdd() {
+      const wrap = L.DomUtil.create('div', 'map-legend');
+      wrap.setAttribute('role', 'group');
+      wrap.setAttribute('aria-label', 'What the pin colours mean');
+      for (const [cls, label] of LEGEND) {
+        const row = L.DomUtil.create('span', 'legend-row', wrap);
+        const chip = L.DomUtil.create('span', `legend-chip pin ${cls}`, row);
+        chip.setAttribute('aria-hidden', 'true');
+        const text = L.DomUtil.create('span', 'legend-label', row);
+        text.textContent = label;
+      }
+      L.DomEvent.disableClickPropagation(wrap);
+      return wrap;
+    },
+  });
+  map.addControl(new Legend());
+
+  // Clicking the map itself puts a fanned group away. Without this the only
+  // way out of an expansion is zooming until the group splits, which is not an
+  // exit a user would think to look for. Marker clicks do not reach here —
+  // Leaflet stops their propagation — so selecting a fanned member keeps the
+  // fan open, which is what you want while comparing two gyms at one address.
+  map.on('click', () => {
+    if (!expandedKey) return;
+    expandedKey = null;
+    render();
+  });
 
   map.on('zoomend moveend', render);
   document.addEventListener('filters:changed', render);

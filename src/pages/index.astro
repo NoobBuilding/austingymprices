@@ -101,7 +101,7 @@ const description =
         <span id="n">{gyms.length}</span> gyms — tap a gym for the full cost breakdown
       </p>
       <div id="cards">
-        {sorted.map((gym) => <GymCard gym={gym} />)}
+        {sorted.map((gym) => <GymCard gym={gym} compare />)}
       </div>
       <div class="empty" id="empty" hidden>
         <p>No gyms match those filters.</p>
@@ -115,6 +115,12 @@ const description =
   <button type="button" class="map-toggle" id="map-toggle" aria-expanded="false">
     <span data-open-label>Map</span>
   </button>
+
+  {/* Appears only at 2+ picks. A real <a>, so it can be opened in a new tab,
+      copied, and shared — the compare URL is the whole state. */}
+  <a class="cmp-pill" id="cmp-pill" href="/compare" hidden>
+    Compare (<span id="cmp-count">0</span>)
+  </a>
 </Base>
 
 <style>
@@ -338,6 +344,41 @@ const description =
     color: #fff;
   }
 
+  /* Floating, above the mobile map toggle's row, clear of the thumb zone. */
+  .cmp-pill {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 22px;
+    z-index: 950;
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 11px 20px;
+    border-radius: var(--r-pill);
+    box-shadow: 0 4px 16px rgba(33, 29, 25, 0.28);
+    text-decoration: none;
+  }
+
+  .cmp-pill:hover {
+    background: var(--orange-dark);
+  }
+
+  .cmp-hint {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.75;
+  }
+
+  @media (max-width: 920px) {
+    /* Sits above the map toggle rather than under it. */
+    .cmp-pill {
+      bottom: 74px;
+    }
+  }
+
   @media (max-width: 560px) {
     .hero {
       padding: 40px 18px 0;
@@ -360,6 +401,7 @@ const description =
   // must never take the content down with it.
   import { matchesQuery } from '../lib/search.js';
   import { nextSelection } from '../lib/selection.js';
+  import { MAX_COMPARE, MIN_COMPARE, compareHref } from '../lib/compare.js';
 
   try {
   const container = document.getElementById('cards');
@@ -659,6 +701,45 @@ const description =
       },
       true,
     );
+
+    // ── Compare picks ──────────────────────────────────────────────────────
+    // Picks are client-only state; the compare URL is the state that matters
+    // and it is built fresh on every change. Nothing is persisted, because a
+    // stale selection surfacing on a later visit is a small lie about intent.
+    const pillEl = document.getElementById('cmp-pill');
+    const countEl2 = document.getElementById('cmp-count');
+    const boxes = Array.from(container.querySelectorAll('.cmp-box'));
+    const picks = [];
+
+    function syncPicks() {
+      // The cap is enforced on the CONTROLS, not by silently dropping a pick
+      // later: an unchecked box that refuses to check is confusing, a disabled
+      // one is self-explanatory.
+      const full = picks.length >= MAX_COMPARE;
+      for (const box of boxes) {
+        box.disabled = full && !box.checked;
+        box.closest('.cmp-pick')?.classList.toggle('capped', box.disabled);
+      }
+      if (countEl2) countEl2.textContent = String(picks.length);
+      if (pillEl) {
+        pillEl.hidden = picks.length < MIN_COMPARE;
+        pillEl.href = compareHref(picks);
+      }
+    }
+
+    for (const box of boxes) {
+      // Reveal only now: server-rendered hidden, so a no-JS visitor never sees
+      // a control that cannot work.
+      box.closest('.cmp-pick')?.removeAttribute('hidden');
+      box.addEventListener('change', () => {
+        const slug = box.dataset.slug;
+        const at = picks.indexOf(slug);
+        if (box.checked && at === -1) picks.push(slug);
+        else if (!box.checked && at !== -1) picks.splice(at, 1);
+        syncPicks();
+      });
+    }
+    syncPicks();
 
     document.documentElement.dataset.filtersReady = 'true';
   }

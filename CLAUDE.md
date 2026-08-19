@@ -450,7 +450,8 @@ exists; they are recorded now so they're inherited, not retrofitted.
    - **A selection made from the list is brought into view.** Selecting a card pans
      the map smoothly to the gym's pin when it is not comfortably inside the frame —
      "comfortably" matters, because a bubble hard against the edge reads as absent.
-     Zoom changes only when the gym is merged into a cluster and needs resolving.
+     Zoom changes only when the gym is stacked under a merged bubble and needs
+     splitting out.
      Clicking a pin does NOT pan: the user is already looking at it, and its
      list-side equivalent is the existing scroll-to-card.
    - **Pin ↔ gym matching is slug-keyed everywhere.** The list sorts cheapest-first
@@ -465,7 +466,7 @@ exists; they are recorded now so they're inherited, not retrofitted.
      Cards used to be independent `<details>`: opening a second one moved the
      selection while the first stayed open, and closing that second one then
      cleared a selection whose own card was still open. The map went white
-     underneath an open card, which reads as "the selected cluster lost its
+     underneath an open card, which reads as "the selected bubble lost its
      orange" when in truth nothing was selected at all. That was **two states
      pretending to be one**, and the fix is to make them genuinely one rather
      than to keep them in sync. Side-by-side comparison is the detail pages' job.
@@ -478,8 +479,8 @@ exists; they are recorded now so they're inherited, not retrofitted.
      emits.
    - **Colour meanings on the map are exclusive and must stay that way.**
      **Ink = expensive** (tier 3). **Orange = selected**, and nothing else on the map
-     uses orange as a fill. A selected cluster gets the identical treatment to a
-     selected lone pin — orange fill, white text, ring, scale bump — never a partial
+     uses orange as a fill. A selected merged bubble gets the identical treatment
+     to a selected lone pin — orange fill, white text, ring, scale bump — never a partial
      version of it. Every pin state is a single-specificity class pair, so `.pin.active`
      must be declared **last**; `scripts/check-map.mjs` asserts that ordering, because
      both regressions here came from a later rule quietly winning.
@@ -489,17 +490,47 @@ exists; they are recorded now so they're inherited, not retrofitted.
      a price on every pin invites writing a gym off before reading a word about it,
      and location-first browsing deserves its own mode rather than a compromise
      between the two. Dots keep the tier tint and every other pin state — selected
-     is still orange, filtered-out still dims, a cluster dot is simply larger, and
+     is still orange, filtered-out still dims, a merged dot is simply larger, and
      the price a dot no longer prints becomes its accessible name. The preference
      persists in `localStorage` and nowhere else; a browser that refuses storage
      just gets the default back, which is not a failure worth handling twice.
      The control is chrome, so it uses **neither orange nor ink** — both meanings
      are reserved for pins.
-   - **Clustering**: minimal. With 41 gyms individual pins should survive to fairly wide
-     zoom. When clustering does trigger, the cluster label is the **price range** of its
-     members ("$15–259"), never a count — a count tells you nothing you came for.
+   - **Placement: nudge, do not merge. 41 gyms is not NYC.** Every pin shows its
+     own price at every zoom — the price on the pin is the reason the map exists,
+     and a merged bubble hides prices to solve a problem this dataset does not
+     have. Crowding is resolved by **nudging bubbles apart** (spiderfy-lite):
+     overlapping bubbles are pushed along the axis needing the least movement,
+     which for wide short price bubbles is almost always vertical. Displacement
+     is **capped**; past the cap a bubble is allowed to overlap rather than drift,
+     because a pin that wanders to stay readable is lying about where the gym is,
+     and on a map that is the same class of error as a wrong price. The marker
+     stays at the true coordinates — only the icon's anchor moves.
+     Pins merge **only when effectively co-located** — the same plaza, a handful
+     of pixels apart. A merged bubble reads **cheapest price + how many more are
+     underneath**: "$38 +1". It answers both questions a stack raises — what is
+     the best price here, and how much am I not seeing.
+     **Price-range labels ("$15–259") are gone**: they told you nothing you came
+     for and read like one gym's pricing. A bare count is no better.
+     Clicking a merged bubble **fans it open** into its members, each showing its
+     own price; clicking a fanned member selects it and keeps the fan open (you
+     are comparing two gyms at one address); clicking the map background puts it
+     away. Zooming in splits the group on its own. A merged bubble containing the
+     selection wears the full selected treatment, exactly as a lone pin does.
+     With the current data this merges **nothing at any zoom**, which is the
+     intended outcome and is asserted as such.
+   - **A legend, bottom-right, above the attribution.** The map encodes three
+     separate meanings in colour — price tier, "no published price", and
+     "selected" — and an unlabelled colour code is a puzzle rather than
+     information. Tiny and quiet: it explains the map, it is not part of it.
+     Its swatches **reuse the real pin classes**, so a key entry cannot drift
+     from the thing it describes; the legend overrides geometry only, never
+     colour, and does so at higher specificity so `.pin.active` can stay declared
+     last. Hidden below 420px, where there is no room for both the key and the
+     pins it explains. Note that this puts `.pin` elements outside the marker
+     pane, so anything counting pins must scope to `.leaflet-marker-pane`.
    - **Tab-aware** (per the §3 rule): on the Day passes tab pins show the day-pass price;
-     gyms with no published pass fade to 25% and are excluded from cluster ranges.
+     gyms with no published pass fade to 25% and never merge.
    - **Tiles**: CartoDB Positron, or Voyager if Positron reads too grey against our
      palette. Free, no API key, keeps the CSP clean. Attribution rendered per their terms.
    - **Pin ↔ card sync**: click a pin to highlight and scroll to its card; the active pin

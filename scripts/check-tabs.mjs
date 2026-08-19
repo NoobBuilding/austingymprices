@@ -50,23 +50,61 @@ const scriptCode = readFileSync(join('dist', scriptSrc.replace(/^\//, '')), 'utf
 const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true });
 const { window } = dom;
 
-// The bundle is an ES module: it statically imports Vite's preload helper and
-// references import.meta, neither of which is legal in eval'd non-module code.
-// Rewrite both into local stubs. The map is never loaded in these tests
-// (IntersectionObserver is stubbed below), so the preload helper is never
-// actually invoked — only its binding needs to exist. No logic under test is
-// touched.
+// The bundle is an ES module: it statically imports other chunks and Vite's
+// preload helper, and references import.meta — none of which is legal in
+// eval'd non-module code.
+//
+// Vite's preload helper is STUBBED: the map is never loaded in these tests
+// (IntersectionObserver is stubbed below), so only its binding needs to exist.
+// Every other chunk is INLINED, not stubbed — those hold real code the page
+// calls during init, and a stub would change the behaviour under test rather
+// than merely standing in for it.
+const ASTRO_DIR = 'dist/_astro';
+const parseBindings = (clause) =>
+  clause
+    .split(',')
+    .map((b) => {
+      const [imported, local] = b.split(/\s+as\s+/).map((x) => x.trim());
+      return { imported, local: local ?? imported };
+    })
+    .filter((b) => b.imported);
+
+let prelude = '';
+let chunkCount = 0;
+
 const evalSafe = scriptCode
   .replace(
-    /import\s*\{([^}]*)\}\s*from\s*"[^"]*";?/,
-    (_m, bindings) => {
-      const names = bindings
+    /import\s*\{([^}]*)\}\s*from\s*"([^"]*)";?/g,
+    (_m, bindings, spec) => {
+      const file = spec.replace(/^\.\//, '');
+      const names = parseBindings(bindings);
+
+      if (/preload-helper/.test(file)) {
+        return names.map((b) => `const ${b.local} = (fn) => fn();`).join('');
+      }
+
+      const chunk = readFileSync(join(ASTRO_DIR, file), 'utf8');
+      if (/^\s*import[\s{]/m.test(chunk)) {
+        // Nested chunk imports would need resolving too. Fail loudly rather
+        // than silently testing a half-wired bundle.
+        throw new Error(`chunk ${file} has its own imports; harness needs extending`);
+      }
+      const exported = (chunk.match(/export\s*\{([^}]*)\}\s*;?\s*$/) || [])[1] ?? '';
+      const pairs = exported
         .split(',')
-        .map((b) => b.split(/\s+as\s+/).pop().trim())
-        .filter(Boolean);
-      // __vite__mapDeps is already defined in the chunk; only the imported
-      // binding needs a stand-in.
-      return `const ${names.map((n) => `${n} = (fn) => fn()`).join(', ')};`;
+        .map((pair) => {
+          const [localName, exportedName] = pair.split(/\s+as\s+/).map((x) => x.trim());
+          return [exportedName ?? localName, localName];
+        })
+        .filter(([ex]) => ex);
+
+      const ns = `__chunk${chunkCount++}`;
+      prelude +=
+        `const ${ns} = (() => {\n${chunk.replace(/export\s*\{[^}]*\}\s*;?\s*$/, '')}\n` +
+        `return {${pairs.map(([ex, loc]) => `${ex}:${loc}`).join(',')}};\n})();\n`;
+      return names
+        .map((b) => `const ${b.local} = ${ns}[${JSON.stringify(b.imported)}];`)
+        .join('');
     },
   )
   .replace(/import\.meta/g, "({url:'file:///bundle.js',resolve:undefined})");
@@ -84,7 +122,7 @@ window.IntersectionObserver = class {
   unobserve() {}
 };
 
-window.eval(evalSafe);
+window.eval(prelude + evalSafe);
 
 const $ = (sel) => Array.from(window.document.querySelectorAll(sel));
 const visible = (sel) => $(sel).filter((el) => !el.hidden);

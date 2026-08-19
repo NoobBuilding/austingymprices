@@ -10,109 +10,11 @@ studio. A plausible-but-wrong pin is the map version of a plausible-but-wrong pr
 
 | | Gym | Source | Address found | Lat / Lng | Confidence | Check on OSM |
 |---|---|---|---|---|---|---|
-| ⚠️ | 10th Planet Jiu Jitsu Austin | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Anytime Fitness North Loop | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Atomic Athlete | name-search | (none found) | — | low | — |
-| ⚠️ | Barry's Austin | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Black Swan Yoga (Downtown) | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Crux Climbing Center South | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Equinox Austin (SoCo) | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Equinox Domain | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | F45 Downtown | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | FeV Iron Vault Gym | name-search | (none found) | — | low | — |
-| ⚠️ | Gold's Gym Downtown | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Grassiron | name-search | (none found) | — | low | — |
-| ⚠️ | Kollective | name-search | (none found) | — | low | — |
-| ⚠️ | Life Time Austin Downtown | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Los Campeones Gym North | address | 6406 N I-35 Frontage Rd, Suite 2450, Austin, TX 78752 | — | low · multi-location | — |
-| ⚠️ | Los Campeones Gym South | address | 9811 Vikki Terrace, Austin, TX 78736 | — | low · multi-location | — |
-| ⚠️ | Rumble Boxing South Austin | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | Studio Three | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | YMCA of Greater Austin | name-search | (none found) | — | low · multi-location | — |
-| ⚠️ | 24 Hour Fitness Hancock Center | address | 1000 East 41st Street, Austin, TX | 30.30042, -97.71961 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.300418&mlon=-97.719608#map=18/30.300418/-97.719608) |
-| ⚠️ | 24 Hour Fitness Austin Sport (Research Blvd) | address | 10616 Research Blvd, Austin, TX | 30.39735, -97.74784 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.397350&mlon=-97.747843#map=18/30.397350/-97.747843) |
-| ⚠️ | Austin Bouldering Project | name-search | 979, Springdale Road, Austin, Texas, 78702 | 30.26327, -97.69630 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.263268&mlon=-97.696296#map=18/30.263268/-97.696296) |
-| ⚠️ | Club Pilates Austin | name-search | 1011, East 5th Street, Austin, Texas, 78702 | 30.26391, -97.73258 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.263910&mlon=-97.732576#map=18/30.263910/-97.732576) |
-| ⚠️ | CorePower Yoga Austin | name-search | Aldrich Street, Austin, Texas, 78723 | 30.29834, -97.70588 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.298337&mlon=-97.705880#map=18/30.298337/-97.705880) |
-| ⚠️ | CrossFit Austin | address | 8708 S Congress Ave, Austin, TX | 30.17179, -97.78749 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.171795&mlon=-97.787493#map=18/30.171795/-97.787493) |
-| ⚠️ | Crunch South Austin | address | 4625 W William Cannon Dr, Austin, TX 78749 | 30.22191, -97.84335 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.221913&mlon=-97.843352#map=18/30.221913/-97.843352) |
-| ⚠️ | Gold's Gym Austin (Burnet) | address | 7301 Burnet Rd, Suite 300A, Austin, TX 78757 | 30.34880, -97.73507 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.348796&mlon=-97.735066#map=18/30.348796/-97.735066) |
-| ⚠️ | LA Fitness Anderson Lane | address | 2020 W Anderson Ln, Austin, TX 78757 | 30.35468, -97.72738 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.354681&mlon=-97.727381#map=18/30.354681/-97.727381) |
-| ⚠️ | LA Fitness S. Lamar | address | 4001 S Lamar Blvd, Austin, TX 78704 | 30.23699, -97.79180 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.236990&mlon=-97.791802#map=18/30.236990/-97.791802) |
-| ⚠️ | Life Time Austin North | name-search | North Ranch Road 620, Austin, Texas, 78717 | 30.47263, -97.77329 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.472630&mlon=-97.773288#map=18/30.472630/-97.773288) |
-| ⚠️ | Life Time Austin South | name-search | 7101, South Mopac Expressway, Austin, Texas, 78749 | 30.21526, -97.83937 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.215262&mlon=-97.839366#map=18/30.215262/-97.839366) |
-| ⚠️ | Orangetheory Austin | name-search | 1911, Aldrich Street, Austin, Texas, 78723 | 30.29891, -97.70435 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.298913&mlon=-97.704352#map=18/30.298913/-97.704352) |
-| ⚠️ | Planet Fitness E. Riverside | name-search | 1819, South Pleasant Valley Road, Austin, Texas, 78741 | 30.23452, -97.72065 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.234521&mlon=-97.720654#map=18/30.234521/-97.720654) |
-| ⚠️ | [solidcore] Austin | name-search | 204, Colorado Street, Austin, Texas, 78701 | 30.26513, -97.74554 | high · multi-location | [view](https://www.openstreetmap.org/?mlat=30.265125&mlon=-97.745538#map=18/30.265125/-97.745538) |
-| ✓ | Big Tex Gym | name-search | 1921, Cedar Bend Drive, Austin, Texas, 78758 | 30.40762, -97.69798 | high | [view](https://www.openstreetmap.org/?mlat=30.407616&mlon=-97.697977#map=18/30.407616/-97.697977) |
-| ✓ | Castle Hill Fitness | address | 1112 North Lamar Blvd, Austin, TX 78703 | 30.27658, -97.75192 | high | [view](https://www.openstreetmap.org/?mlat=30.276579&mlon=-97.751918#map=18/30.276579/-97.751918) |
-| ✓ | East Austin Athletic Club | address | 4909 E Cesar Chavez St, Austin, TX 78702 | 30.25132, -97.70092 | high | [view](https://www.openstreetmap.org/?mlat=30.251322&mlon=-97.700920#map=18/30.251322/-97.700920) |
-| ✓ | Hyde Park Gym | name-search | 4125, Guadalupe Street, Austin, Texas, 78751 | 30.30711, -97.73523 | high | [view](https://www.openstreetmap.org/?mlat=30.307114&mlon=-97.735228#map=18/30.307114/-97.735228) |
-| ✓ | Korrect Fitness (formerly Onnit Gym) | address | 4401 Freidrich Ln, Austin, TX | 30.20894, -97.74988 | high | [view](https://www.openstreetmap.org/?mlat=30.208939&mlon=-97.749879#map=18/30.208939/-97.749879) |
-| ✓ | Lift ATX | name-search | 1005, Springdale Road, Austin, Texas, 78721 | 30.26533, -97.69446 | high | [view](https://www.openstreetmap.org/?mlat=30.265334&mlon=-97.694463#map=18/30.265334/-97.694463) |
-| ✓ | Travis County Strength | address | 813 Morrow St, Austin, TX 78757 | 30.34402, -97.71585 | high | [view](https://www.openstreetmap.org/?mlat=30.344016&mlon=-97.715853#map=18/30.344016/-97.715853) |
+| ✓ | [solidcore] Domain Northside | address | 3210 Esperanza Crossing, Austin, TX 78758 | 30.40047, -97.72385 | high | [view](https://www.openstreetmap.org/?mlat=30.400466&mlon=-97.723851#map=18/30.400466/-97.723851) |
+| ✓ | [solidcore] The Triangle | address | 4601 N Lamar Blvd Suite 506, Austin, TX 78751 | 30.31515, -97.73596 | high | [view](https://www.openstreetmap.org/?mlat=30.315151&mlon=-97.735962#map=18/30.315151/-97.735962) |
 
 ## Summary
 
-- **22** geocoded with high confidence and written to /data
-- **34** need your eyes (⚠️): 19 low-confidence, 15 multi-location brands
-- **19** could not be geocoded at all — genuine gap list
-
-### Genuine gap list — nothing found
-
-- **10th Planet Jiu Jitsu Austin** — no result for the name
-- **Anytime Fitness North Loop** — no result for the name
-- **Atomic Athlete** — no result for the name
-- **Barry's Austin** — no result for the name
-- **Black Swan Yoga (Downtown)** — no result for the name
-- **Crux Climbing Center South** — no result for the name
-- **Equinox Austin (SoCo)** — no result for the name
-- **Equinox Domain** — no result for the name
-- **F45 Downtown** — matched only to a neighbourhood
-- **FeV Iron Vault Gym** — no result for the name
-- **Gold's Gym Downtown** — no result for the name
-- **Grassiron** — no result for the name
-- **Kollective** — no result for the name
-- **Life Time Austin Downtown** — no result for the name
-- **Los Campeones Gym North** — matched only to a road, too coarse for a pin
-- **Los Campeones Gym South** — no result from Nominatim
-- **Rumble Boxing South Austin** — no result for the name
-- **Studio Three** — no result for the name
-- **YMCA of Greater Austin** — no result for the name
-
-## Address candidates pulled from gym websites
-
-Firecrawl fetched each gym's own site for the low-confidence rows above.
-These are **unconfirmed candidates**, not accepted data — several are
-clearly a national brand's other-city HQ. Confirm or correct, and I will
-geocode whatever you approve.
-
-| Gym | Candidate address | Note |
-|---|---|---|
-| barrys-austin | 1081 E. Southlake Blvd. | Southlake TX — national site, WRONG city |
-| black-swan-yoga-downtown | 1417 W Anderson Ln | three Austin locations returned; none is the downtown studio |
-| black-swan-yoga-downtown | 1050 Lakeline Blvd. | three Austin locations returned; none is the downtown studio |
-| black-swan-yoga-downtown | 913 E Cesar Chavez St | three Austin locations returned; none is the downtown studio |
-| studio-three-austin | 176 N Racine Ave. | Chicago — national site, WRONG city |
-| travis-county-strength | 813 Morrow Street | accepted — Austin zip confirmed, now geocoded |
-
-## Booking-funnel pass — decisions needed
-
-### Club Pilates — which studio is our row?
-Club Pilates has ~8 Austin studios. Our seed row says `region: south-soco`, but the
-name search geocoded it to the **East Austin** studio (1011 E 5th St). The studio
-that actually fits south-soco is **William Cannon**, whose own page publishes its
-coordinates directly:
-
-| | Address | Lat / Lng | Fits our region? |
-|---|---|---|---|
-| Currently pinned | 1011 E 5th St (East Austin) | 30.26346, -97.72694 | ✗ east-austin |
-| **Candidate** | 4220 W. William Cannon Dr, Suite 110, Austin TX 78749 | **30.222105, -97.83782** | ✓ south-soco |
-
-The William Cannon figures come from Club Pilates' own site, not a geocoder, so they
-are authoritative once you pick the studio. Tell me which studio the row represents
-and I will write it.
-
-### [solidcore] Downtown — pin confirmed
-The studio page gives **204 Colorado St, 78701**, which matches the coordinates the
-name search already produced. That pin is confirmed by two independent sources.
+- **2** geocoded with high confidence and written to /data
+- **0** need your eyes (⚠️): 0 low-confidence, 0 multi-location brands
+- **0** could not be geocoded at all — genuine gap list

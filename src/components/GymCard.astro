@@ -11,7 +11,10 @@
 import { getRegion } from '../lib/gyms.js';
 import { compactSearch, gymSearchText, normalizeSearch } from '../lib/search.js';
 
-const { gym } = Astro.props;
+/** `compare` opts the card into the compare picker. Only the index wires that
+ *  JS up, and a control nothing can act on is worse than no control — so region
+ *  pages render the card without it rather than with a dead checkbox. */
+const { gym, compare = false } = Astro.props;
 
 const region = getRegion(gym.region);
 const plan = gym.default_plan;
@@ -70,6 +73,21 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     `${gymSearchText(gym, region?.name)} ${CATEGORY_LABELS[gym.category] ?? ''}`,
   )}
 >
+  {/* Compare checkbox. A SIBLING of <details>, never inside <summary>: a
+      control inside the summary competes with the accordion for the same
+      click. Hidden until the page's JS marks itself ready, so it is never a
+      dead control for someone browsing without JavaScript. */}
+  {compare && (
+    <label class="cmp-pick" hidden>
+      <input
+        type="checkbox"
+        class="cmp-box"
+        data-slug={gym.slug}
+        aria-label={`Compare ${gym.name}`}
+      />
+    </label>
+  )}
+
   {/* Named group = native one-at-a-time accordion: opening a card closes any
       other, in the browser, with no JavaScript at all. The open card IS the
       map's single spotlight, so two cards open at once would be two states
@@ -263,10 +281,54 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     border-radius: var(--r);
     margin-bottom: 10px;
     background: var(--bg);
+    position: relative;
     transition:
       border-color 0.12s,
       box-shadow 0.12s;
     overflow: hidden;
+  }
+
+  /* Corner, and deliberately quiet: comparing is a secondary action and must
+     not compete with the price for attention. Revealed only once the island
+     has booted (see index.astro), so it is never a control that does nothing. */
+  .cmp-pick {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.12s;
+  }
+
+  .cmp-pick:hover,
+  .cmp-pick:focus-within,
+  .card:hover .cmp-pick {
+    opacity: 1;
+  }
+
+  .cmp-box {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--orange);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  /* A checked box stays legible even when the card is not hovered. */
+  .cmp-pick:has(.cmp-box:checked) {
+    opacity: 1;
+  }
+
+  /* At the cap, the remaining boxes read as unavailable rather than broken. */
+  .cmp-pick.capped {
+    opacity: 0.18;
+    cursor: not-allowed;
   }
 
   .card:hover,
