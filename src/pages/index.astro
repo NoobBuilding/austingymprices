@@ -852,7 +852,7 @@ const description =
     for (const box of boxes) {
       // Reveal only now: server-rendered hidden, so a no-JS visitor never sees
       // a control that cannot work.
-      box.closest('.cmp-pick')?.removeAttribute('hidden');
+      box.closest('.cmp-row')?.removeAttribute('hidden');
       box.addEventListener('change', () => {
         const slug = box.dataset.slug;
         const at = picks.indexOf(slug);

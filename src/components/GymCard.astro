@@ -77,20 +77,6 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
       control inside the summary competes with the accordion for the same
       click. Hidden until the page's JS marks itself ready, so it is never a
       dead control for someone browsing without JavaScript. */}
-  {compare && (
-    <label class="cmp-pick" hidden>
-      <input
-        type="checkbox"
-        class="cmp-box"
-        data-slug={gym.slug}
-        aria-label={`Compare ${gym.name}`}
-      />
-      {/* The word is the whole point: a bare checkbox in a card corner is
-          mystery UI. Labelled, it explains itself before it is touched. */}
-      <span class="cmp-word" aria-hidden="true">Compare</span>
-    </label>
-  )}
-
   {/* Named group = native one-at-a-time accordion: opening a card closes any
       other, in the browser, with no JavaScript at all. The open card IS the
       map's single spotlight, so two cards open at once would be two states
@@ -276,6 +262,33 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
       </div>
     </div>
   </details>
+
+  {/* Compare control. In FLOW at the card's bottom-right, not absolutely
+      positioned over it: the price owns the top-right unconditionally, and a
+      chip anchored there covered it at every width. Bottom-anchored absolute
+      positioning does not fix it either — a collapsed card is ~83px tall and
+      the price already occupies most of that, so the two still collide. A flow
+      row cannot overlap anything by construction, at any width, however the
+      name or badges wrap.
+
+      Still a SIBLING of <details>, never inside <summary>, so it does not
+      compete with the accordion for the click. Hidden until the page's JS
+      marks itself ready, so it is never a dead control without JavaScript. */}
+  {compare && (
+    <div class="cmp-row" hidden>
+      <label class="cmp-pick">
+        <input
+          type="checkbox"
+          class="cmp-box"
+          data-slug={gym.slug}
+          aria-label={`Compare ${gym.name}`}
+        />
+        {/* The word is the whole point: a bare checkbox is mystery UI.
+            Labelled, it explains itself before it is touched. */}
+        <span class="cmp-word" aria-hidden="true">Compare</span>
+      </label>
+    </div>
+  )}
 </article>
 
 <style>
@@ -294,11 +307,13 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
   /* Corner, and deliberately quiet: comparing is a secondary action and must
      not compete with the price for attention. Revealed only once the island
      has booted (see index.astro), so it is never a control that does nothing. */
+  .cmp-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 14px 10px;
+  }
+
   .cmp-pick {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 2;
     display: flex;
     align-items: center;
     gap: 5px;
