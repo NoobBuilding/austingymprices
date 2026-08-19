@@ -7,7 +7,7 @@
  * dynamically only when the map scrolls into view or the mobile toggle is
  * pressed. The list is fully usable before any map byte arrives.
  */
-import { getAllGyms } from '../lib/gyms.js';
+import { getAllGyms, getRegions } from '../lib/gyms.js';
 
 // Only what the map needs. Keeping the payload tight matters — it ships inline.
 const pins = getAllGyms()
@@ -25,7 +25,14 @@ const pins = getAllGyms()
   }));
 ---
 
-<div class="mapwrap" id="mapwrap" data-pins={JSON.stringify(pins)}>
+<div
+  class="mapwrap"
+  id="mapwrap"
+  data-pins={JSON.stringify(pins)}
+  data-regions={JSON.stringify(
+    getRegions().map((r) => ({ id: r.id, ...r.search })),
+  )}
+>
   <div id="map" class="map" role="application" aria-label="Map of Austin gyms"></div>
   {/* Neutral phrasing: a visitor should not read a completeness scoreboard.
       Once most gyms are placed the note stops earning its space and is
@@ -105,17 +112,10 @@ const pins = getAllGyms()
     font-weight: 600;
   }
 
-  /* Filtered out. */
-  :global(.pin.dim) {
-    opacity: 0.18;
-    pointer-events: none;
-  }
-
-  /* Day-pass tab, gym has no published pass. */
-  :global(.pin.nopass) {
-    opacity: 0.25;
-    pointer-events: none;
-  }
+  /* No .dim and no .nopass. A pin is drawn or it is not — a faded bubble that
+     ignores a tap is an affordance lie, and it was the only thing on this map
+     that could look interactive and not be. Anything an attribute filter
+     excludes is now absent; anything present is clickable. */
 
   /* A merged bubble stands on gyms that are effectively at the same address.
      It reads "$38 +1": the cheapest price it is covering, and how many more are
@@ -143,7 +143,7 @@ const pins = getAllGyms()
    * Location-first browsing: tier tint survives, the number does not. A price
    * on every pin invites writing a gym off before reading a word about it.
    * These rules only resize and round the same bubble, so every state rule
-   * above (tier tint, dim, nopass, merged) still applies unchanged — and
+   * above (tier tint, callfor, merged) still applies unchanged — and
    * .pin.active below still wins the colours it sets. */
   :global(.pin.dot) {
     width: 14px;

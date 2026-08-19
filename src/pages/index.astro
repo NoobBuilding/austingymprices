@@ -487,6 +487,20 @@ const description =
     // neither keeps its own copy.
     const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', classpass: false, selected: null };
 
+    // Slugs the map should draw. Recomputed by apply(); held here so
+    // currentState() can hand it to a map that boots later.
+    let mapVisibleSet = new Set();
+
+    // Region display names, for the "outside {region}" note on a card the user
+    // reached by tapping its pin.
+    const regionNames = Object.fromEntries(
+      Array.from(document.querySelectorAll('#regions .chip')).map((c) => [
+        c.dataset.region,
+        c.textContent.trim(),
+      ]),
+    );
+    const regionName = (id) => regionNames[id] ?? id;
+
     const num = (card, attr) => {
       const raw = card.dataset[attr];
       return raw === '' || raw === undefined ? null : Number(raw);
@@ -565,6 +579,9 @@ const description =
       applyTabVisibility();
       applySelection();
       let shown = 0;
+      // What the MAP draws: attribute matches, region-blind.
+      const mapVisible = new Set();
+      mapVisibleSet = mapVisible;
       // Which tab a gym belongs on, and which number it is judged by. The
       // Memberships tab is facility gyms priced per month; Classes is studios
       // priced per class; Day passes is either, priced per visit.
@@ -579,15 +596,34 @@ const description =
           (state.mode === 'classes'
             ? card.dataset.access === 'classes'
             : card.dataset.access === 'facility');
-        const matches =
+        // ATTRIBUTE filters — everything except region. The map draws exactly
+        // this set: region is a camera move there, not a filter, so a gym just
+        // over the boundary stays visible and clickable.
+        const matchesAttributes =
           rightTab &&
-          (state.region === 'all' || card.dataset.region === state.region) &&
           (state.tier === 'all' || card.dataset[tierAttr] === state.tier) &&
           (!state.noContract || card.dataset.nocontract === 'true') &&
           (!state.classpass || card.dataset.classpass === 'true') &&
           (state.activity === 'all' || card.dataset.category === state.activity) &&
           matchesQuery(card.dataset.search || '', card.dataset.searchCompact || '', state.q) &&
           (state.mode !== 'daypass' || price !== null);
+        const inRegion = state.region === 'all' || card.dataset.region === state.region;
+
+        // A pin tapped outside the active region must not be swallowed. The
+        // selection wins over the region filter, and the card says why it is
+        // there rather than appearing to break the filter.
+        const isSelected = card.dataset.slug === state.selected;
+        const outsideRegion = matchesAttributes && !inRegion && isSelected;
+        const matches = matchesAttributes && (inRegion || isSelected);
+
+        card.classList.toggle('outside-region', outsideRegion);
+        const note = card.querySelector('.outside-note');
+        if (note) {
+          note.hidden = !outsideRegion;
+          if (outsideRegion) note.textContent = `Outside ${regionName(state.region)}`;
+        }
+
+        if (matchesAttributes) mapVisible.add(card.dataset.slug);
         card.hidden = !matches;
         if (matches) shown += 1;
       }
@@ -614,9 +650,10 @@ const description =
       document.dispatchEvent(
         new CustomEvent('filters:changed', {
           detail: {
-            visible: new Set(visible.map((c) => c.dataset.slug)),
+            visible: mapVisible,
             mode: state.mode,
             selected: state.selected,
+            region: state.region,
           },
         }),
       );
@@ -732,10 +769,15 @@ const description =
     let mapApi = null;
     let mapLoading = false;
 
+    // The map is region-blind: it draws every gym matching the ATTRIBUTE
+    // filters and frames the chosen region with the camera instead. Reading
+    // card.hidden here would silently reintroduce the region filter, since the
+    // list DOES hide out-of-region cards.
     const currentState = () => ({
-      visible: new Set(cards.filter((c) => !c.hidden).map((c) => c.dataset.slug)),
+      visible: new Set(mapVisibleSet),
       mode: state.mode,
       selected: state.selected,
+      region: state.region,
     });
 
     async function loadMap() {
@@ -745,7 +787,8 @@ const description =
         // Dynamic import: no Leaflet byte is fetched until this runs.
         const { initMap } = await import('../lib/map-island.js');
         const pins = JSON.parse(mapWrap.dataset.pins || '[]');
-        mapApi = initMap(mapEl, pins, currentState);
+        const regionBounds = JSON.parse(mapWrap.dataset.regions || '[]');
+        mapApi = initMap(mapEl, pins, currentState, regionBounds);
       } catch (err) {
         console.error('[austingymprices] map failed to load; list is unaffected', err);
       } finally {

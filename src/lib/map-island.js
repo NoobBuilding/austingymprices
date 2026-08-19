@@ -85,7 +85,7 @@ function writeDisplay(value) {
   }
 }
 
-export function initMap(container, pins, getState) {
+export function initMap(container, pins, getState, regionBounds = []) {
   ensureLeafletCss();
 
   const map = L.map(container, {
@@ -182,30 +182,31 @@ export function initMap(container, pins, getState) {
   }
 
   function render() {
-    const { visible, mode, selected } = getState();
+    const { visible, mode, selected, region } = getState();
     clear();
 
     // Split into what we draw individually vs what can merge. Gyms with no
     // price for the current tab never merge — a range must not be computed
     // from a gym whose price we do not have.
-    const points = pins.map((pin) => {
-      const price = priceOf(pin, mode);
-      const shown = visible.has(pin.slug);
-      return {
+    // A pin is drawn or it is not. There is no third state.
+    //
+    // Dimming was an affordance lie: a price bubble at 18% opacity still looks
+    // like a price bubble, still invites a tap, and then swallows it. Anything
+    // an attribute filter excludes is now simply absent, and anything present
+    // is fully clickable.
+    const points = pins
+      .filter((pin) => visible.has(pin.slug))
+      .map((pin) => ({
         pin,
-        price,
-        shown,
-        // No figure for this tab (no day pass, or no published per-class rate):
-        // faded and inert rather than absent, so the gym is still findable.
-        noPass:
-          (mode === 'daypass' || mode === 'classes') &&
-          (price === null || price === undefined),
+        price: priceOf(pin, mode),
         point: map.latLngToLayerPoint([pin.lat, pin.lng]),
-      };
-    });
+      }));
 
-    const mergeable = points.filter((p) => p.shown && !p.noPass && p.price !== null);
-    const quiet = points.filter((p) => !p.shown || p.noPass || p.price === null);
+    // Gyms with no figure for this tab still draw — as a "Call" bubble, which
+    // is a real state, not a faded one. The list has already dropped anything
+    // the tab excludes outright.
+    const mergeable = points.filter((p) => p.price !== null && p.price !== undefined);
+    const quiet = points.filter((p) => p.price === null || p.price === undefined);
 
     const groups = mergeCoLocated(mergeable, MERGE_PX);
 
@@ -276,26 +277,23 @@ export function initMap(container, pins, getState) {
     }
 
     for (const p of quiet) {
-      const priced = p.price !== null && p.price !== undefined;
       const cls = [
         'pin',
-        priced ? `tier-${p.pin.tier ?? 2}` : 'callfor',
-        p.noPass ? 'nopass' : '',
-        !p.shown ? 'dim' : '',
+        'callfor',
         selected === p.pin.slug ? 'active' : '',
       ]
         .filter(Boolean)
         .join(' ');
       placed.push({
-        label: priced ? money(p.price) : 'Call',
+        label: 'Call',
         cls,
         latlng: [p.pin.lat, p.pin.lng],
         point: p.point,
         fan: { dx: 0, dy: 0 },
-        // Filtered-out and no-pass pins are near-invisible. They neither claim
-        // space nor get to shove a readable pin off its gym.
-        nudge: p.shown && !p.noPass,
-        onClick: p.shown && !p.noPass ? () => select(p.pin.slug) : null,
+        nudge: true,
+        // Every drawn pin is clickable. No exceptions — that is the invariant
+        // dimming used to break.
+        onClick: () => select(p.pin.slug),
       });
     }
 
@@ -319,6 +317,8 @@ export function initMap(container, pins, getState) {
     });
 
     for (const m of markers) m.addTo(map);
+
+    frameRegion(region);
 
     revealSelection(selected, groups);
   }
@@ -476,6 +476,44 @@ export function initMap(container, pins, getState) {
   // exit a user would think to look for. Marker clicks do not reach here —
   // Leaflet stops their propagation — so selecting a fanned member keeps the
   // fan open, which is what you want while comparing two gyms at one address.
+  /**
+   * Region chips move the CAMERA, never the pin set.
+   *
+   * Filtering the map by region hid the very thing a map is for: seeing what is
+   * nearby, including the gym just over the boundary. The list narrows to a
+   * region; the map flies to it and keeps drawing everything. The two answer
+   * different questions and should not share a mechanism.
+   */
+  let lastFramed = null;
+
+  /** Camera moves are motion. Somebody who has asked the OS for less of it
+   *  should get the new frame, not a flight to it. */
+  function wantsMotion() {
+    try {
+      return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch {
+      return true;
+    }
+  }
+
+  function frameRegion(regionId) {
+    if (regionId === lastFramed) return;
+    lastFramed = regionId;
+    if (!regionId || regionId === 'all') {
+      // Per §9: the default frame is central Austin, never a fitBounds over
+      // every pin — outliers do not get to set the frame.
+      map.setView(DEFAULT_CENTER, DEFAULT_ZOOM, { animate: wantsMotion() });
+      return;
+    }
+    const r = regionBounds.find((b) => b.id === regionId);
+    if (!r) return;
+    // toBounds takes the box WIDTH, so a radius becomes a diameter.
+    map.fitBounds(L.latLng(r.lat, r.lng).toBounds(r.radius_m * 2), {
+      padding: [28, 28],
+      animate: wantsMotion(),
+    });
+  }
+
   map.on('click', () => {
     if (!expandedKey) return;
     expandedKey = null;

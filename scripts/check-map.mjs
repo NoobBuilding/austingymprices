@@ -73,7 +73,7 @@ check(
 );
 
 console.log('\nPin styling');
-for (const cls of ['.pin', '.pin.tier-1', '.pin.tier-3', '.pin.callfor', '.pin.merged', '.pin.fanned', '.pin.dim', '.pin.nopass', '.pin.active']) {
+for (const cls of ['.pin', '.pin.tier-1', '.pin.tier-3', '.pin.callfor', '.pin.merged', '.pin.fanned', '.pin.active']) {
   const escaped = cls.replace(/\./g, '\\.');
   check(new RegExp(escaped.replace(/\\\./g, '\\.')).test(css), `${cls} style is present`);
 }
@@ -453,6 +453,14 @@ function bootMap(payload) {
   w.HTMLElement.prototype.getBoundingClientRect = () => ({
     x: 0, y: 0, width: 800, height: 700, top: 0, left: 0, right: 800, bottom: 700, toJSON() {},
   });
+  // Report reduced motion. jsdom cannot run a Leaflet fly-through, so an
+  // animated camera move would be asserted mid-flight; the island honours this
+  // preference for real users too, which is why it is worth stubbing rather
+  // than working around.
+  w.matchMedia = (q) => ({
+    matches: /prefers-reduced-motion/.test(q),
+    media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {},
+  });
   for (const k of ['window', 'document', 'HTMLElement', 'Element', 'Node', 'SVGElement',
     'CustomEvent', 'Event', 'requestAnimationFrame', 'cancelAnimationFrame',
     'getComputedStyle', 'DOMParser', 'location', 'navigator']) {
@@ -464,8 +472,17 @@ function bootMap(payload) {
 
 const { window: win } = bootMap(pins);
 const { initMap } = await import('../src/lib/map-island.js');
-const mapState = { visible: new Set(pins.map((p) => p.slug)), mode: 'membership', selected: null };
-const api = initMap(win.document.getElementById('map'), pins, () => mapState);
+const mapState = {
+  visible: new Set(pins.map((p) => p.slug)),
+  mode: 'membership',
+  selected: null,
+  region: 'all',
+};
+const regionBounds = JSON.parse(readFileSync('data/regions.json', 'utf8')).map((r) => ({
+  id: r.id,
+  ...r.search,
+}));
+const api = initMap(win.document.getElementById('map'), pins, () => mapState, regionBounds);
 
 // Pins live in the marker pane. The LEGEND deliberately reuses the real pin
 // classes for its swatches so a key entry can never drift from the thing it
@@ -549,6 +566,82 @@ check(
   bubbles().filter((b) => b.active).length === 1,
   'the accordion retiring a card does NOT blank the map (the reported repro)',
 );
+
+// ── Interaction model: the map frames, the list filters ──────────────────
+// Dimming is gone. A price bubble at 18% opacity still looks like a price
+// bubble, still invites a tap, and then swallows it — an affordance lie, and
+// the only thing on this map that could look interactive and not be.
+console.log('\nInteraction model — draw or do not draw');
+
+const pinEls = () => [...win.document.querySelectorAll(PIN_SEL)];
+check(
+  !/\.pin\.dim|\.pin\.nopass/.test(css),
+  'no .dim or .nopass rule survives in the stylesheet',
+);
+check(
+  !/'dim'|'nopass'|`dim`|`nopass`/.test(readFileSync('src/lib/map-island.js', 'utf8')),
+  'and the island never applies those classes',
+);
+check(
+  pinEls().every((el) => !el.classList.contains('dim') && !el.classList.contains('nopass')),
+  'no rendered pin carries a dimmed class',
+);
+// A pin the CSS makes inert is the exact failure being removed. The stylesheet
+// may only disable pointer events on something that is not a pin.
+const pinRules = css.split('}').filter((b) => /\.pin[.{ ]/.test(b));
+check(
+  !pinRules.some((b) => /pointer-events:\s*none/.test(b)),
+  'no pin rule disables pointer events',
+  pinRules.find((b) => /pointer-events:\s*none/.test(b)) ?? 'none',
+);
+
+// Region is a CAMERA. Changing it must move the viewport and leave the pin
+// set alone; changing an attribute filter must do the opposite.
+mapState.selected = null;
+mapState.region = 'all';
+win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+const pinsAll = pinEls().length;
+const centreAll = api.map.getCenter();
+
+mapState.region = 'the-domain';
+win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+const movedTo = api.map.getCenter();
+check(
+  pinEls().length === pinsAll,
+  'a region chip does NOT change how many pins are drawn',
+  `${pinsAll} -> ${pinEls().length}`,
+);
+check(
+  Math.abs(movedTo.lat - centreAll.lat) > 0.005 || Math.abs(movedTo.lng - centreAll.lng) > 0.005,
+  'but it DOES move the camera',
+  `${centreAll.lat.toFixed(4)},${centreAll.lng.toFixed(4)} -> ${movedTo.lat.toFixed(4)},${movedTo.lng.toFixed(4)}`,
+);
+
+mapState.region = 'all';
+win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+check(
+  Math.abs(api.map.getCenter().lat - centreAll.lat) < 0.005,
+  '"All of Austin" returns to the default central frame, never a fitBounds over outliers',
+);
+
+// An attribute filter is expressed by the visible SET, and must change the
+// number of pins drawn.
+const half = new Set([...mapState.visible].slice(0, Math.max(1, Math.floor(pinsAll / 2))));
+const fullSet = mapState.visible;
+mapState.visible = half;
+win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+check(
+  pinEls().length < pinsAll,
+  'an attribute filter DOES change how many pins are drawn',
+  `${pinsAll} -> ${pinEls().length}`,
+);
+check(
+  pinEls().every((el) => Number(win.getComputedStyle(el).opacity || 1) >= 0.9),
+  'every drawn pin is fully opaque — nothing is half-present',
+);
+mapState.visible = fullSet;
+win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+check(pinEls().length === pinsAll, 'and clearing it brings them back');
 
 // ── Merged bubbles, through the real render ──────────────────────────────
 // Nothing in the live data is co-located, so this uses a payload that is: two
@@ -637,6 +730,9 @@ win2.document.dispatchEvent(new win2.CustomEvent('filters:changed', { detail: {}
 
 // ── Display modes ────────────────────────────────────────────────────────
 console.log('\nMap display modes');
+// The interaction-model section above deliberately cleared the selection.
+mapState.selected = target.slug;
+win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
 api.setDisplay('dots');
 const dots = bubbles();
 check(dots.every((b) => b.dot), 'dots mode puts every pin in dot form', `${dots.length} pins`);

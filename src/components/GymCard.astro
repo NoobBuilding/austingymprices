@@ -98,6 +98,11 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
             <span class={`tag ${badge.tone} membership-only`}>{badge.label}</span>
           )}
         </h2>
+        {/* Shown only when this card was reached by tapping its pin from
+            outside the active region filter. The tap is honoured; the note
+            explains why the card is here rather than letting the filter look
+            broken. */}
+        <p class="outside-note" hidden></p>
         <p class="card-meta">
           {placeLabel}<span class="sep">•</span>{CATEGORY_LABELS[gym.category] ?? gym.category}
         </p>
@@ -416,6 +421,15 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     font-weight: 700;
     font-size: 1rem;
     line-height: 1.3;
+  }
+
+  .outside-note {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin-bottom: 2px;
   }
 
   .card-meta {

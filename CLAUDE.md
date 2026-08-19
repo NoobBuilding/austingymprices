@@ -563,8 +563,26 @@ exists; they are recorded now so they're inherited, not retrofitted.
      gyms with no published pass fade to 25% and never merge.
    - **Tiles**: CartoDB Positron, or Voyager if Positron reads too grey against our
      palette. Free, no API key, keeps the CSP clean. Attribution rendered per their terms.
-   - **Pin ↔ card sync**: click a pin to highlight and scroll to its card; the active pin
-     inverts to ink. Filtered-out pins dim to ~18%.
+   - **The map FRAMES; the list FILTERS.** They answer different questions and
+     must not share a mechanism.
+     **Region chips are a camera.** Choosing a region pans and zooms the map to
+     that region's bounds (the search circles in `regions.json`, padded) and
+     changes **nothing** about which pins are drawn. Filtering a map by region
+     hides the very thing a map is for — seeing what is nearby, including the
+     gym just over the boundary. "All of Austin" returns to the default central
+     frame, never a `fitBounds` over outliers. Camera moves honour
+     `prefers-reduced-motion`.
+     **Attribute filters hide.** Price tier, activity, no-contract, ClassPass
+     and the search query remove non-matching pins outright.
+     **Dimming is abolished.** There is no `.dim` and no `.nopass`: a price
+     bubble at 18% opacity still looks like a price bubble, still invites a tap,
+     and then swallows it. It was the only thing on this map that could look
+     interactive and not be. **Every drawn pin is clickable, always.**
+     **A tap is never swallowed.** Tapping a pin outside the active region
+     selects that gym and brings its card back into the list, marked
+     "Outside {region}" — the selection wins over the region filter, and the
+     note explains the card's presence rather than letting the filter look
+     broken.
    - **Mobile**: map behind a bottom toggle, per the mockup.
    - **Performance budget**: map JS lazy-loads below the fold or on toggle. The list must
      render before any map asset arrives.
