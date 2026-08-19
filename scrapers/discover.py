@@ -26,6 +26,7 @@ never in the client bundle (§8).
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -177,6 +178,38 @@ def enumerate_places():
 
 
 # ── (b) diff ───────────────────────────────────────────────────────────────
+def metres(lat1, lng1, lat2, lng2):
+    dy = (lat1 - lat2) * 111320.0
+    dx = (lng1 - lng2) * 111320.0 * math.cos(math.radians(lat1))
+    return math.hypot(dx, dy)
+
+
+def nearest_region(place):
+    """
+    Re-assign a result to the region it is actually IN.
+
+    `searchText` only accepts `locationBias`, which biases without restricting —
+    the first sweep returned Crux Pflugerville, 26 km outside any circle, tagged
+    to whichever region's query happened to surface it. Tagging by the querying
+    region would have put gyms in neighbourhoods they are nowhere near, which on
+    a site organised by neighbourhood is its own kind of wrong number.
+
+    Returns (region_id, distance_m) or (None, distance) when it is outside every
+    circle, in which case the caller drops it.
+    """
+    loc = place.get("location") or {}
+    lat, lng = loc.get("latitude"), loc.get("longitude")
+    if lat is None or lng is None:
+        return None, None
+    best, best_d = None, float("inf")
+    for r in regions():
+        s = r["search"]
+        d = metres(lat, lng, s["lat"], s["lng"])
+        if d <= s["radius_m"] and d < best_d:
+            best, best_d = r["id"], d
+    return best, (best_d if best else None)
+
+
 def diff_against_seed(places):
     have_names = {norm(g["name"]) for g in existing_gyms()}
     have_sites = set()
@@ -187,6 +220,11 @@ def diff_against_seed(places):
     fresh, known, skipped = [], [], []
     for p in places:
         name = (p.get("displayName") or {}).get("text", "")
+        region, _d = nearest_region(p)
+        if region is None:
+            skipped.append((name, "outside every region circle"))
+            continue
+        p["region"] = region  # where it IS, not which query found it
         if p.get("businessStatus") and p["businessStatus"] != "OPERATIONAL":
             skipped.append((name, "businessStatus=%s" % p["businessStatus"]))
             continue
@@ -279,8 +317,15 @@ def category_guess(place):
 # ── (e) report ─────────────────────────────────────────────────────────────
 def write_report(fresh, known, skipped, probes):
     order = {"SCRAPEABLE": 0, "HUMAN-READABLE": 1, "GATED": 2, "NO-SITE": 3}
-    rows = sorted(zip(fresh, probes), key=lambda x: (order[x[1]["class"]],
-                                                     (x[0].get("displayName") or {}).get("text", "")))
+    # Downtown first: it is the weakest region (1 of 12 priced) and the most
+    # visible one, so it is where the first cherry-picking pass should land.
+    region_order = {"downtown": 0}
+    rows = sorted(
+        zip(fresh, probes),
+        key=lambda x: (region_order.get(x[0].get("region"), 1),
+                       order[x[1]["class"]],
+                       (x[0].get("displayName") or {}).get("text", "")),
+    )
     counts = {}
     for _, pr in rows:
         counts[pr["class"]] = counts.get(pr["class"], 0) + 1
