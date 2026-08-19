@@ -4,6 +4,7 @@
   "region": "downtown",
   "sub_locality": "Downtown",
   "category": "gym-weights",
+  "access_model": "facility",
   "website": "https://fevgym.com",
   "pricing_url": null,
   "address": null,

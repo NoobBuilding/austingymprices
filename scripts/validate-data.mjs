@@ -71,6 +71,32 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
 
   // Monetization plumbing, planted empty (CLAUDE.md §10). Required PRESENT so a
   // new gym file cannot silently omit them, but null/standard is the norm.
+  for (const p of gym.plans ?? []) {
+    // Contingent fees are visible but never enter all-in math: all-in is what
+    // you WILL pay, a cancellation fee is what you MIGHT.
+    if ('cancellation_fee' in p && p.cancellation_fee !== null) {
+      if (typeof p.cancellation_fee !== 'number' || p.cancellation_fee < 0) {
+        fail(`plan "${p.name}" has a non-numeric cancellation_fee`);
+      }
+      if (!p.commit_months) {
+        fail(`plan "${p.name}" has a cancellation_fee but no commit_months to cancel before`);
+      }
+    }
+    if ('classes_per_period' in p && p.classes_per_period !== null) {
+      if (typeof p.classes_per_period !== 'number' || p.classes_per_period <= 0) {
+        fail(`plan "${p.name}" has an invalid classes_per_period`);
+      }
+    }
+  }
+
+  // Which tab a gym belongs on. "facility" = you buy door access; "classes" =
+  // you buy instructed sessions. The distinction drives the comparable unit:
+  // $/mo for a facility, $/class for a studio, and mixing them breaks the sort
+  // in both directions.
+  if (!['facility', 'classes'].includes(gym.access_model)) {
+    fail(`access_model must be "facility" or "classes", got ${JSON.stringify(gym.access_model)}`);
+  }
+
   if (!('intro_offer_url' in gym)) fail('intro_offer_url is missing (use null)');
   if (gym.intro_offer_url !== null && gym.intro_offer_url !== undefined) {
     if (typeof gym.intro_offer_url !== 'string' || !gym.intro_offer_url.startsWith('https://')) {

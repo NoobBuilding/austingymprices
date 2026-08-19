@@ -4,6 +4,7 @@
   "region": "the-domain",
   "sub_locality": "Arboretum",
   "category": "gym-weights",
+  "access_model": "facility",
   "website": "https://24hourfitness.com",
   "pricing_url": null,
   "address": "10616 Research Blvd, Austin, TX",

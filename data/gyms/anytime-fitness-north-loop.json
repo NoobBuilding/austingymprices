@@ -4,6 +4,7 @@
   "region": "hyde-park",
   "sub_locality": "North Loop",
   "category": "gym-weights",
+  "access_model": "facility",
   "website": "https://anytimefitness.com",
   "pricing_url": null,
   "address": null,

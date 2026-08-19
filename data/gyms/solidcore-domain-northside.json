@@ -4,6 +4,7 @@
   "region": "the-domain",
   "sub_locality": "Domain Northside",
   "category": "pilates",
+  "access_model": "classes",
   "website": "https://solidcore.co",
   "pricing_url": null,
   "address": "3210 Esperanza Crossing, Austin, TX 78758",
@@ -16,15 +17,144 @@
   "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-19",
   "billing_period": "monthly",
-  "plans": [],
-  "day_pass": null,
-  "day_pass_qualifier": null,
-  "day_pass_terms": [],
+  "plans": [
+    {
+      "name": "Monthly 4",
+      "monthly": 130,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Four classes a month, no rollover, auto-charged. Plus tax.",
+      "is_default": true,
+      "classes_per_period": 4
+    },
+    {
+      "name": "Monthly 8",
+      "monthly": 230,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Plus tax.",
+      "is_default": false,
+      "classes_per_period": 8
+    },
+    {
+      "name": "Monthly Unlimited",
+      "monthly": 365,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Maximum one class a day. Plus tax.",
+      "is_default": false
+    },
+    {
+      "name": "Travel Monthly Unlimited",
+      "monthly": 420,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Plus tax.",
+      "is_default": false
+    },
+    {
+      "name": "Monthly 4 — 6-month commitment",
+      "monthly": 110,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "15% off. Plus tax.",
+      "is_default": false,
+      "classes_per_period": 4
+    },
+    {
+      "name": "Monthly 8 — 6-month commitment",
+      "monthly": 195,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "15% off. Plus tax.",
+      "is_default": false,
+      "classes_per_period": 8
+    },
+    {
+      "name": "Monthly Unlimited — 6-month commitment",
+      "monthly": 310,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "15% off. Plus tax.",
+      "is_default": false
+    },
+    {
+      "name": "Travel Unlimited — 6-month commitment",
+      "monthly": 357,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "15% off. Plus tax.",
+      "is_default": false
+    },
+    {
+      "name": "Monthly 4 — 12-month commitment",
+      "monthly": 97,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "25% off. Plus tax.",
+      "is_default": false,
+      "classes_per_period": 4
+    },
+    {
+      "name": "Monthly 8 — 12-month commitment",
+      "monthly": 172,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "25% off. Plus tax.",
+      "is_default": false,
+      "classes_per_period": 8
+    },
+    {
+      "name": "Monthly Unlimited — 12-month commitment",
+      "monthly": 273,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "25% off. Plus tax.",
+      "is_default": false
+    },
+    {
+      "name": "Travel Unlimited — 12-month commitment",
+      "monthly": 315,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "25% off. Plus tax.",
+      "is_default": false
+    }
+  ],
+  "day_pass": 39,
+  "day_pass_qualifier": "+ tax, single class",
+  "day_pass_terms": [
+    "Expires 40 days after purchase"
+  ],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published on a page we can read — class-pack and membership rates vary by studio.",
+  "pricing_note": "All prices plus tax. Class packs: single class $39 (expires 40 days), 5-pack $175 (45 days), 10-pack $330 (90 days), coach-in-training class $20, Power30 single $23. Read from solidcore.co/membership-perks on 2026-08-19; all three Austin studios price identically.",
   "stale": false,
   "price_history": []
 }

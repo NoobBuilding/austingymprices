@@ -4,6 +4,7 @@
   "region": "downtown",
   "sub_locality": "SoCo",
   "category": "luxury",
+  "access_model": "facility",
   "website": "https://equinox.com",
   "pricing_url": null,
   "address": null,

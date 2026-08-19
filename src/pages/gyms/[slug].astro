@@ -147,6 +147,15 @@ const jsonLd = {
                 <span class={`mo ${p.commitment_badge.tone}`}>{p.commitment_badge.label}</span>
               )}
               {p.restricted_label && <span class="mo restricted">{p.restricted_label}</span>}
+              {/* A contingent fee. It is deliberately NOT in the all-in maths —
+                  that figure is what you WILL pay, and this is what you MIGHT —
+                  but it is exactly the kind of number a gym would rather you
+                  found in the contract, so it is stated on the row (§3). */}
+              {p.cancellation_fee && (
+                <span class="mo fee">
+                  ${p.cancellation_fee} fee if cancelled before {p.commit_months} months
+                </span>
+              )}
               {p.note && (
                 <span class="info">
                   <button type="button" aria-label={`Details for ${p.name}`}>i</button>
@@ -283,6 +292,8 @@ const jsonLd = {
   .mo { font-size: .66rem; font-weight: 700; letter-spacing: .04em; background: var(--neutral-badge-bg); color: var(--ink-soft); border-radius: 5px; padding: 3px 7px; }
   .mo.green { background: var(--green-tint); color: var(--green); }
   .mo.restricted { background: var(--orange-tint); color: var(--orange-dark); }
+  /* Warning tone, not alarm: a stated fact about a real cost (§5 voice). */
+  .mo.fee { background: var(--orange-tint); color: var(--orange-dark); }
   .info { position: relative; display: inline-flex; }
   .info button { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #C9C1B8; background: none; color: #9B9288; font-size: .62rem; font-weight: 700; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .info button:hover { border-color: var(--orange); color: var(--orange-dark); }

@@ -4,6 +4,7 @@
   "region": "east-austin",
   "sub_locality": "E. Riverside",
   "category": "gym-weights",
+  "access_model": "facility",
   "website": "https://planetfitness.com",
   "pricing_url": "https://www.planetfitness.com/gyms/austin-e-riverside-tx/offers",
   "address": "1819, South Pleasant Valley Road, Austin, Texas, 78741",

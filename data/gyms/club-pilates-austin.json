@@ -4,6 +4,7 @@
   "region": "south-soco",
   "sub_locality": "William Cannon",
   "category": "pilates",
+  "access_model": "classes",
   "website": "https://clubpilates.com",
   "pricing_url": null,
   "address": "4220 W. William Cannon Dr, Suite 110, Austin, TX 78749",
@@ -16,15 +17,30 @@
   "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-19",
   "billing_period": "monthly",
-  "plans": [],
-  "day_pass": null,
-  "day_pass_qualifier": null,
+  "plans": [
+    {
+      "name": "From $99/mo (entry tier)",
+      "monthly": 99,
+      "enroll_fee": 149,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "restricted": null,
+      "note": "All memberships carry an initial three-month commitment, then run month to month. The class count for this entry tier was not stated in the studio's reply and still needs confirming.",
+      "is_default": true,
+      "promo": {
+        "enroll_fee": 49,
+        "note": "$49 enrollment this month, down from $149"
+      }
+    }
+  ],
+  "day_pass": 35,
+  "day_pass_qualifier": "single class",
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published — call the studio. Club Pilates has ~8 Austin studios; this listing is the William Cannon location. A free intro class is offered, and enrollment promotions run frequently.",
+  "pricing_note": "Confirmed by email from studio staff on 2026-08-19. Promotion this month: three classes for $79.",
   "stale": false,
   "price_history": []
 }

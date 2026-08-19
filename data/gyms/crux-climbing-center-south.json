@@ -4,6 +4,7 @@
   "region": "south-soco",
   "sub_locality": "South Austin",
   "category": "climbing",
+  "access_model": "facility",
   "website": "https://cruxclimbingcenter.com",
   "pricing_url": "https://www.cruxclimbingcenter.com/south-austin/rates",
   "address": null,

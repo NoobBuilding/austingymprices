@@ -4,6 +4,7 @@
   "region": "hyde-park",
   "sub_locality": "Burnet Road",
   "category": "gym-weights",
+  "access_model": "facility",
   "website": "https://goldsgym.com",
   "pricing_url": null,
   "address": "7301 Burnet Rd, Suite 300A, Austin, TX 78757",

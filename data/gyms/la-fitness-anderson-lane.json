@@ -4,6 +4,7 @@
   "region": "hyde-park",
   "sub_locality": "Anderson Lane",
   "category": "gym-weights",
+  "access_model": "facility",
   "website": "https://lafitness.com",
   "pricing_url": "https://lafitness.com/Pages/clubhome.aspx?clubid=1035",
   "address": "2020 W Anderson Ln, Austin, TX 78757",

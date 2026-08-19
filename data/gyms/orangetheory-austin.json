@@ -4,6 +4,7 @@
   "region": "mueller",
   "sub_locality": "Mueller",
   "category": "crossfit-hiit",
+  "access_model": "classes",
   "website": "https://orangetheory.com",
   "pricing_url": null,
   "address": "1911, Aldrich Street, Austin, Texas, 78723",

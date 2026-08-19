@@ -4,6 +4,7 @@
   "region": "downtown",
   "sub_locality": "Downtown",
   "category": "yoga",
+  "access_model": "classes",
   "website": "https://corepoweryoga.com",
   "pricing_url": null,
   "address": "Aldrich Street, Austin, Texas, 78723",

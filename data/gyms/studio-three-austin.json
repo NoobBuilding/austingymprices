@@ -4,6 +4,7 @@
   "region": "downtown",
   "sub_locality": "Downtown",
   "category": "crossfit-hiit",
+  "access_model": "classes",
   "website": "https://studiothree.com",
   "pricing_url": null,
   "address": null,

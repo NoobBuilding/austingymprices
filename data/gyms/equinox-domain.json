@@ -4,6 +4,7 @@
   "region": "the-domain",
   "sub_locality": "The Domain",
   "category": "luxury",
+  "access_model": "facility",
   "website": "https://equinox.com",
   "pricing_url": null,
   "address": null,

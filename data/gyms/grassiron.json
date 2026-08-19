@@ -4,6 +4,7 @@
   "region": "hyde-park",
   "sub_locality": "Hyde Park",
   "category": "gym-weights",
+  "access_model": "classes",
   "website": "https://grassiron.com",
   "pricing_url": null,
   "address": null,

@@ -4,6 +4,7 @@
   "region": "south-soco",
   "sub_locality": "South Congress",
   "category": "crossfit-hiit",
+  "access_model": "classes",
   "website": "https://crossfitaustin.com",
   "pricing_url": null,
   "address": "8708 S Congress Ave, Austin, TX",

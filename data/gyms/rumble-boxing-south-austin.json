@@ -4,6 +4,7 @@
   "region": "south-soco",
   "sub_locality": "South Austin",
   "category": "boxing",
+  "access_model": "classes",
   "website": "https://rumbleboxinggym.com",
   "pricing_url": null,
   "address": null,

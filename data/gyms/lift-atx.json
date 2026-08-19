@@ -4,6 +4,7 @@
   "region": "downtown",
   "sub_locality": "Downtown",
   "category": "gym-weights",
+  "access_model": "facility",
   "website": "https://liftatx.com",
   "pricing_url": null,
   "address": "1005, Springdale Road, Austin, Texas, 78721",
