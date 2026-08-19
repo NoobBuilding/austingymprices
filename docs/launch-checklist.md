@@ -113,6 +113,25 @@ it should happen after the data threshold is met, not before.
       the domain is live, to confirm the security headers followed it.
 - [ ] Re-run the Lighthouse workflow against the real domain.
 
+## Gate 4b — Founder Campaign (launch week, after the domain flip)
+
+Fires **after** gym pages are live on the real domain, alongside the Reddit
+post — not before. See CLAUDE.md §10 for the full framing.
+
+- [ ] **@austingymprices Instagram handle secured** (owner).
+- [ ] **hello@ routing verified end-to-end** — send a message to it from an
+      outside address and confirm it lands. The campaign invites replies to it.
+- [ ] Contact emails extracted for the independent gyms in the discovery set.
+- [ ] `docs/founder-campaign.html` generated: one row per gym, page URL,
+      contact, one shared template personalised only by gym name and link.
+- [ ] Owner sends every message personally. No bulk send, no automation.
+
+**Ethics guardrail, non-negotiable:** the Instagram tag ask is an invitation
+**after the fact**, never a condition of listing. Every sourceable gym is listed
+regardless of whether it replies, tags, links, or ignores us entirely. If a
+version of this email would read differently to a gym that said no, it is the
+wrong email.
+
 ## Gate 5 — post-launch, first week
 
 - [ ] Watch for the first scraper PR and merge or reject it deliberately.

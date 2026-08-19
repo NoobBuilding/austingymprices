@@ -655,6 +655,36 @@ data model stays compatible with it.
 
 **Recorded for later:**
 
+- **Founder Campaign (launch week).** A coordinated email to the solo-founder and
+  independent gyms surfaced by the discovery sweep, sent **personally by the
+  owner** during launch week, **after** their pages are live on the real domain.
+  Nothing is built until the discovery harvest lands and those pages exist.
+
+  The frame is a **value-grant, not a favour-ask**, and one rule makes that true
+  rather than merely stated: **every sourceable gym is listed regardless.**
+  Listing is never contingent on a reply, a tag, a link, or anything else. A
+  directory that quietly lists you better for promoting it is a directory whose
+  rankings are for sale, which is the thing §4 and `/for-gym-owners` promise we
+  will never be.
+
+  The email says three things, in this order: (1) you are listed on
+  austingymprices.com, here is your page; (2) anything wrong, correct it by
+  reply; (3) **separately and voluntarily** — we are launching on Instagram at
+  @austingymprices, and if the listing is useful to you, a tag would mean a lot.
+  The third point is an invitation **after the fact**. It is never a condition,
+  never a trade, and never phrased as one.
+
+  Targeting: independents first; big-box chains excluded — they have marketing
+  departments and no founder to write to.
+
+  When triggered, build: extend `scrapers/discover.py` to extract contact emails
+  where they are findable, and generate `docs/founder-campaign.html` as outreach
+  round two — one row per gym, detail-page URL, contact address, and **one
+  honest shared template** personalised only by gym name and page link.
+  **No AI-generated per-gym flattery**: a paragraph of machine-written warmth
+  about a gym nobody visited is a lie told at scale, and it reads as one. The
+  owner sends every message.
+
 - **Barbell brand mark** — a minimal horizontal barbell (a bar with two plates)
   as an underline accent beneath the wordmark, and possibly a flanking treatment
   in the hero only. **Launch polish, not v1.** The header wordmark and the
