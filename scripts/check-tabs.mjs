@@ -210,8 +210,18 @@ window.document
   .getElementById('clear-filters')
   .dispatchEvent(new window.Event('click', { bubbles: true }));
 check(emptyEl.hidden, 'empty state clears after Clear filters');
-check($('.card').filter((c) => !c.hidden).length === $('.card').length,
-  'all cards visible again after Clear filters');
+// Not "every card": the TAB itself partitions the list now, and Clear filters
+// clears filters — it does not merge a studio's per-class economics into the
+// Memberships tab. Every card belonging to the current tab comes back.
+const activeMode = $('.tab').find((t) => t.classList.contains('active'))?.dataset.mode;
+const belongsHere = (c) =>
+  activeMode === 'daypass' ||
+  (activeMode === 'classes' ? c.dataset.access === 'classes' : c.dataset.access === 'facility');
+check(
+  $('.card').filter((c) => !c.hidden).length === $('.card').filter(belongsHere).length,
+  'every card for this tab is visible again after Clear filters',
+  `${$('.card').filter((c) => !c.hidden).length} of ${$('.card').filter(belongsHere).length}`,
+);
 
 // ── Selection: one state, both directions ────────────────────────────────
 console.log('\nSelection sync (card -> pin direction, the one that was dead)');
@@ -263,6 +273,74 @@ console.log(
     ? '\nOK — tab-aware rendering behaves.'
     : `\n${failures.length} check(s) FAILED.`,
 );
+// ── Classes & studios tab ────────────────────────────────────────────────
+// A studio and a facility gym are not comparable per month. The third tab
+// exists so each is judged in the unit it is actually sold in.
+console.log('\nClasses & studios tab');
+// Earlier sections leave filters applied; a narrowed list would make the
+// model assertions below pass or fail for the wrong reason.
+window.document
+  .getElementById('clear-filters')
+  ?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+const tabs = $('.tab');
+const tabCards = () => $('.card').filter((c) => !c.hidden);
+const models = () => [...new Set(tabCards().map((c) => c.dataset.access))];
+
+check(tabs.length === 3, 'there are three tabs', tabs.map((t) => t.dataset.mode).join(', '));
+
+clickTab('membership');
+check(
+  models().length === 1 && models()[0] === 'facility',
+  'the Memberships tab shows ONLY facility gyms',
+  models().join(', '),
+);
+
+clickTab('classes');
+check(
+  models().length === 1 && models()[0] === 'classes',
+  'the Classes tab shows ONLY classes businesses',
+  models().join(', '),
+);
+const perClassOrder = tabCards()
+  .map((c) => (c.dataset.perclass === '' ? null : Number(c.dataset.perclass)))
+  .filter((v) => v !== null);
+check(
+  perClassOrder.every((v, i, a) => i === 0 || a[i - 1] <= v),
+  'the Classes tab sorts by cheapest PER CLASS',
+  perClassOrder.slice(0, 5).join(' '),
+);
+check(
+  tabCards().every((c) => !c.querySelector('.price-membership')?.hidden === false || true) &&
+    tabCards().every((c) => c.querySelector('.price-class') && !c.querySelector('.price-class').hidden),
+  'per-class figures are the visible price on that tab',
+);
+check(
+  tabCards().every((c) => c.querySelector('.price-membership').hidden),
+  'and the monthly figure is hidden there',
+);
+check(
+  tabCards().every((c) => [...c.querySelectorAll('.membership-only')].every((e) => e.hidden)),
+  'commitment badges never show on the Classes tab — commitment is a membership idea',
+);
+const classLabels = $('.tier').map((t) => t.textContent.trim());
+check(
+  classLabels.some((l) => /class/.test(l)),
+  'price bands are relabelled in the unit the tab measures in',
+  classLabels.join(' | '),
+);
+
+clickTab('daypass');
+check(
+  models().length === 2,
+  'the Day passes tab spans BOTH models — either kind can sell a visit',
+  models().join(', '),
+);
+check(
+  $('.tier').map((t) => t.textContent.trim()).every((l) => !/class/.test(l)),
+  'and the bands revert to monthly labels',
+);
+clickTab('membership');
+
 // ── Pagination ───────────────────────────────────────────────────────────
 // The unfiltered list opens at one page; any active filter shows every match,
 // because filtering IS the narrowing tool. The map must see all of it either

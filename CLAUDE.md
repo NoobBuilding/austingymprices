@@ -216,6 +216,36 @@ deleted, because the whole point is an auditable trail behind every number we sh
   card shows "Pricing not published — call" state, never a fake number
 - Add-on fees (Crux gear/locker): fold into `note`, not into the math
 
+**`access_model` rules:** `"facility"` (you buy door access — gyms, climbing,
+Castle Hill) or `"classes"` (you buy instructed sessions — solidcore, Club
+Pilates, F45, yoga, BJJ). It decides which tab a gym appears on, and therefore
+**which unit it is judged in**: a facility is comparable per month, a studio per
+class. Listing "$130/mo for 4 classes" beside "$23/mo unlimited access" breaks
+the sort and misleads in both directions. The test is what you are buying, not
+what the category says — Grassiron is `gym-weights` but publishes only class and
+PT rates, so it is `classes`; Korrect is `gym-classes` but sells unlimited open
+gym, so it is `facility`.
+
+**Classes-tab economics:** the headline is **"from $X/class"** — the best
+per-class rate a walk-in can actually get. "Attainable" carries the same spirit
+as the default-plan rule: packs always count (they commit you to nothing), plans
+with `commit_months ≤ 2` count, and a rate reachable only through a twelve-month
+lock-in does not — that is the price of a year, not of a class. Restricted plans
+are excluded for the same reason they never take the headline. Derived at build
+time from `classes_per_period` on plans and from `class_packs`; where no class
+count is published there is **no figure**, never an inferred one. A promo pack is
+excluded outright: letting "3 classes for $79 this month" set the per-class rate
+would promote a promo to standing, and it becomes a wrong number the day the
+offer ends. Class price tiers are **1 (< $22), 2 ($22–32), 3 ($32+)**, fitted to
+what Austin studios actually charge rather than to round numbers that would drop
+nearly everything into tier 1.
+
+**`cancellation_fee` rules:** a nullable number on a plan, for contingent exit
+costs (Castle Hill charges $300 to leave a 12-month plan early). It renders on
+the plan row and **never enters all-in math**: all-in is what you *will* pay,
+a cancellation fee is what you *might*. It is stated anyway, because it is
+exactly the kind of number a gym would rather you found in the contract.
+
 **Regions (ids locked):** `downtown`, `east-austin`, `south-soco`, `hyde-park`,
 `mueller`, `the-domain`, plus `all` as a filter state. Display names per the v2 mockup.
 

@@ -122,9 +122,14 @@ export function initMap(container, pins, getState) {
     markers = [];
   };
 
-  /** Price a pin should display, given the current tab. */
+  /** Price a pin should display, given the current tab. Tab-aware for the same
+   *  reason the cards are: a monthly figure on the Classes tab would be
+   *  comparing a studio's month against a gym's month, which is the confusion
+   *  the third tab exists to remove. */
   function priceOf(pin, mode) {
-    return mode === 'daypass' ? pin.dayPass : pin.allIn;
+    if (mode === 'daypass') return pin.dayPass;
+    if (mode === 'classes') return pin.perClass;
+    return pin.allIn;
   }
 
   /**
@@ -190,8 +195,11 @@ export function initMap(container, pins, getState) {
         pin,
         price,
         shown,
-        // Day-pass tab, gym has no published pass: faded and inert.
-        noPass: mode === 'daypass' && (price === null || price === undefined),
+        // No figure for this tab (no day pass, or no published per-class rate):
+        // faded and inert rather than absent, so the gym is still findable.
+        noPass:
+          (mode === 'daypass' || mode === 'classes') &&
+          (price === null || price === undefined),
         point: map.latLngToLayerPoint([pin.lat, pin.lng]),
       };
     });

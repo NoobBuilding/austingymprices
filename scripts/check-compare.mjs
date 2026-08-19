@@ -250,9 +250,20 @@ check(pill?.hasAttribute('hidden'), 'the pill starts hidden — 0 picks is not a
 check(pill?.tagName === 'A', 'the pill is a real link, so it can be opened in a tab and shared');
 const picks = indexDoc.querySelectorAll('.cmp-pick');
 check(picks.length === gyms.length, 'every card has a compare control', `${picks.length}`);
+// The hidden attribute lives on the ROW now, not the label: the control moved
+// out of the price's corner and into flow at the card's bottom-right.
 check(
-  [...picks].every((p) => p.hasAttribute('hidden')),
+  [...indexDoc.querySelectorAll('.cmp-row')].length === gyms.length,
+  'each compare control sits in its own flow row',
+  `${indexDoc.querySelectorAll('.cmp-row').length}`,
+);
+check(
+  [...indexDoc.querySelectorAll('.cmp-row')].every((r) => r.hasAttribute('hidden')),
   'compare controls are hidden until JS boots — never a dead control without JS',
+);
+check(
+  [...picks].every((p) => !p.style.position && !/position:\s*absolute/.test(p.getAttribute('style') ?? '')),
+  'the control is not absolutely positioned over the card',
 );
 check(
   [...indexDoc.querySelectorAll('.cmp-pick')].every((p) => !p.closest('summary')),

@@ -142,3 +142,82 @@ export function restrictedLabel(plan) {
   }
   return RESTRICTED_LABELS[plan.restricted] ?? 'Restricted';
 }
+
+// ── Classes-tab economics (CLAUDE.md §9) ────────────────────────────────────
+// A facility and a studio are not comparable per month: "$130/mo for 4 classes"
+// beside "$23/mo unlimited access" misleads in both directions. On the Classes
+// tab the comparable unit is the PER-CLASS price.
+
+/** Per-class price of a plan, or null where the class count is not finite. */
+export function perClassOfPlan(plan, billingPeriod) {
+  const n = plan?.classes_per_period;
+  if (typeof n !== 'number' || n <= 0) return null;
+  const monthly = normalizedMonthly(plan, billingPeriod);
+  return monthly === null ? null : monthly / n;
+}
+
+/** Per-class price of a pack. Packs have no commitment, so they always count. */
+export function perClassOfPack(pack) {
+  if (!pack || typeof pack.price !== 'number' || typeof pack.classes !== 'number') return null;
+  return pack.classes > 0 ? pack.price / pack.classes : null;
+}
+
+/**
+ * The best per-class rate a walk-in can actually get today.
+ *
+ * "Attainable" carries the same spirit as the default-plan rule: a rate you can
+ * only reach by signing a twelve-month lock-in is not the price of a class, it
+ * is the price of a year. Packs always count — they commit you to nothing —
+ * and so do plans with a commitment of two months or less. Restricted plans are
+ * excluded for the same reason they are excluded from the headline: a solo
+ * adult cannot simply buy them.
+ *
+ * Returns null when nothing qualifies, which renders as no figure at all rather
+ * than a guess.
+ */
+export function fromPerClass(gym) {
+  const candidates = [];
+  for (const plan of gym.plans ?? []) {
+    if (plan.restricted !== null && plan.restricted !== undefined) continue;
+    const commit = plan.commit_months;
+    const lowCommit = commit === null || commit === undefined || commit <= 2;
+    if (!lowCommit) continue;
+    const v = perClassOfPlan(plan, gym.billing_period);
+    if (v !== null) candidates.push(v);
+  }
+  for (const pack of gym.class_packs ?? []) {
+    // A promo pack is a promo price. Letting "3 classes for $79 this month"
+    // set the per-class figure would promote a promo to standing, which is the
+    // one thing §3 forbids outright — and it would quietly become a wrong
+    // number the day the offer ends.
+    if (pack.promo) continue;
+    const v = perClassOfPack(pack);
+    if (v !== null) candidates.push(v);
+  }
+  return candidates.length === 0 ? null : Math.round(Math.min(...candidates) * 100) / 100;
+}
+
+/**
+ * Price tier for the Classes tab. Bands are fitted to what Austin studios
+ * actually charge — the observed cluster is $18-33 a class — rather than to a
+ * round number that would drop nearly everything into tier 1.
+ */
+export function classTier(perClass) {
+  if (perClass === null || perClass === undefined) return null;
+  if (perClass < 22) return 1;
+  if (perClass <= 32) return 2;
+  return 3;
+}
+
+/** Cheapest unlimited-class plan a walk-in can buy, for the secondary line. */
+export function unlimitedMonthly(gym) {
+  const eligible = (gym.plans ?? []).filter(
+    (p) =>
+      (p.restricted === null || p.restricted === undefined) &&
+      (p.commit_months === null || p.commit_months === undefined || p.commit_months <= 2) &&
+      /unlimited/i.test(p.name ?? '') &&
+      typeof p.monthly === 'number',
+  );
+  if (eligible.length === 0) return null;
+  return Math.round(Math.min(...eligible.map((p) => normalizedMonthly(p, gym.billing_period))));
+}

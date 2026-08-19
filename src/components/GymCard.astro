@@ -65,6 +65,9 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
   data-daypass={gym.day_pass ?? ''}
   data-nocontract={gym.is_no_contract === true ? 'true' : 'false'}
   data-classpass={gym.accepts_classpass === true ? 'true' : 'false'}
+  data-access={gym.access_model}
+  data-perclass={gym.from_per_class ?? ''}
+  data-classtier={gym.class_tier ?? ''}
   data-name={gym.name}
   data-search={normalizeSearch(
     `${gymSearchText(gym, region?.name)} ${CATEGORY_LABELS[gym.category] ?? ''}`,
@@ -109,6 +112,19 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
             </>
           ) : (
             <span class="callfor">Call for pricing</span>
+          )}
+        </div>
+        {/* Classes tab: the comparable unit is the price of ONE CLASS. Where
+            the class count is not published there is no figure — never an
+            inferred one (§3). */}
+        <div class="price price-class" hidden>
+          {gym.from_per_class !== null ? (
+            <>
+              <span class="n">{money(gym.from_per_class)}</span>
+              <span class="u">/class from</span>
+            </>
+          ) : (
+            <span class="callfor">Per-class rate not published</span>
           )}
         </div>
         <div class="price price-daypass" hidden>

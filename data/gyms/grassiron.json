@@ -91,6 +91,20 @@
       "is_default": false
     }
   ],
+  "class_packs": [
+    {
+      "name": "Single class",
+      "price": 35,
+      "classes": 1,
+      "expires_days": null
+    },
+    {
+      "name": "10-pack",
+      "price": 285,
+      "classes": 10,
+      "expires_days": null
+    }
+  ],
   "day_pass": 35,
   "day_pass_qualifier": "single class",
   "day_pass_terms": [

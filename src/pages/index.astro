@@ -53,6 +53,11 @@ const description =
       <button class="tab active" data-mode="membership" role="tab" aria-selected="true">
         Memberships
       </button>
+      {/* Third tab, not a filter: a studio and a facility are not comparable
+          per month, so they get separate surfaces with different units. */}
+      <button class="tab" data-mode="classes" role="tab" aria-selected="false">
+        Classes &amp; studios
+      </button>
       <button class="tab" data-mode="daypass" role="tab" aria-selected="false">
         Day passes
       </button>
@@ -73,10 +78,16 @@ const description =
     </div>
 
     <div class="filters">
-      <button class="pill tier active" data-tier="all">Any price</button>
-      <button class="pill tier" data-tier="1">Under $40</button>
-      <button class="pill tier" data-tier="2">$40–100</button>
-      <button class="pill tier" data-tier="3">$100+</button>
+      {/* Two label sets, one control. The bands differ by tab because the unit
+          does: $40-100 a month and $22-32 a class are both "the middle", and
+          showing monthly bands over per-class prices would misfilter silently.
+          Class bands are fitted to what Austin studios actually charge — the
+          observed cluster is $18-33 — rather than to round numbers that would
+          drop nearly everything into tier 1. */}
+      <button class="pill tier active" data-tier="all" data-label-classes="Any price">Any price</button>
+      <button class="pill tier" data-tier="1" data-label-classes="Under $22/class">Under $40</button>
+      <button class="pill tier" data-tier="2" data-label-classes="$22–32/class">$40–100</button>
+      <button class="pill tier" data-tier="3" data-label-classes="$32+/class">$100+</button>
       <button class="pill" id="nocontract" aria-pressed="false">No contract</button>
       {showClasspassChip && (
         <button class="pill" id="classpass" aria-pressed="false">ClassPass</button>
@@ -129,6 +140,7 @@ const description =
       staying invisible until the user has already guessed the rule. */}
   <a class="cmp-pill" id="cmp-pill" href="/compare" hidden>
     <span id="cmp-label">Compare</span>
+    <span class="cmp-hint" id="cmp-note" hidden></span>
   </a>
 
   {/* Slug -> name for the recently-viewed strip. Rendered as data, read by JS,
@@ -486,16 +498,28 @@ const description =
     // paths showing membership chrome under a day-pass headline.
     function applyTabVisibility() {
       const daypass = state.mode === 'daypass';
+      const classes = state.mode === 'classes';
       const swap = (selector, hide) => {
         document.querySelectorAll(selector).forEach((el) => {
           el.hidden = hide;
         });
       };
-      swap('.price-membership', daypass);
+      swap('.price-membership', daypass || classes);
+      swap('.price-class', !classes);
       swap('.price-daypass', !daypass);
-      swap('.detail-membership', daypass);
+      swap('.detail-membership', daypass || classes);
       swap('.detail-daypass', !daypass);
-      swap('.membership-only', daypass);
+      // Commitment is a membership concept. It is just as wrong above a
+      // per-class headline as above a day-pass one.
+      swap('.membership-only', daypass || classes);
+
+      // Retarget the price-band labels at the unit the current tab measures in.
+      for (const btn of document.querySelectorAll('.tier')) {
+        const classLabel = btn.dataset.labelClasses;
+        if (!classLabel) continue;
+        if (!btn.dataset.labelDefault) btn.dataset.labelDefault = btn.textContent.trim();
+        btn.textContent = classes ? classLabel : btn.dataset.labelDefault;
+      }
     }
 
     // ── Pagination ─────────────────────────────────────────────────────────
@@ -541,11 +565,24 @@ const description =
       applyTabVisibility();
       applySelection();
       let shown = 0;
+      // Which tab a gym belongs on, and which number it is judged by. The
+      // Memberships tab is facility gyms priced per month; Classes is studios
+      // priced per class; Day passes is either, priced per visit.
+      const sortKey =
+        state.mode === 'daypass' ? 'daypass' : state.mode === 'classes' ? 'perclass' : 'allin';
+      const tierAttr = state.mode === 'classes' ? 'classtier' : 'tier';
+
       for (const card of cards) {
-        const price = state.mode === 'daypass' ? num(card, 'daypass') : num(card, 'allin');
+        const price = num(card, sortKey);
+        const rightTab =
+          state.mode === 'daypass' ||
+          (state.mode === 'classes'
+            ? card.dataset.access === 'classes'
+            : card.dataset.access === 'facility');
         const matches =
+          rightTab &&
           (state.region === 'all' || card.dataset.region === state.region) &&
-          (state.tier === 'all' || card.dataset.tier === state.tier) &&
+          (state.tier === 'all' || card.dataset[tierAttr] === state.tier) &&
           (!state.noContract || card.dataset.nocontract === 'true') &&
           (!state.classpass || card.dataset.classpass === 'true') &&
           (state.activity === 'all' || card.dataset.category === state.activity) &&
@@ -558,9 +595,8 @@ const description =
       const visible = cards.filter((c) => !c.hidden);
       visible.sort((a, b) => {
         if (state.sort === 'az') return (a.dataset.name || '').localeCompare(b.dataset.name || '');
-        const key = state.mode === 'daypass' ? 'daypass' : 'allin';
-        const av = num(a, key);
-        const bv = num(b, key);
+        const av = num(a, sortKey);
+        const bv = num(b, sortKey);
         if (av === null && bv === null) return (a.dataset.name || '').localeCompare(b.dataset.name || '');
         if (av === null) return 1;
         if (bv === null) return -1;
@@ -812,6 +848,7 @@ const description =
     // stale selection surfacing on a later visit is a small lie about intent.
     const pillEl = document.getElementById('cmp-pill');
     const pillLabel = document.getElementById('cmp-label');
+    const pillNote = document.getElementById('cmp-note');
     const boxes = Array.from(container.querySelectorAll('.cmp-box'));
     const picks = [];
 
@@ -820,15 +857,37 @@ const description =
       // later: an unchecked box that refuses to check is confusing, a disabled
       // one is self-explanatory.
       const full = picks.length >= MAX_COMPARE;
+      // Comparing a studio against a facility gym is apples to oranges — one is
+      // priced per class and the other per month, and the table would put two
+      // incomparable numbers side by side under one heading. Once a model is
+      // picked, the other model's controls close.
+      const model = picks.length
+        ? cards.find((c) => c.dataset.slug === picks[0])?.dataset.access
+        : null;
       for (const box of boxes) {
-        box.disabled = full && !box.checked;
+        const card = box.closest('.card');
+        const wrongModel = Boolean(model) && card?.dataset.access !== model;
+        box.disabled = (full && !box.checked) || (wrongModel && !box.checked);
         box.closest('.cmp-pick')?.classList.toggle('capped', box.disabled);
+        const row = box.closest('.cmp-row');
+        if (row) row.dataset.reason = wrongModel && !box.checked ? 'model' : '';
       }
       if (pillLabel) {
         pillLabel.textContent =
           picks.length < MIN_COMPARE
             ? `Compare — pick ${MIN_COMPARE - picks.length} more`
             : `Compare (${picks.length})`;
+      }
+      if (pillNote) {
+        // One line, only while it is actually constraining anything.
+        const constrained = picks.length > 0 && picks.length < MAX_COMPARE;
+        pillNote.textContent =
+          constrained && model === 'classes'
+            ? 'Comparing studios by price per class'
+            : constrained && model === 'facility'
+              ? 'Comparing gyms by monthly cost'
+              : '';
+        pillNote.hidden = !pillNote.textContent;
       }
       if (pillEl) {
         pillEl.hidden = picks.length === 0;

@@ -17,6 +17,9 @@ import {
   priceTier,
   restrictedLabel,
   selectDefaultPlan,
+  classTier,
+  fromPerClass,
+  unlimitedMonthly,
 } from './pricing.js';
 
 // import.meta.glob is resolved by Vite at build time — the JSON is baked into
@@ -61,6 +64,12 @@ function decorateGym(gym) {
     all_in_monthly: allIn,
     first_year_total: defaultPlan?.first_year_total ?? null,
     price_tier: priceTier(allIn),
+    // Classes-tab economics. Null for facility gyms and for any studio whose
+    // class counts are not published — which renders as no figure, not a guess.
+    from_per_class: fromPerClass(gym),
+    class_tier: classTier(fromPerClass(gym)),
+    unlimited_monthly: unlimitedMonthly(gym),
+    has_class_price: fromPerClass(gym) !== null,
     // A gym is "no contract" for filtering purposes on its headline plan.
     is_no_contract: defaultPlan ? defaultPlan.is_no_contract : null,
     // Promo flag for the card, if the headline plan carries one.

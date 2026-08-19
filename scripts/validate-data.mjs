@@ -89,6 +89,18 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
     }
   }
 
+  if (!Array.isArray(gym.class_packs)) fail('class_packs must be an array (empty is fine)');
+  for (const k of gym.class_packs ?? []) {
+    if (typeof k.price !== 'number' || k.price <= 0) fail(`class pack "${k.name}" has no price`);
+    if (typeof k.classes !== 'number' || k.classes <= 0) fail(`class pack "${k.name}" has no class count`);
+    if ('promo' in k && typeof k.promo !== 'boolean') fail(`class pack "${k.name}" has a non-boolean promo flag`);
+  }
+  // A gym selling class packs is selling classes. If those two ever disagree
+  // the tabs are lying about what you are buying.
+  if ((gym.class_packs ?? []).length > 0 && gym.access_model !== 'classes') {
+    fail('has class_packs but access_model is not "classes"');
+  }
+
   // Which tab a gym belongs on. "facility" = you buy door access; "classes" =
   // you buy instructed sessions. The distinction drives the comparable unit:
   // $/mo for a facility, $/class for a studio, and mixing them breaks the sort
