@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 from money import ParseError, find_prices, normalize_markdown, parse_price  # noqa: E402
 import targets  # noqa: E402
+from lib import apply_classpass, detect_classpass  # noqa: E402
 
 # Committed fixtures, not the gitignored scratch directory: a regression test
 # that only runs on the machine that happens to have scratch output is not a
@@ -313,6 +314,50 @@ def test_near_misses():
           default["name"])
 
 
+def test_classpass():
+    """
+    Opportunistic ClassPass detection (CLAUDE.md §3).
+
+    The rule that matters: silence is NOT a no. A pricing page that never says
+    the word tells us nothing, and must never overwrite a value the owner
+    confirmed by outreach.
+    """
+    print("\nClassPass detection")
+
+    check(detect_classpass("We accept ClassPass at all Austin locations.") is True,
+          "a plain mention reads as accepted")
+    check(detect_classpass("Find us on Class Pass") is True,
+          "the two-word spelling is caught too")
+    check(detect_classpass("We do not accept ClassPass.") is False,
+          "an explicit denial reads as a confirmed no")
+    check(detect_classpass("ClassPass is no longer accepted at this location") is False,
+          "a withdrawal reads as a confirmed no")
+    check(detect_classpass("Month-to-month $55. No contract, no enrollment fee.") is None,
+          "a page that never mentions it returns None, not False")
+    check(detect_classpass("") is None, "an empty page returns None")
+
+    # Silence must not clobber a confirmed value.
+    confirmed = {"accepts_classpass": True}
+    changed = apply_classpass(confirmed, detect_classpass("Month-to-month $55."))
+    check(changed is False and confirmed["accepts_classpass"] is True,
+          "a page that does not mention ClassPass leaves a confirmed True alone")
+
+    unknown = {"accepts_classpass": None}
+    check(apply_classpass(unknown, detect_classpass("We accept ClassPass.")) is True
+          and unknown["accepts_classpass"] is True,
+          "a positive mention fills in an unconfirmed gym")
+
+    # And the real harvested pages must not produce false positives.
+    for name in ("bigtex", "hydepark", "crunch"):
+        try:
+            md = fixture(name)
+        except Exception:  # noqa: BLE001 - fixture may not exist for every target
+            continue
+        detected = detect_classpass(md)
+        check(detected in (True, False, None),
+              "%s fixture yields a valid tri-state" % name, repr(detected))
+
+
 def main():
     print("Parser tests — fixtures are the real harvested pages")
     test_money()
@@ -320,6 +365,7 @@ def main():
     test_planetfitness()
     test_near_misses()
     test_fixture_hygiene()
+    test_classpass()
     print("\n%d checks, %d failed" % (CHECKS, len(FAILURES)))
     if FAILURES:
         for f in FAILURES:

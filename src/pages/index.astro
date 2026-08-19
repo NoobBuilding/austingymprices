@@ -15,6 +15,14 @@ const sorted = [...gyms].sort((a, b) => {
   return a.name.localeCompare(b.name);
 });
 
+// The ClassPass chip earns its place only once it can actually narrow the list.
+// Below this many confirmed gyms it would filter 41 down to 2 and read as a
+// broken filter rather than a useful one, so it does not render at all. It
+// appears on its own the moment the data supports it — no code change needed.
+const CLASSPASS_CHIP_MIN = 5;
+const classpassCount = gyms.filter((g) => g.accepts_classpass === true).length;
+const showClasspassChip = classpassCount >= CLASSPASS_CHIP_MIN;
+
 const activities = [
   ['gym-weights', 'Gym / weights'],
   ['gym-classes', 'Gym + classes'],
@@ -70,6 +78,9 @@ const description =
       <button class="pill tier" data-tier="2">$40–100</button>
       <button class="pill tier" data-tier="3">$100+</button>
       <button class="pill" id="nocontract" aria-pressed="false">No contract</button>
+      {showClasspassChip && (
+        <button class="pill" id="classpass" aria-pressed="false">ClassPass</button>
+      )}
       <label class="visually-hidden" for="activity">Activity</label>
       <select class="pill" id="activity">
         <option value="all">All activities</option>
@@ -348,6 +359,7 @@ const description =
   // cheapest-first, and every accordion is a native <details>. A broken filter
   // must never take the content down with it.
   import { matchesQuery } from '../lib/search.js';
+  import { nextSelection } from '../lib/selection.js';
 
   try {
   const container = document.getElementById('cards');
@@ -359,10 +371,12 @@ const description =
     const activity = document.getElementById('activity');
     const sortEl = document.getElementById('sort');
     const noContractBtn = document.getElementById('nocontract');
+    // Only present once enough gyms are confirmed; every use is null-guarded.
+    const classpassBtn = document.getElementById('classpass');
 
     // ONE piece of selection state. Both the list and the map render from it;
     // neither keeps its own copy.
-    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', selected: null };
+    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', classpass: false, selected: null };
 
     const num = (card, attr) => {
       const raw = card.dataset[attr];
@@ -403,6 +417,7 @@ const description =
           (state.region === 'all' || card.dataset.region === state.region) &&
           (state.tier === 'all' || card.dataset.tier === state.tier) &&
           (!state.noContract || card.dataset.nocontract === 'true') &&
+          (!state.classpass || card.dataset.classpass === 'true') &&
           (state.activity === 'all' || card.dataset.category === state.activity) &&
           matchesQuery(card.dataset.search || '', card.dataset.searchCompact || '', state.q) &&
           (state.mode !== 'daypass' || price !== null);
@@ -485,6 +500,7 @@ const description =
       state.noContract = false;
       state.q = '';
       state.activity = 'all';
+      state.classpass = false;
       document.querySelectorAll('#regions .chip').forEach((c) => {
         c.classList.toggle('active', c.dataset.region === 'all');
       });
@@ -493,10 +509,19 @@ const description =
       });
       noContractBtn?.classList.remove('active');
       noContractBtn?.setAttribute('aria-pressed', 'false');
+      classpassBtn?.classList.remove('active');
+      classpassBtn?.setAttribute('aria-pressed', 'false');
       if (search) search.value = '';
       if (activity) activity.value = 'all';
       apply();
       search?.focus();
+    });
+
+    classpassBtn?.addEventListener('click', () => {
+      state.classpass = !state.classpass;
+      classpassBtn.classList.toggle('active', state.classpass);
+      classpassBtn.setAttribute('aria-pressed', String(state.classpass));
+      apply();
     });
 
     document.querySelectorAll('.tab').forEach((tab) => {
@@ -608,7 +633,29 @@ const description =
         if (!(details instanceof window.HTMLElement) || details.tagName !== 'DETAILS') return;
         const card = details.closest('.card');
         if (!card) return;
-        setSelected(details.open ? card.dataset.slug : null);
+        const slug = card.dataset.slug;
+
+        // One card open at a time. `<details name>` already does this natively,
+        // so this loop is only for browsers that predate it — where it is
+        // harmless, because closing an already-closed card is a no-op. Keeping
+        // both means the invariant "the open card IS the selection" holds
+        // everywhere rather than only on recent browsers.
+        if (details.open) {
+          for (const other of container.querySelectorAll('.card details[open]')) {
+            if (other !== details) other.open = false;
+          }
+        }
+
+        // The rule itself lives in ../lib/selection.js so it can be executed by
+        // scripts/check-map.mjs. Inline here, it was unreachable by any test —
+        // which is exactly how it stayed broken while the map assertions were
+        // green.
+        const next = nextSelection({
+          slug,
+          open: details.open,
+          current: state.selected,
+        });
+        if (next !== state.selected) setSelected(next);
       },
       true,
     );

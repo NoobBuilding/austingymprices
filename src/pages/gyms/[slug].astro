@@ -106,6 +106,15 @@ const jsonLd = {
       </div>
     )}
 
+    {/* Nominative use only: the plain name of a third-party service this gym
+        accepts, as a statement of fact. No logo, no mark, no link — we are not
+        a ClassPass affiliate and must not look like one. `false` (a confirmed
+        no) and `null` (unconfirmed) both render nothing: a negative is not
+        worth the space, and absence of data renders absence of text (§3). */}
+    {gym.accepts_classpass === true && (
+      <p class="classpass">Accepts ClassPass</p>
+    )}
+
     {/* A photo renders only when one exists. Null renders nothing at all —
         never a placeholder box, same rule as known_for (§5). */}
     {photoSrc && (
@@ -255,6 +264,9 @@ const jsonLd = {
   .headline.callfor { color: var(--ink-soft); }
   .known { margin-top: 14px; font-size: .92rem; color: var(--ink-soft); background: var(--surface-sunk); border: 1px solid var(--line); border-radius: 10px; padding: 11px 15px; display: flex; gap: 9px; align-items: baseline; }
   .known .k { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--orange-dark); flex: none; }
+  /* Plain factual line, styled like body copy rather than a badge — it is a
+     statement, not an endorsement. */
+  .classpass { margin-top: 12px; font-size: .88rem; color: var(--ink-soft); }
   h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; text-transform: uppercase; letter-spacing: .02em; margin: 44px 0 6px; }
   .h2sub { font-size: .8rem; color: var(--ink-soft); margin-bottom: 14px; }
   .plans { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }

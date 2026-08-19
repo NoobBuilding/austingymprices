@@ -1,7 +1,8 @@
 ---
 /**
  * Index card. Collapsed by default; the accordion is a native <details> so it
- * works with JavaScript disabled (CLAUDE.md §8).
+ * works with JavaScript disabled (CLAUDE.md §8), and a named one so that
+ * "only one card open at a time" is the browser's job first and ours second.
  *
  * The headline price is ALL-IN with the "/mo all-in" unit. The sticker price
  * appears only inside the breakdown (§5). A gym without a confirmed price
@@ -60,6 +61,7 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
   data-allin={gym.all_in_monthly ?? ''}
   data-daypass={gym.day_pass ?? ''}
   data-nocontract={gym.is_no_contract === true ? 'true' : 'false'}
+  data-classpass={gym.accepts_classpass === true ? 'true' : 'false'}
   data-name={gym.name}
   data-search={normalizeSearch(
     `${gymSearchText(gym, region?.name)} ${CATEGORY_LABELS[gym.category] ?? ''}`,
@@ -68,7 +70,13 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     `${gymSearchText(gym, region?.name)} ${CATEGORY_LABELS[gym.category] ?? ''}`,
   )}
 >
-  <details class="card-details">
+  {/* Named group = native one-at-a-time accordion: opening a card closes any
+      other, in the browser, with no JavaScript at all. The open card IS the
+      map's single spotlight, so two cards open at once would be two states
+      pretending to be one — which is exactly where the selection-wipe bug
+      lived (§9 step 4). index.astro enforces the same rule in JS for browsers
+      that predate `name`, so the invariant holds either way. */}
+  <details class="card-details" name="gym-card">
     <summary class="card-top">
       <div class="card-id">
         <h2 class="card-name">

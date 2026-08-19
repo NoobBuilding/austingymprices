@@ -123,6 +123,67 @@ const pins = getAllGyms()
     font-weight: 700;
   }
 
+  /* ── Dots mode ────────────────────────────────────────────────────────
+   * Location-first browsing: tier tint survives, the number does not. A price
+   * on every pin invites writing a gym off before reading a word about it.
+   * These rules only resize and round the same bubble, so every state rule
+   * above (tier tint, dim, nopass, cluster) still applies unchanged — and
+   * .pin.active below still wins the colours it sets. */
+  :global(.pin.dot) {
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0;
+    box-shadow: 0 1px 3px rgba(33, 29, 25, 0.28);
+  }
+
+  /* A cluster dot is bigger, because "more than one gym here" is the one thing
+   * a dot still has to say once the price range is gone. */
+  :global(.pin.dot.cluster) {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+  }
+
+  :global(.pin.dot.callfor) {
+    border-width: 1.5px;
+  }
+
+  /* The display toggle. Quiet by design — a preference, not a filter. */
+  :global(.map-display) {
+    display: flex;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(33, 29, 25, 0.12);
+  }
+
+  :global(.map-display-btn) {
+    border: 0;
+    background: transparent;
+    color: var(--ink-soft);
+    font: 600 11px var(--font-body);
+    padding: 6px 11px;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  :global(.map-display-btn:hover) {
+    color: var(--ink);
+  }
+
+  /* Neutral on purpose. Orange means "selected" and ink means "expensive" on
+   * this map, and both meanings are exclusive (CLAUDE.md §9 step 4) — chrome
+   * does not get to borrow either one. */
+  :global(.map-display-btn.on) {
+    background: var(--surface-sunk);
+    color: var(--ink);
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
   /* MUST come last. Selected must be unmistakable against every other pin
    * state, and these are all single-specificity class pairs, so source order
    * decides. Defined before .pin.cluster, a selected cluster kept the white

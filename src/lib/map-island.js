@@ -38,6 +38,33 @@ const CLUSTER_PX = 44;
 
 const money = (n) => `$${Number.isInteger(n) ? n : Number(n).toFixed(2)}`;
 
+// Map display mode. "prices" is the default and stays the default: the price
+// on the pin is the whole point of the site. "dots" exists because a price on
+// every pin invites dismissing a gym before reading anything about it, so
+// location-first browsing gets its own mode rather than a compromise between
+// the two.
+const DISPLAY_KEY = 'agp:map-display';
+const DISPLAYS = ['prices', 'dots'];
+
+/** localStorage is best-effort: private modes throw on access, and a map that
+ *  cannot remember a preference is far better than a map that fails to load. */
+function readDisplay() {
+  try {
+    const saved = window.localStorage.getItem(DISPLAY_KEY);
+    return DISPLAYS.includes(saved) ? saved : 'prices';
+  } catch {
+    return 'prices';
+  }
+}
+
+function writeDisplay(value) {
+  try {
+    window.localStorage.setItem(DISPLAY_KEY, value);
+  } catch {
+    /* preference simply does not persist; the map still works */
+  }
+}
+
 export function initMap(container, pins, getState) {
   ensureLeafletCss();
 
@@ -60,6 +87,7 @@ export function initMap(container, pins, getState) {
   }).addTo(map);
 
   let markers = [];
+  let display = readDisplay();
   // Which selection we have already brought into view, and whether the
   // current one came from a pin click on this map (in which case the user is
   // already looking at it and panning would be jarring).
@@ -83,17 +111,29 @@ export function initMap(container, pins, getState) {
    * so that a gym-supplied string can never reach an HTML sink by accident.
    */
   function bubble(label, className, latlng, onClick) {
+    const dots = display === 'dots';
     const el = document.createElement('span');
-    el.className = className;
-    el.textContent = label;
+    el.className = dots ? `${className} dot` : className;
+    // In dots mode the number is deliberately absent from the pin, but the pin
+    // is still the only thing announcing this gym on the map — so the label it
+    // would have shown becomes its accessible name rather than disappearing.
+    if (dots) {
+      // A bare <span> is not guaranteed to expose aria-label, so give the dot
+      // a role that does. The list remains the accessible equivalent of the
+      // map, but a pin should never be an unnamed blob either.
+      el.setAttribute('role', 'img');
+      el.setAttribute('aria-label', label);
+    }
+    else el.textContent = label;
 
-    const width = label.length * 8 + 20;
+    const size = dots ? (className.includes('cluster') ? 18 : 14) : label.length * 8 + 20;
+    const height = dots ? size : 26;
     const marker = L.marker(latlng, {
       icon: L.divIcon({
         html: el,
         className: '',
-        iconSize: [width, 26],
-        iconAnchor: [width / 2, 13],
+        iconSize: [size, height],
+        iconAnchor: [size / 2, height / 2],
       }),
       keyboard: false,
     });
@@ -134,7 +174,9 @@ export function initMap(container, pins, getState) {
           'pin',
           `tier-${pin.tier ?? 2}`,
           selected === pin.slug ? 'active' : '',
-        ].join(' ');
+        ]
+          .filter(Boolean)
+          .join(' ');
         markers.push(bubble(label, cls, [pin.lat, pin.lng], () => select(pin.slug)));
       } else {
         const label = clusterLabel(group.members, money);
@@ -185,7 +227,21 @@ export function initMap(container, pins, getState) {
    * needs resolving, per the spec.
    */
   function revealSelection(selected, groups) {
-    if (!selected || selected === lastRevealed) return;
+    if (!selected) {
+      // Selection cleared. Forget what we last revealed, or re-selecting the
+      // same gym is treated as "already in view" and never brought back —
+      // including never zooming to resolve the cluster it is hiding inside.
+      lastRevealed = null;
+      selfInitiated = false;
+      return;
+    }
+    // Already revealed. Consume the self-initiated flag on the way past, or a
+    // pin click on the gym that is already selected leaves it set and steals
+    // the pan from the NEXT selection made from the list.
+    if (selected === lastRevealed) {
+      selfInitiated = false;
+      return;
+    }
     if (selfInitiated) {
       // Came from clicking this very pin; the user can see it already.
       lastRevealed = selected;
@@ -225,9 +281,62 @@ export function initMap(container, pins, getState) {
     document.dispatchEvent(new CustomEvent('gym:select', { detail: { slug } }));
   }
 
+  /**
+   * The display toggle. A real pair of buttons built with DOM APIs — no inline
+   * handler, so script-src 'self' is untouched (CLAUDE.md §8). Deliberately
+   * small and low-contrast: it is a preference, not a filter, and it must not
+   * compete with the pins for attention.
+   */
+  function setDisplay(next) {
+    if (display === next) return;
+    display = next;
+    writeDisplay(next);
+    render();
+  }
+
+  const DisplayControl = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd() {
+      const wrap = L.DomUtil.create('div', 'map-display');
+      wrap.setAttribute('role', 'group');
+      wrap.setAttribute('aria-label', 'Map pin display');
+
+      const buttons = DISPLAYS.map((value) => {
+        const btn = L.DomUtil.create('button', 'map-display-btn', wrap);
+        btn.type = 'button';
+        btn.textContent = value === 'prices' ? '$ prices' : 'dots';
+        btn.setAttribute('aria-pressed', String(display === value));
+        btn.classList.toggle('on', display === value);
+        L.DomEvent.on(btn, 'click', (e) => {
+          L.DomEvent.stop(e);
+          setDisplay(value);
+          for (const b of buttons) {
+            const on = b.dataset.display === display;
+            b.setAttribute('aria-pressed', String(on));
+            b.classList.toggle('on', on);
+          }
+        });
+        btn.dataset.display = value;
+        return btn;
+      });
+
+      // Clicks and scrolls on the control belong to the control, not the map.
+      L.DomEvent.disableClickPropagation(wrap);
+      L.DomEvent.disableScrollPropagation(wrap);
+      return wrap;
+    },
+  });
+  map.addControl(new DisplayControl());
+
   map.on('zoomend moveend', render);
   document.addEventListener('filters:changed', render);
 
   render();
-  return { map, render, invalidate: () => map.invalidateSize() };
+  return {
+    map,
+    render,
+    invalidate: () => map.invalidateSize(),
+    getDisplay: () => display,
+    setDisplay,
+  };
 }

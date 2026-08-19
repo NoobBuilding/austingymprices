@@ -85,6 +85,7 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
       "is_default": true              // exactly one plan per gym; drives card price + map pin
     }
   ],
+  "accepts_classpass": null,          // true | false | null — null renders NOTHING
   "sub_locality": "North Loop",       // display-only neighbourhood, shown after the region
   "billing_period": "monthly",        // "monthly" (default) | "4-week" | "weekly"
   "day_pass": 15,                     // null if unknown/none
@@ -176,6 +177,23 @@ standing**. This is deliberately the foundation for the §10 deals feed.
 ("2-mo minimum"). The **"No contract" filter** includes `commit_months ≤ 2`, because a
 two-month floor is not what people mean by a contract — but the badge never overstates.
 
+**`accepts_classpass` rules:** a tri-state, and the tri-state is the point.
+`true` renders the plain words "Accepts ClassPass" on the detail page — nominative
+use only: **no logo, no mark, no link, no affiliate framing**, because we are not
+a ClassPass partner and must never look like one. `false` is a confirmed no and
+renders **nothing** — a negative does not earn space on the page, but it is worth
+storing because it tells the owner's outreach not to ask twice. `null` means
+unconfirmed and also renders nothing. **Silence is not a no:** a pricing page that
+never says the word proves nothing, so a scrape that finds no mention leaves the
+stored value alone rather than writing `false`. Same rule as the commitment badge —
+absence of data renders absence of claim. Scrapers read for it opportunistically
+off pages they already fetched (§6), so it costs no extra credits.
+
+The index gets a **"ClassPass" filter chip only once ≥5 gyms are confirmed `true`**.
+Below that it would cut 41 gyms to two and read as a broken filter rather than a
+useful one. The gate is computed at build time, so the chip appears on its own the
+day the data supports it — no code change.
+
 **`price_history` rules:** on every scrape where any plan value changes, the scraper
 **appends** a `{date, plan_name, field, old, new}` entry rather than silently overwriting
 the plan. The current value still lives on the plan object — history is additive, not a
@@ -249,6 +267,15 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   Orange is never a background wash — accent, not wallpaper.
 - Type: Barlow Condensed 600/700 for display/headlines/prices, Inter for everything else.
   Self-host the fonts (no Google Fonts request at runtime — privacy + speed).
+- **Favicon / app mark:** a white "A" on an orange `#BF5700` rounded square —
+  the logo's Austin-orange half, reduced to one letter. Shipped as
+  `favicon.svg` (primary), `favicon.ico` (16/32/48 fallback) and
+  `apple-touch-icon.png` (180, full-bleed square because iOS applies its own
+  mask). The letter is the **real Barlow Condensed 700 glyph converted to a
+  path**, not live text: a favicon cannot fetch a webfont, so an unconverted
+  `<text>` element would silently render in whatever the OS substitutes. Cap
+  height is 48/64 of the tile — the smallest size at which the counter stays
+  open at 16px, which is the size that actually has to work.
 - `known_for` is the owner's editorial voice, never generated. When it is `null`,
   render **nothing** — no placeholder, no empty box.
 - **Accessibility overrides "do not restyle."** The design system is fixed, with one
@@ -430,6 +457,25 @@ exists; they are recorded now so they're inherited, not retrofitted.
      while the map iterates data order, so any position-based lookup would light up
      the wrong gym. `scripts/check-map.mjs` asserts this with the two orderings
      deliberately different.
+   - **Exactly one card is open at a time, and the open card IS the selection.**
+     The cards are a named `<details>` group, so the browser enforces the
+     accordion natively even with JS off; `index.astro` enforces the same rule
+     for browsers that predate `name`, and `src/lib/selection.js` holds the
+     selection rule itself where a test can execute it.
+     Cards used to be independent `<details>`: opening a second one moved the
+     selection while the first stayed open, and closing that second one then
+     cleared a selection whose own card was still open. The map went white
+     underneath an open card, which reads as "the selected cluster lost its
+     orange" when in truth nothing was selected at all. That was **two states
+     pretending to be one**, and the fix is to make them genuinely one rather
+     than to keep them in sync. Side-by-side comparison is the detail pages' job.
+     The rule must converge whichever order the two toggle events arrive in,
+     because the spec does not pin that order down.
+     The lesson generalises: **a rule that only exists inside an event handler
+     cannot be asserted, and an assertion that only reads CSS and pure helpers
+     will stay green while the real path is broken.** `scripts/check-map.mjs`
+     now boots the actual island and inspects the classes `render()` really
+     emits.
    - **Colour meanings on the map are exclusive and must stay that way.**
      **Ink = expensive** (tier 3). **Orange = selected**, and nothing else on the map
      uses orange as a fill. A selected cluster gets the identical treatment to a
@@ -437,6 +483,18 @@ exists; they are recorded now so they're inherited, not retrofitted.
      version of it. Every pin state is a single-specificity class pair, so `.pin.active`
      must be declared **last**; `scripts/check-map.mjs` asserts that ordering, because
      both regressions here came from a later rule quietly winning.
+   - **Display toggle — "$ prices" / "dots".** A quiet two-button control on the map.
+     **Prices is and stays the default**: the price on the pin is the whole reason
+     the map exists. **Dots** drops the numbers for small tier-tinted dots, because
+     a price on every pin invites writing a gym off before reading a word about it,
+     and location-first browsing deserves its own mode rather than a compromise
+     between the two. Dots keep the tier tint and every other pin state — selected
+     is still orange, filtered-out still dims, a cluster dot is simply larger, and
+     the price a dot no longer prints becomes its accessible name. The preference
+     persists in `localStorage` and nowhere else; a browser that refuses storage
+     just gets the default back, which is not a failure worth handling twice.
+     The control is chrome, so it uses **neither orange nor ink** — both meanings
+     are reserved for pins.
    - **Clustering**: minimal. With 41 gyms individual pins should survive to fairly wide
      zoom. When clustering does trigger, the cluster label is the **price range** of its
      members ("$15–259"), never a count — a count tells you nothing you came for.
@@ -485,8 +543,19 @@ data model stays compatible with it.
 
 - **Deals feed + price-drop email alerts + price history charts**, built on scrape diffs;
   potential promo-placement revenue layer once traffic exists.
+- **Gym-owner media feed** — an Instagram-style scrollable strip of photos and short
+  video on each gym detail page, uploaded by the gym owner. Ships **with the owner
+  portal**, not before: it is owner-published content, so it needs an authenticated
+  owner identity, moderation, and storage before a single pixel of it renders.
+  Recorded now so v1 does not foreclose it — v1's `photo` field stays a single
+  string and gains nothing speculative, and the detail page keeps the vertical
+  room below the photo where a strip would go. Inherits every **[phase-2]** rule in
+  §8, plus the obvious ones a media upload path adds: server-side MIME and size
+  validation, re-encoding rather than trusting the uploaded bytes, EXIF stripping,
+  and serving from a separate origin so a malicious upload cannot execute against
+  ours. **Not built in v1, not partially built in v1.**
 
-The `price_history` array in §3 is the v1 groundwork for this: it costs nothing now, and
+The `price_history` array in §3 is the v1 groundwork for the deals feed: it costs nothing now, and
 without it from day one the charts would have no back-catalogue to draw. Everything else
 this implies — accounts, email capture, a write path — remains firmly out of v1 per §1,
 and inherits every **[phase-2]** security rule in §8 the day it arrives.

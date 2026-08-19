@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Austin Gym Prices">
+  <!-- Austin Gym Prices mark: white "A" on Austin orange (#BF5700, CLAUDE.md §5).
+       The letter is the real Barlow Condensed 700 "A", converted to a path from
+       public/fonts/barlow-condensed-700-latin.woff2 — an SVG favicon cannot load
+       a webfont, so the outline has to travel with it. Cap height is 48/64 of the
+       tile, the smallest size at which the counter stays open at 16px. -->
+  <rect width="64" height="64" rx="14" fill="#BF5700"/>
+  <path transform="translate(15.459 56.000) scale(0.068571 -0.068571)" fill="#fff" d="M325 11 309 107Q309 112 303 112H176Q170 112 170 107L154 11Q153 0 141 0H24Q11 0 14 13L161 689Q163 700 174 700H309Q320 700 322 689L468 13L469 9Q469 0 458 0H338Q326 0 325 11ZM194 221H284Q289 221 288 226L241 499Q240 502 238.0 502.0Q236 502 235 499L190 226Q190 221 194 221Z"/>
+</svg>

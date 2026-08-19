@@ -24,6 +24,16 @@ const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
 
+    {/* SVG first for browsers that take it (sharp at any size, one file);
+        favicon.ico is the fallback and is deliberately NOT declared with a
+        `sizes` attribute, so old browsers fall back to /favicon.ico anyway.
+        Same artwork in all three — the "A" is the real Barlow Condensed 700
+        glyph as a path, since a favicon cannot fetch a webfont. */}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#BF5700" />
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

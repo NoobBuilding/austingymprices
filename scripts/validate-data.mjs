@@ -61,6 +61,14 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
   if (!['scrape', 'manual'].includes(gym.data_source)) {
     fail(`data_source must be "scrape" or "manual", got "${gym.data_source}"`);
   }
+  // ClassPass: a tri-state. `null` means we have not confirmed either way and
+  // renders nothing; `false` is a confirmed no. Only `true` ever shows text, so
+  // the field obeys the same rule as the badges — confirmed data only.
+  if (![true, false, null].includes(gym.accepts_classpass ?? null)) {
+    fail(`accepts_classpass must be true, false or null, got ${JSON.stringify(gym.accepts_classpass)}`);
+  }
+  if (!('accepts_classpass' in gym)) fail('accepts_classpass is missing (use null when unconfirmed)');
+
   if (!Array.isArray(gym.price_history)) fail('price_history must be an array');
   if (typeof gym.stale !== 'boolean') fail('stale must be a boolean');
   // A stale flag with no verified_date has nothing to be stale relative to.

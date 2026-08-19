@@ -26,9 +26,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import targets as target_registry  # noqa: E402
 from lib import (  # noqa: E402
-    GuardrailError, ParseError, ScrapeError, apply_result, check_guardrails,
-    fetch, get_api_key, init_sentry, load_gym, mark_stale, report, save_gym,
-    today_iso,
+    GuardrailError, ParseError, ScrapeError, apply_classpass, apply_result,
+    check_guardrails, detect_classpass, fetch, get_api_key, init_sentry,
+    load_gym, mark_stale, report, save_gym, today_iso,
 )
 
 POLITE_DELAY_SECONDS = 5
@@ -77,6 +77,11 @@ def run_target(name, api_key, dry_run, sentry, today):
         before = json.dumps(gym.get("plans", []), sort_keys=True)
         history = apply_result(gym, plans, day_pass, today)
         after = json.dumps(gym["plans"], sort_keys=True)
+
+        # Free ride on a page we already hold. Silence changes nothing, so this
+        # can only ever add information, never remove it.
+        if apply_classpass(gym, detect_classpass(markdown)):
+            print("       ClassPass: %s" % gym["accepts_classpass"])
 
         if before == after and not history:
             print("  --   %-34s unchanged" % label)

@@ -16,6 +16,7 @@ The contract every target obeys (CLAUDE.md §6):
 
 import json
 import os
+import re
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -182,6 +183,58 @@ def apply_result(gym, new_plans, new_day_pass, today):
     gym["stale"] = False
     gym.setdefault("price_history", []).extend(history)
     return history
+
+
+# ── ClassPass ───────────────────────────────────────────────────────────────
+# Opportunistic only: we are already holding the pricing page, so we read it for
+# a ClassPass mention rather than fetching anything extra. Never costs a credit.
+_CLASSPASS = re.compile(r"class\s*pass", re.I)
+# Explicit denials, which are the only thing that may write a confirmed False.
+_CLASSPASS_NEGATED = re.compile(
+    r"(?:no(?:t)?|don'?t|do not|doesn'?t|does not|we no longer|cannot|can'?t|"
+    r"stopped)\W{0,30}(?:accept|take|honor|honour|partner|work)\w*\W{0,20}"
+    r"class\s*pass"
+    r"|class\s*pass\W{0,30}(?:is\s+)?(?:no longer|not)\s+(?:accept|available|"
+    r"honou?red|offered)",
+    re.I,
+)
+
+
+def detect_classpass(markdown):
+    """
+    Read a ClassPass status off a page we already fetched.
+
+    Returns True (mentioned), False (explicitly denied) or **None** (no mention).
+
+    None is not "no". A pricing page that never says the word proves nothing
+    about whether the gym is on ClassPass, and inferring a negative from silence
+    is the same class of error as inferring "no contract" from unpublished terms
+    (CLAUDE.md §3). Only a positive mention or an explicit denial writes a value;
+    silence leaves whatever the owner's outreach has established.
+    """
+    if not markdown:
+        return None
+    if _CLASSPASS_NEGATED.search(markdown):
+        return False
+    if _CLASSPASS.search(markdown):
+        return True
+    return None
+
+
+def apply_classpass(gym, detected):
+    """
+    Merge a detection into a gym record. Returns True if the value changed.
+
+    A None detection never overwrites: it means "this page did not say", not
+    "this gym does not". A confirmed value from the owner's outreach therefore
+    survives every scrape that simply fails to mention it.
+    """
+    if detected is None:
+        return False
+    if gym.get("accepts_classpass") == detected:
+        return False
+    gym["accepts_classpass"] = detected
+    return True
 
 
 def mark_stale(gym, today):
