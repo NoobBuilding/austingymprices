@@ -12,17 +12,33 @@
   "known_for": null,
   "amenities": [],
   "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-19",
   "billing_period": "monthly",
-  "plans": [],
-  "day_pass": null,
-  "day_pass_qualifier": null,
-  "day_pass_terms": [],
+  "plans": [
+    {
+      "name": "Membership",
+      "monthly": 50,
+      "enroll_fee": 25,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Plus tax. One-time $25 sign-up fee. No contract. Discounts for military, first responders, students and educators.",
+      "is_default": true
+    }
+  ],
+  "day_pass": 10,
+  "day_pass_qualifier": "+ tax, weekdays",
+  "day_pass_terms": [
+    "Weekend day pass is $20 + tax",
+    "Price is per day"
+  ],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "A ~$40/mo rate appears in local coverage but is unconfirmed against the gym's own site, so no number is shown. Call to confirm.",
+  "pricing_note": null,
   "stale": false,
   "price_history": []
 }

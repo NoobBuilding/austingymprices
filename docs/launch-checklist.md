@@ -66,6 +66,33 @@ All of these run in CI on every push. Green is required, not advisory.
       (or Settings → Rules → main protection → remove the bypass actor).
       Verify by attempting a direct push and watching it be refused.
 
+## Gate 3b — event counting (start BEFORE launch)
+
+The outbound-click dataset cannot be reconstructed retroactively, so it has to
+be counting before the first visitor arrives, not after the first gym asks what
+we did for them.
+
+- [ ] **Create the D1 database and bind it.** Cloudflare dashboard → Workers &
+      Pages → D1 → create `austingymprices`, then bind it to the Pages project
+      as **`DB`** (Settings → Functions → D1 database bindings). Free tier is
+      ample: 100k writes/day against a site that will not see thousands.
+- [ ] **Apply the schema:**
+      `npx wrangler d1 execute austingymprices --remote --file=migrations/0001_events.sql`
+- [ ] **Verify a click lands.** Open a gym page on the deployed site, click
+      "Visit gym website", then:
+      `npx wrangler d1 execute austingymprices --remote --command "SELECT * FROM events"`
+      Until the binding exists the endpoint answers 204 and counts nothing —
+      by design, so a missing binding can never break a visitor's click-through.
+- [ ] **Enable Cloudflare Web Analytics** for pageviews (dashboard toggle;
+      Pages injects the script). **This requires a CSP change** —
+      `script-src` must gain `https://static.cloudflareinsights.com` and
+      `connect-src` `https://cloudflareinsights.com`, or the beacon is refused
+      silently in production. Do not enable it without editing `public/_headers`
+      in the same change, and re-run `npm run smoke` afterwards.
+- [ ] **Rate-limit `/api/event`** — Cloudflare → Security → WAF → rate limiting,
+      e.g. 60 requests/minute per IP. The endpoint is a public write path; §8
+      requires rate limiting on those the moment one exists.
+
 ## Gate 4 — the domain (owner, manual, last)
 
 Deliberately last: connecting the domain is what makes the site findable, and

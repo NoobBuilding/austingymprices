@@ -496,13 +496,23 @@ check(
   'the real payload merges NOTHING at the default zoom — every pin shows its own price',
   bubbles().filter((b) => b.merged).map((b) => b.label).join(', ') || 'no merged bubbles',
 );
+// Zooming OUT can legitimately merge a genuinely co-located pair — Austin
+// Bouldering Project and Lift ATX are 4.4px apart at zoom 11. Asserting "never
+// merges" pinned a property of the dataset on the day it was written; the rule
+// is that merging stays MINIMAL and, when it happens, is labelled correctly.
 for (const z of [11, 12, 14, 16]) {
   api.map.setZoom(z);
   api.render();
+  const merged = bubbles().filter((b) => b.merged);
   check(
-    bubbles().every((b) => !b.merged),
-    `no merged bubbles at zoom ${z}`,
-    bubbles().filter((b) => b.merged).map((b) => b.label).join(', ') || 'none',
+    merged.length <= 1,
+    `merging stays minimal at zoom ${z} — this is not NYC`,
+    merged.map((b) => b.label).join(', ') || 'none',
+  );
+  check(
+    merged.every((b) => /^\$[\d.]+ \+\d+$/.test(b.label)),
+    `any merged bubble at zoom ${z} reads "cheapest +N"`,
+    merged.map((b) => b.label).join(', ') || 'none merged',
   );
 }
 api.map.setZoom(12);

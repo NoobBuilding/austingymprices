@@ -130,6 +130,12 @@ const description =
   <a class="cmp-pill" id="cmp-pill" href="/compare" hidden>
     <span id="cmp-label">Compare</span>
   </a>
+
+  {/* Slug -> name for the recently-viewed strip. Rendered as data, read by JS,
+      so a stale slug can never surface as raw kebab-case at a reader. */}
+  <span id="gym-names" hidden data-names={JSON.stringify(
+    Object.fromEntries(gyms.map((g) => [g.slug, g.name])),
+  )}></span>
 </Base>
 
 <style>
@@ -448,6 +454,7 @@ const description =
   import { matchesQuery } from '../lib/search.js';
   import { nextSelection } from '../lib/selection.js';
   import { MAX_COMPARE, MIN_COMPARE, compareHref } from '../lib/compare.js';
+  import { track } from '../lib/track.js';
 
   try {
   const container = document.getElementById('cards');
@@ -585,6 +592,7 @@ const description =
       document.querySelectorAll('#regions .chip').forEach((c) => c.classList.remove('active'));
       chip.classList.add('active');
       state.region = chip.dataset.region;
+      track('filter_region', state.region);
       apply();
     });
 
@@ -593,6 +601,7 @@ const description =
         document.querySelectorAll('.tier').forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
         state.tier = btn.dataset.tier;
+        track('filter_tier', state.tier);
         apply();
       });
     });
@@ -601,6 +610,7 @@ const description =
       state.noContract = !state.noContract;
       noContractBtn.classList.toggle('active', state.noContract);
       noContractBtn.setAttribute('aria-pressed', String(state.noContract));
+      track('filter_nocontract', state.noContract ? 'on' : 'off');
       apply();
     });
 
@@ -611,6 +621,7 @@ const description =
 
     activity?.addEventListener('change', () => {
       state.activity = activity.value;
+      track('filter_activity', state.activity);
       apply();
     });
 
@@ -668,6 +679,7 @@ const description =
         tab.setAttribute('aria-selected', 'true');
         // Set state only; apply() derives all tab-dependent visibility.
         state.mode = tab.dataset.mode;
+        track('tab', state.mode);
         apply();
       });
     });
@@ -820,6 +832,13 @@ const description =
       }
       if (pillEl) {
         pillEl.hidden = picks.length === 0;
+        // The comparison SET, not the individual picks: which gyms people weigh
+        // against each other is the question worth answering, and a sorted slug
+        // list says that without saying anything about who asked.
+        if (picks.length >= MIN_COMPARE) {
+          track('compare', [...picks].sort().join('|'));
+          track('compare_count', String(picks.length));
+        }
         const ready = picks.length >= MIN_COMPARE;
         // At one pick the pill is a prompt, not a destination. Dropping the
         // href stops it being a link to a comparison that cannot exist yet.
@@ -843,6 +862,23 @@ const description =
       });
     }
     syncPicks();
+
+    // Recently viewed. Renders only when there is history, and only for gyms
+    // still listed — a delisted slug is dropped rather than shown raw.
+    // .then() rather than top-level await: this script is bundled as a module,
+    // but the build assertions eval it as plain script, and a footer nicety is
+    // not worth making the bundle un-testable over.
+    import('../lib/recent.js')
+      .then(({ renderRecent }) => {
+        const namesEl = document.getElementById('gym-names');
+        renderRecent(
+          document.getElementById('recently-viewed'),
+          JSON.parse(namesEl?.dataset.names ?? '{}'),
+        );
+      })
+      .catch((err) => {
+        console.error('[austingymprices] recently-viewed failed; footer is unaffected', err);
+      });
 
     document.documentElement.dataset.filtersReady = 'true';
   }

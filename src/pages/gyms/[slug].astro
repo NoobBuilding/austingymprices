@@ -68,7 +68,7 @@ const jsonLd = {
 };
 ---
 
-<Base title={title} description={description} canonicalPath={`/gyms/${gym.slug}`} ogImage={`gym-${gym.slug}`}>
+<Base title={title} description={description} canonicalPath={`/gyms/${gym.slug}`} ogImage={`gym-${gym.slug}`} gymSlug={gym.slug}>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div class="wrap">
@@ -79,7 +79,13 @@ const jsonLd = {
     <div class="title-row">
       <h1>{gym.name}</h1>
       {gym.website && (
-        <a class="visit" href={gym.website} target="_blank" rel="noopener noreferrer">Visit gym website ↗</a>
+        <a
+          class="visit"
+          href={gym.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-outbound={gym.slug}
+        >Visit gym website ↗</a>
       )}
     </div>
 
@@ -321,6 +327,20 @@ const jsonLd = {
 </style>
 
 <script>
+  import { track } from '../../lib/track.js';
+  import { pushRecent } from '../../lib/recent.js';
+
+  // Record the visit locally. Never leaves the browser and is not an identifier.
+  pushRecent(document.body.dataset.gymSlug);
+
+  // Outbound clicks. The one number every future gym conversation turns on,
+  // and it cannot be reconstructed later — so it starts counting before
+  // launch. Fired with sendBeacon, so the navigation is never delayed and a
+  // failure here can never cost the visitor their click-through.
+  for (const link of document.querySelectorAll('[data-outbound]')) {
+    link.addEventListener('click', () => track('outbound', link.dataset.outbound));
+  }
+
   try {
     const el = document.getElementById('minimap');
     if (el && 'IntersectionObserver' in window) {

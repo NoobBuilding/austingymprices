@@ -8,6 +8,7 @@
  * effectively co-located pins collapse into one bubble reading "$38 +1".
  */
 import L from 'leaflet';
+import { track } from './track.js';
 import {
   fanOffsets,
   groupKey,
@@ -377,6 +378,7 @@ export function initMap(container, pins, getState) {
   // dead, so there is only one copy now.
   function select(slug) {
     selfInitiated = true;
+    track('map_pin', slug);
     document.dispatchEvent(new CustomEvent('gym:select', { detail: { slug } }));
   }
 
@@ -390,6 +392,7 @@ export function initMap(container, pins, getState) {
     if (display === next) return;
     display = next;
     writeDisplay(next);
+    track('map_display', next);
     render();
   }
 

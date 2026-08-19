@@ -12,17 +12,34 @@
   "known_for": null,
   "amenities": [],
   "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-19",
   "billing_period": "monthly",
-  "plans": [],
+  "plans": [
+    {
+      "name": "Regular Unlimited",
+      "monthly": 260,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": null,
+      "restricted": null,
+      "note": "The site also lists drop-in, weekly, 4- and 8-class-per-month plans; those rates are not published on the page.",
+      "is_default": true,
+      "promo": {
+        "price": 79,
+        "note": "Intro month, unlimited"
+      }
+    }
+  ],
   "day_pass": null,
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Visit-pack rates circulating from 2023 ($80/4 visits, $160/8, $240 unlimited) are too old to ship. Call to confirm current rates.",
+  "pricing_note": "First class is $20.",
   "stale": false,
   "price_history": []
 }

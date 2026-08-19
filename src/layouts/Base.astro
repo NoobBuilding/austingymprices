@@ -11,9 +11,11 @@ interface Props {
   /** Keep the page out of the index. Used by /compare, whose useful URLs are
    *  query strings with a combinatorial number of values and no search value. */
   noindex?: boolean;
+  /** Slug of the gym this page is about, for the recently-viewed list. */
+  gymSlug?: string;
 }
 
-const { title, description, canonicalPath, ogImage, noindex } = Astro.props;
+const { title, description, canonicalPath, ogImage, noindex, gymSlug } = Astro.props;
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
 const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
 ---
@@ -67,7 +69,7 @@ const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
     />
   </head>
 
-  <body>
+  <body data-gym-slug={gymSlug}>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
@@ -94,6 +96,15 @@ const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
         <a href="/for-gym-owners">For gym owners</a>
         <a href="mailto:reports@austingymprices.com?subject=Price%20correction">Report a wrong price</a>
       </nav>
+      {/* Mailto, never a form: a form is an endpoint to defend, a list to hold,
+          and a consent question to answer. A mailto is none of those. */}
+      <p class="foot-signup">
+        Want Austin gym deals and price-drop alerts when we launch them? Email
+        <a href="mailto:hello@austingymprices.com?subject=Deals%20and%20price-drop%20alerts">hello@austingymprices.com</a>.
+      </p>
+      {/* Recently viewed. Populated by JS from localStorage when history
+          exists, and completely absent otherwise — no empty shell (§5). */}
+      <p class="foot-recent" id="recently-viewed" hidden></p>
       <p class="foot-note">
         Not affiliated with any gym listed. Prices come from each gym's own website;
         every listing shows the date it was last checked.
@@ -148,6 +159,27 @@ const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
 
   .hdr-links a:hover {
     color: var(--orange);
+  }
+
+  .foot-signup {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  .foot-signup a {
+    color: var(--orange-dark);
+  }
+
+  /* A memory aid, not a feature. Plain text, no cards, no thumbnails. */
+  .foot-recent {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 10px;
+  }
+
+  .foot-recent a {
+    color: var(--ink-soft);
   }
 
   .site-footer {

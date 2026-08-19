@@ -83,7 +83,17 @@ WIDGETS = re.compile(
     r"mindbody|mariana ?tek|marianatek|glofox|wodify|pushpress|zenplanner|"
     r"clubready|abcfinancial|momence|walla|arketa", re.I)
 
-CHALLENGE = re.compile(r"_cf_chl_opt|Just a moment|challenge-platform/h/|captcha", re.I)
+# A real interstitial, not "this page mentions a captcha".
+#
+# The first pass matched a bare `captcha` anywhere in the source and flagged 139
+# sites as walled — nearly all of them ordinary pages carrying a reCAPTCHA on a
+# contact form. Same false positive as Cloudflare's passive jsd/main.js script,
+# which is why the path below is /h/ specifically. A genuine challenge also
+# refuses the request: it answers 403/503/429, never 200. Both signals are now
+# required, so "walled" means walled.
+CHALLENGE = re.compile(
+    r"_cf_chl_opt|<title>\s*Just a moment|challenge-platform/h/\w+/orchestrate", re.I)
+BLOCKED_STATUS = {401, 403, 429, 503}
 MONEY = re.compile(r"\$\s?\d{1,4}(?:\.\d{2})?")
 
 
@@ -280,7 +290,7 @@ def probe(place):
             continue
         code, html = fetch(url)
         time.sleep(1.5)
-        if CHALLENGE.search(html or ""):
+        if CHALLENGE.search(html or "") and code in BLOCKED_STATUS:
             return {"class": "GATED", "url": url, "prices": [],
                     "note": "bot challenge (HTTP %s)" % code}
         if code != 200 or not html:
@@ -295,8 +305,11 @@ def probe(place):
             return {"class": "HUMAN-READABLE", "url": url, "prices": prices[:8],
                     "note": "%s widget — prices behind JS" % widget.group(0)}
         tried.append((url, "no prices"))
-    return {"class": "GATED", "url": base, "prices": [],
-            "note": "no pricing path found (%s tried)" % len(tried)}
+    # Distinct from a bot wall: the site is perfectly readable, it simply does
+    # not publish a price anywhere we looked. Conflating the two would hide
+    # which of these are worth a human visit.
+    return {"class": "NO-PUBLISHED-PRICE", "url": base, "prices": [],
+            "note": "site readable; no price on %d path(s) tried" % len(tried)}
 
 
 def region_for(place):
@@ -315,15 +328,40 @@ def category_guess(place):
 
 
 # ── (e) report ─────────────────────────────────────────────────────────────
+def suspected_duplicate(place):
+    """
+    Does this candidate look like a gym we already list under a different name?
+
+    The diff matches on a normalised name, which is deliberately loose but not
+    loose enough: "10th Planet Austin" and our "10th Planet Jiu Jitsu Austin"
+    are the same gym and slipped through as new. Flagging beats tightening —
+    a false "new" in a review sheet costs a glance, while a tightened matcher
+    that swallows a genuine find costs the find.
+    """
+    key = norm((place.get("displayName") or {}).get("text", ""))
+    if not key:
+        return None
+    for g in existing_gyms():
+        other = norm(g["name"])
+        if not other:
+            continue
+        if key == other or (len(key) > 5 and len(other) > 5
+                            and (key in other or other in key)):
+            return g["name"]
+    return None
+
+
 def write_report(fresh, known, skipped, probes):
-    order = {"SCRAPEABLE": 0, "HUMAN-READABLE": 1, "GATED": 2, "NO-SITE": 3}
+    order = {"SCRAPEABLE": 0, "HUMAN-READABLE": 1, "NO-PUBLISHED-PRICE": 2,
+             "GATED": 3, "NO-SITE": 4}
     # Downtown first: it is the weakest region (1 of 12 priced) and the most
     # visible one, so it is where the first cherry-picking pass should land.
     region_order = {"downtown": 0}
     rows = sorted(
         zip(fresh, probes),
         key=lambda x: (region_order.get(x[0].get("region"), 1),
-                       order[x[1]["class"]],
+                       x[0].get("region") or "",
+                       order.get(x[1]["class"], 9),
                        (x[0].get("displayName") or {}).get("text", "")),
     )
     counts = {}
@@ -337,23 +375,34 @@ def write_report(fresh, known, skipped, probes):
     L.append("**This is a proposal. Nothing here has been written to `/data`.**\n")
     L.append("Classification: **SCRAPEABLE** = prices in fetchable HTML, a scraper target ·\n"
              "**HUMAN-READABLE** = prices exist but sit behind a booking widget, so they go on\n"
-             "the transcription list · **GATED** = bot wall or no pricing path found ·\n"
+             "the transcription list · **NO-PUBLISHED-PRICE** = site reads fine but\n"
+             "publishes no price on any path tried · **GATED** = bot wall ·\n"
              "**NO-SITE** = no website on record.\n")
     L.append("| | count |\n|---|---|")
-    for k in ["SCRAPEABLE", "HUMAN-READABLE", "GATED", "NO-SITE"]:
+    for k in ["SCRAPEABLE", "HUMAN-READABLE", "NO-PUBLISHED-PRICE", "GATED", "NO-SITE"]:
         L.append("| %s | %d |" % (k, counts.get(k, 0)))
     L.append("| already listed | %d |" % len(known))
     L.append("| set aside (out of v1 scope) | %d |\n" % len(skipped))
 
     L.append("## Candidates\n")
-    L.append("| Name | Region | Category | Website | Class | Sample prices | Note |")
-    L.append("|---|---|---|---|---|---|---|")
+    L.append("Downtown first — it is the weakest region (1 of 12 priced) and the most\n"
+             "visible, so it is where the first cherry-picking pass should land.\n")
+    seen_region = None
     for p, pr in rows:
+        if region_for(p) != seen_region:
+            seen_region = region_for(p)
+            n = sum(1 for q, _ in rows if region_for(q) == seen_region)
+            L.append("\n### %s — %d candidate(s)\n" % (seen_region, n))
+            L.append("| Name | Category | Website | Class | Sample prices | Note |")
+            L.append("|---|---|---|---|---|---|")
         name = (p.get("displayName") or {}).get("text", "")
         addr = p.get("formattedAddress", "")
         site = p.get("websiteUri") or ""
-        L.append("| **%s**<br><sub>%s</sub> | %s | %s | %s | **%s** | %s | %s |" % (
-            name, addr, region_for(p), category_guess(p),
+        dupe = suspected_duplicate(p)
+        L.append("| **%s**%s<br><sub>%s</sub> | %s | %s | **%s** | %s | %s |" % (
+            name,
+            " ⚠︎<br><sub>possibly already listed as *%s*</sub>" % dupe if dupe else "",
+            addr, category_guess(p),
             "[link](%s)" % site if site else "—",
             pr["class"], " ".join(pr["prices"]) or "—", pr["note"]))
 
@@ -401,13 +450,33 @@ def main():
 
     probes = []
     if args.probe or args.all:
-        print("\nProbing %d candidate site(s) — free, robots checked, spaced.\n" % len(fresh))
-        for i, p in enumerate(fresh, 1):
-            name = (p.get("displayName") or {}).get("text", "")
-            pr = probe(p)
-            probes.append(pr)
-            print("  %3d/%-3d %-38s %-15s %s" % (i, len(fresh), name[:38], pr["class"],
-                                                 " ".join(pr["prices"][:4])))
+        print("\nProbing %d candidate site(s) — free, robots checked.\n" % len(fresh))
+        # Parallel ACROSS domains, sequential WITHIN one. Politeness is owed to
+        # a host, not to the internet as a whole: each worker still walks one
+        # site's paths one at a time, 1.5s apart. Sequentially this pass takes
+        # hours; this way it takes minutes, and no host sees a faster request
+        # rate than the single-threaded version would have sent it.
+        from concurrent.futures import ThreadPoolExecutor
+        probes = [None] * len(fresh)
+        done = [0]
+
+        def run(idx):
+            place = fresh[idx]
+            name = (place.get("displayName") or {}).get("text", "")
+            try:
+                pr = probe(place)
+            except Exception as exc:  # noqa: BLE001 - one bad site must not end the sweep
+                pr = {"class": "GATED", "url": place.get("websiteUri"),
+                      "prices": [], "note": "probe error: %s" % type(exc).__name__}
+            probes[idx] = pr
+            done[0] += 1
+            print("  %3d/%-3d %-36s %-15s %s" % (done[0], len(fresh), name[:36],
+                                                 pr["class"], " ".join(pr["prices"][:4])),
+                  flush=True)
+
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            list(pool.map(run, range(len(fresh))))
+
         CACHE_DIR.mkdir(exist_ok=True)
         PROBE_CACHE.write_text(json.dumps(probes, indent=1))
     elif PROBE_CACHE.exists():

@@ -69,6 +69,19 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
   }
   if (!('accepts_classpass' in gym)) fail('accepts_classpass is missing (use null when unconfirmed)');
 
+  // Monetization plumbing, planted empty (CLAUDE.md §10). Required PRESENT so a
+  // new gym file cannot silently omit them, but null/standard is the norm.
+  if (!('intro_offer_url' in gym)) fail('intro_offer_url is missing (use null)');
+  if (gym.intro_offer_url !== null && gym.intro_offer_url !== undefined) {
+    if (typeof gym.intro_offer_url !== 'string' || !gym.intro_offer_url.startsWith('https://')) {
+      fail(`intro_offer_url must be https when set, got ${JSON.stringify(gym.intro_offer_url)}`);
+    }
+  }
+  if (!('listing_tier' in gym)) fail('listing_tier is missing (use "standard")');
+  if (gym.listing_tier !== undefined && typeof gym.listing_tier !== 'string') {
+    fail('listing_tier must be a string');
+  }
+
   if (!Array.isArray(gym.price_history)) fail('price_history must be an array');
   if (typeof gym.stale !== 'boolean') fail('stale must be a boolean');
   // A stale flag with no verified_date has nothing to be stale relative to.

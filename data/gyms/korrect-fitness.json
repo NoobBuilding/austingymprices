@@ -12,17 +12,90 @@
   "known_for": null,
   "amenities": [],
   "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-19",
   "billing_period": "monthly",
-  "plans": [],
+  "plans": [
+    {
+      "name": "Core — Month to Month",
+      "monthly": 199,
+      "enroll_fee": 0,
+      "annual_fee": 100,
+      "commit_months": 2,
+      "restricted": null,
+      "note": "$50 Facility Enhancement Investment is charged each 1 April and 1 October. Month-to-month requires a two-month minimum.",
+      "is_default": true
+    },
+    {
+      "name": "Core — 12 Month",
+      "monthly": 149,
+      "enroll_fee": 0,
+      "annual_fee": 100,
+      "commit_months": 12,
+      "restricted": null,
+      "note": null,
+      "is_default": false
+    },
+    {
+      "name": "Core — Paid in Full",
+      "monthly": 109,
+      "enroll_fee": 0,
+      "annual_fee": 100,
+      "commit_months": 12,
+      "restricted": null,
+      "note": null,
+      "is_default": false
+    },
+    {
+      "name": "Essential — Month to Month",
+      "monthly": 299,
+      "enroll_fee": 0,
+      "annual_fee": 100,
+      "commit_months": 2,
+      "restricted": null,
+      "note": null,
+      "is_default": false
+    },
+    {
+      "name": "Essential — 12 Month",
+      "monthly": 249,
+      "enroll_fee": 0,
+      "annual_fee": 100,
+      "commit_months": 12,
+      "restricted": null,
+      "note": null,
+      "is_default": false
+    },
+    {
+      "name": "Essential — Paid in Full",
+      "monthly": 209,
+      "enroll_fee": 0,
+      "annual_fee": 100,
+      "commit_months": 12,
+      "restricted": null,
+      "note": null,
+      "is_default": false
+    },
+    {
+      "name": "Optimized",
+      "monthly": 499,
+      "enroll_fee": 0,
+      "annual_fee": 100,
+      "commit_months": null,
+      "restricted": null,
+      "note": "Published as “starting at”.",
+      "is_default": false
+    }
+  ],
   "day_pass": null,
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published — call the gym. Rebranded from Onnit Gym in 2025 — confirm the current name and rates.",
+  "pricing_note": "A two-week trial is $99.",
   "stale": false,
   "price_history": []
 }

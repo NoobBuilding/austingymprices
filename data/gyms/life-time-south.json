@@ -17,6 +17,8 @@
     "Café"
   ],
   "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
   "photo": null,
   "data_source": "scrape",
   "verified_date": "2026-08-18",

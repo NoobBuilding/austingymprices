@@ -54,11 +54,10 @@ const { window } = dom;
 // preload helper, and references import.meta — none of which is legal in
 // eval'd non-module code.
 //
-// Vite's preload helper is STUBBED: the map is never loaded in these tests
-// (IntersectionObserver is stubbed below), so only its binding needs to exist.
-// Every other chunk is INLINED, not stubbed — those hold real code the page
-// calls during init, and a stub would change the behaviour under test rather
-// than merely standing in for it.
+// Every chunk is INLINED rather than stubbed: they hold real code the page
+// calls during init, and a stub changes the behaviour under test rather than
+// standing in for it. Dynamic imports still fail under jsdom, which is fine —
+// the page catches those and degrades, which is itself worth exercising.
 const ASTRO_DIR = 'dist/_astro';
 const parseBindings = (clause) =>
   clause
@@ -79,10 +78,12 @@ const evalSafe = scriptCode
       const file = spec.replace(/^\.\//, '');
       const names = parseBindings(bindings);
 
-      if (/preload-helper/.test(file)) {
-        return names.map((b) => `const ${b.local} = (fn) => fn();`).join('');
-      }
-
+      // Every chunk is inlined, including Vite's preload-helper chunk.
+      // Stubbing by filename used to be safe, but Rollup now merges our own
+      // modules into that chunk — track.js landed there, got stubbed as
+      // `(fn) => fn()`, and every track() call became "fn is not a function".
+      // Inlining has no such failure mode: the code under test is the code
+      // that ships.
       const chunk = readFileSync(join(ASTRO_DIR, file), 'utf8');
       if (/^\s*import[\s{]/m.test(chunk)) {
         // Nested chunk imports would need resolving too. Fail loudly rather
@@ -122,7 +123,11 @@ window.IntersectionObserver = class {
   unobserve() {}
 };
 
-window.eval(prelude + evalSafe);
+// The import.meta rewrite has to cover the inlined chunks too — Vite's preload
+// helper uses import.meta.url, and a chunk that was never rewritten throws
+// "Cannot use 'import.meta' outside a module" the moment it is eval'd.
+const IMPORT_META = "({url:'file:///bundle.js',resolve:undefined})";
+window.eval(prelude.replace(/import\.meta/g, IMPORT_META) + evalSafe);
 
 const $ = (sel) => Array.from(window.document.querySelectorAll(sel));
 const visible = (sel) => $(sel).filter((el) => !el.hidden);

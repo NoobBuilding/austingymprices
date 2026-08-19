@@ -599,6 +599,32 @@ data model stays compatible with it.
 
 - **Deals feed + price-drop email alerts + price history charts**, built on scrape diffs;
   potential promo-placement revenue layer once traffic exists.
+- **Monetization plumbing is planted, not built.** `intro_offer_url` (null) and
+  `listing_tier` ("standard") sit on every gym costing nothing, so the day a
+  disclosed offer link or an enhanced listing exists the data model does not
+  have to change underneath a live site. The invariant they inherit is the one
+  stated on `/for-gym-owners`: **money never moves a price or a ranking.** A
+  populated `intro_offer_url` renders as a clearly-labelled disclosed link and
+  changes no ordering; `listing_tier` has no rendering effect at all today.
+  Note the copy rule that goes with it — promise the **invariant**, not the
+  **absence**. "We will never take a referral fee" is a promise about our
+  business model that a future us might have to break; "no payment alters a
+  listed price or a ranking" is a promise about the product, and it is the one
+  that actually protects the reader.
+**Deliberately DECLINED — recorded so it is not rediscovered as a good idea:**
+
+- **Interrogative popups and qualification surveys.** The budget/timeline
+  questionnaires that competitors interrupt visitors with (gympricing's model)
+  are declined on two grounds that are both load-bearing here. They clutter a
+  page whose entire value is answering one question fast, and they collect
+  personal intent data — which is the asset such a survey exists to sell, and we
+  have told visitors in the FAQ that we collect and sell nothing about them.
+  A site that says "no personal information collected or sold" cannot also ask
+  what your budget is. Feedback stays a `mailto:` and, later, a static
+  `/feedback` page.
+
+**Recorded for later:**
+
 - **Barbell brand mark** — a minimal horizontal barbell (a bar with two plates)
   as an underline accent beneath the wordmark, and possibly a flanking treatment
   in the hero only. **Launch polish, not v1.** The header wordmark and the

@@ -12,17 +12,42 @@
   "known_for": null,
   "amenities": [],
   "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-19",
   "billing_period": "monthly",
-  "plans": [],
-  "day_pass": null,
-  "day_pass_qualifier": null,
-  "day_pass_terms": [],
+  "plans": [
+    {
+      "name": "Single Month",
+      "monthly": 128,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "No commitment and no refunds.",
+      "is_default": true
+    },
+    {
+      "name": "Annual Auto-draft",
+      "monthly": 81.25,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "$975 billed annually. The site lists this for select cities; confirm it applies to Austin before relying on it.",
+      "is_default": false
+    }
+  ],
+  "day_pass": 15,
+  "day_pass_qualifier": "suggested donation",
+  "day_pass_terms": [
+    "Donation-based drop-in — pay what you choose"
+  ],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Donation-based — there is no fixed membership price. A $12–18 donation is suggested per class.",
+  "pricing_note": "Drop-in classes are donation-based, with $15 suggested.",
   "stale": false,
   "price_history": []
 }
