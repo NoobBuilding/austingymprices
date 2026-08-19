@@ -155,8 +155,16 @@ same class of error as inventing a price.
 `commit_months ≤ 2`. Cheapest *all-in*, never cheapest sticker — at LA Fitness the
 $29.99 plan costs $44/mo all-in while the $31.99 plan costs $38, because of a $99
 initiation fee. That inversion is the entire point of the site, so the default must be
-computed on the all-in figure or the headline number lies. Where no plan qualifies
-(e.g. a promo-only gym), the card falls back to the "call for pricing" state.
+computed on the all-in figure or the headline number lies. **Where no plan satisfies `commit_months ≤ 2`, the default falls back to the
+cheapest all-in plan at the SHORTEST available commitment** — shortest first,
+even if a longer lock-in is cheaper — and its commitment badge renders on the
+card headline. **The price answers "what does it cost"; the badge answers
+"what's the catch."** Suppressing the first because of the second helps nobody,
+and studios whose every option carries a 3- or 6-month minimum are common
+enough in the class inventory that the old behaviour would have shown "call for
+pricing" for gyms whose prices we had read and recorded.
+Only where **no plan carries a price at all** (a promo-only gym, or a
+consult-gated one) does the card fall back to the "call for pricing" state.
 
 **`billing_period` rules:** store the amount the gym actually bills, in the period it
 actually bills it — never silently convert. EAAC bills $215 every 4 weeks, which is 13

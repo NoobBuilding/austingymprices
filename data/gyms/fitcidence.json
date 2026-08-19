@@ -1,0 +1,69 @@
+{
+  "slug": "fitcidence",
+  "name": "Fitcidence",
+  "region": "east-austin",
+  "sub_locality": "East Austin",
+  "category": "gym-classes",
+  "access_model": "classes",
+  "website": "https://fitcidence.com",
+  "pricing_url": "https://fitcidence.com",
+  "address": "2921 E 17th St Ste 100, Austin, TX 78702",
+  "lat": 30.279035,
+  "lng": -97.710314,
+  "known_for": null,
+  "amenities": [],
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": "2026-08-19",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "8-Class Monthly Membership",
+      "monthly": 119,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": null,
+      "restricted": null,
+      "note": "Eight classes a month, used however you like.",
+      "is_default": true,
+      "classes_per_period": 8
+    },
+    {
+      "name": "Unlimited Monthly Membership",
+      "monthly": 139,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": null,
+      "restricted": null,
+      "note": "As many classes as you like, plus a free guest pass.",
+      "is_default": false
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "First-timer 2-for-1 pass",
+      "price": 26,
+      "classes": 2,
+      "expires_days": null,
+      "promo": true
+    },
+    {
+      "name": "2-week unlimited pass",
+      "price": 69,
+      "classes": 14,
+      "expires_days": 14,
+      "promo": true
+    }
+  ],
+  "day_pass": null,
+  "day_pass_qualifier": null,
+  "day_pass_terms": [],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "Class packs never expire. The 2-for-1 and two-week passes are introductory offers.",
+  "stale": false,
+  "price_history": []
+}

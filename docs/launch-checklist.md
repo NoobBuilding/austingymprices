@@ -89,9 +89,15 @@ we did for them.
       `connect-src` `https://cloudflareinsights.com`, or the beacon is refused
       silently in production. Do not enable it without editing `public/_headers`
       in the same change, and re-run `npm run smoke` afterwards.
-- [ ] **Rate-limit `/api/event`** — Cloudflare → Security → WAF → rate limiting,
-      e.g. 60 requests/minute per IP. The endpoint is a public write path; §8
-      requires rate limiting on those the moment one exists.
+- [x] **Rate-limit `/api/event`** — done in the function itself (60/min per IP)
+      rather than as a WAF rule, so it lives in the repo, deploys with the code,
+      and cannot be silently absent on a fresh environment. Add a WAF rule on
+      top if traffic ever warrants it.
+- [ ] **Turn Cloudflare Web Analytics ON** (dashboard → Web Analytics → enable
+      for this Pages project). The CSP already allows
+      `static.cloudflareinsights.com` and `cloudflareinsights.com`, so the
+      beacon will not be refused — but confirm with `npm run smoke` and a live
+      console check afterwards.
 
 ## Gate 4 — the domain (owner, manual, last)
 

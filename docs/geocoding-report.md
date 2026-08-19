@@ -10,11 +10,15 @@ studio. A plausible-but-wrong pin is the map version of a plausible-but-wrong pr
 
 | | Gym | Source | Address found | Lat / Lng | Confidence | Check on OSM |
 |---|---|---|---|---|---|---|
-| ✓ | [solidcore] Domain Northside | address | 3210 Esperanza Crossing, Austin, TX 78758 | 30.40047, -97.72385 | high | [view](https://www.openstreetmap.org/?mlat=30.400466&mlon=-97.723851#map=18/30.400466/-97.723851) |
-| ✓ | [solidcore] The Triangle | address | 4601 N Lamar Blvd Suite 506, Austin, TX 78751 | 30.31515, -97.73596 | high | [view](https://www.openstreetmap.org/?mlat=30.315151&mlon=-97.735962#map=18/30.315151/-97.735962) |
+| ✓ | Fitcidence | address | 2921 E 17th St Ste 100, Austin, TX 78702 | 30.27903, -97.71031 | high | [view](https://www.openstreetmap.org/?mlat=30.279035&mlon=-97.710314#map=18/30.279035/-97.710314) |
+| ✓ | Flow Pilates ATX | address | 908 E 5th St Ste 114, Austin, TX 78702 | 30.26442, -97.73321 | high | [view](https://www.openstreetmap.org/?mlat=30.264421&mlon=-97.733210#map=18/30.264421/-97.733210) |
+| ✓ | JETSET Pilates Downtown | address | 1011 W 5th St #140, Austin, TX 78703 | 30.27057, -97.75581 | high | [view](https://www.openstreetmap.org/?mlat=30.270566&mlon=-97.755810#map=18/30.270566/-97.755810) |
+| ✓ | JETSET Pilates South Austin | address | 5601 Brodie Ln #530, Austin, TX 78745 | 30.22623, -97.82198 | high | [view](https://www.openstreetmap.org/?mlat=30.226226&mlon=-97.821975#map=18/30.226226/-97.821975) |
+| ✓ | Nocturna | address | 605 W 37th St Ste B, Austin, TX 78705 | 30.30209, -97.73922 | high | [view](https://www.openstreetmap.org/?mlat=30.302091&mlon=-97.739216#map=18/30.302091/-97.739216) |
+| ✓ | OPTML Performance | address | 410 Pressler St, Austin, TX 78703 | 30.27227, -97.76120 | high | [view](https://www.openstreetmap.org/?mlat=30.272267&mlon=-97.761203#map=18/30.272267/-97.761203) |
 
 ## Summary
 
-- **2** geocoded with high confidence and written to /data
+- **6** geocoded with high confidence and written to /data
 - **0** need your eyes (⚠️): 0 low-confidence, 0 multi-location brands
 - **0** could not be geocoded at all — genuine gap list

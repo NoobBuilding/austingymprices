@@ -35,9 +35,8 @@ const rows = priceRows(money);
         us picking for the reader; the range is a fact about the set. */}
     <p class="range" id="compare-range" hidden></p>
     <p class="lede" id="compare-lede">
-      Every figure below is the gym's own published number. Nothing here is
-      ranked or recommended — the point is to put the maths next to each other
-      and let you read it.
+      All figures are each gym's own published prices. Nothing is ranked or
+      recommended.
     </p>
 
     {/* Shown only when JS is off or the URL names nothing valid: the table
@@ -152,6 +151,15 @@ const rows = priceRows(money);
      winner. Nothing on this page ranks a column (§4). */
   .headline .v { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; }
   tr[data-row="all_in"] .v { color: var(--ink); }
+
+  /* First-year total gets the accordion receipt's treatment — the same
+     orange-dark figure on the same orange tint. It is the number the whole
+     all-in argument builds to, and it should look like the bottom line of a
+     receipt because that is what it is. Existing tokens only; no new colour,
+     and applied to the ROW so it still cannot read as marking a column. */
+  tr[data-row="first_year"] td,
+  tr[data-row="first_year"] .rowhead { background: var(--orange-tint); }
+  tr[data-row="first_year"] .v { color: var(--orange-dark); }
   .callfor { color: var(--ink-soft); font-style: italic; font-size: .84rem; }
   .amenity td { text-align: center; }
   .amenity .rowhead { font-weight: 500; }

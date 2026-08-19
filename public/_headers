@@ -1,13 +1,17 @@
 # Cloudflare Pages headers — CLAUDE.md §8.
 #
-# CSP is intentionally tight: this is a static site with no inline handlers,
-# no third-party scripts and no font CDN. Sentry is allowed for error
+# CSP is intentionally tight: this is a static site with no inline handlers and
+# no font CDN. Two third-party origins are allowed and no more: Sentry for error
+# reporting (§8), and Cloudflare Web Analytics, which Pages injects when the
+# dashboard toggle is on. Without these entries the analytics beacon is refused
+# SILENTLY in production and nothing says so — which is why the CSP edit ships
+# in the same change as the decision to enable it, never after. Sentry is allowed for error
 # reporting (§8) and OpenStreetMap tile hosts for the Leaflet map (§2).
 # Nothing here permits an inline <script>, so a data-derived string can never
 # execute even if escaping were somehow bypassed.
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://*.sentry.io; style-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self' https://*.sentry.io; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://*.sentry.io https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self' https://*.sentry.io https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; object-src 'none'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY

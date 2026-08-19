@@ -643,6 +643,40 @@ mapState.visible = fullSet;
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
 check(pinEls().length === pinsAll, 'and clearing it brings them back');
 
+// ── Mobile ───────────────────────────────────────────────────────────────
+// The map lives behind a toggle on a phone; without it the map is unreachable
+// there, which is indistinguishable from not having one.
+console.log('\nMobile map toggle');
+const indexHtml = readFileSync('dist/index.html', 'utf8');
+check(/id="map-toggle"/.test(indexHtml), 'the toggle is server-rendered, not JS-injected');
+check(
+  /aria-expanded="false"/.test(indexHtml.match(/<button[^>]*id="map-toggle"[^>]*>/)?.[0] ?? ''),
+  'and reports its expanded state',
+);
+const toggleRule = css.split('}').find((b) => b.includes('.map-toggle') && /position:fixed/.test(b));
+check(Boolean(toggleRule), 'the toggle is fixed-position', toggleRule ? 'yes' : 'missing');
+check(
+  /left:50%/.test(toggleRule ?? '') && /translate/.test(toggleRule ?? ''),
+  'and centred horizontally',
+);
+// A phone-width media query must REVEAL it — it is display:none on desktop.
+// The minifier rewrites `max-width: 920px` as `width<=920px`, so match the
+// shipped form rather than the authored one — an assertion against source that
+// never ships is an assertion that cannot fail.
+const flat = css.replace(/\s/g, '');
+const mobileReveal = flat
+  .split('@media')
+  .find(
+    (b) =>
+      /(max-width:920px|width<=920px)/.test(b) &&
+      /\.map-toggle[^{]*\{[^}]*display:block/.test(b),
+  );
+check(Boolean(mobileReveal), 'a phone-width media query reveals it (<=920px)');
+check(
+  /env\(safe-area-inset-bottom/.test(toggleRule ?? ''),
+  'it clears the home indicator and browser chrome, which overlay the bottom band',
+);
+
 // ── Merged bubbles, through the real render ──────────────────────────────
 // Nothing in the live data is co-located, so this uses a payload that is: two
 // gyms at effectively the same address, which is the only case that may merge.

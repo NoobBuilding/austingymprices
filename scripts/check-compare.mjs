@@ -70,9 +70,16 @@ for (const claim of [
   check(!text.includes(claim), `the page never claims "${claim}"`);
 }
 check(
-  /nothing here is ranked or recommended|not ranked/.test(text),
+  /nothing is ranked or recommended/.test(text),
   'and it says so explicitly, so the omission reads as a policy not an oversight',
 );
+// One line, not a paragraph: the table is the content.
+check(
+  (doc.getElementById('compare-lede')?.textContent ?? '').trim().split(/\s+/).length <= 18,
+  'the explainer is one line, not a paragraph',
+  `${(doc.getElementById('compare-lede')?.textContent ?? '').trim().split(/\s+/).length} words`,
+);
+
 const css = readFileSync('dist/compare/index.html', 'utf8');
 check(
   !/class="[^"]*\b(winner|best|recommended)\b/.test(css),
@@ -178,6 +185,8 @@ const compareCss = readdir('dist/_astro')
 // A selector can appear in several blocks (`.rowhead` alone, and again inside
 // the alternating-tint rule), so ask whether ANY block pairs the selector with
 // the declaration rather than trusting the first match.
+const compareCssBlocks = (needle) =>
+  compareCss.split('}').filter((block) => block.includes(needle));
 const cssBlocks = (needle) =>
   compareCss.split('}').filter((block) => block.includes(needle));
 const declaredOn = (needle, decl) => cssBlocks(needle).some((b) => decl.test(b));
@@ -185,6 +194,17 @@ const declaredOn = (needle, decl) => cssBlocks(needle).some((b) => decl.test(b))
 check(
   declaredOn('.gymhead', /border-left:\s*1px solid/),
   'columns are boxed with a vertical rule',
+);
+
+// The first-year total reads as a receipt bottom line, using existing tokens.
+const firstYear = compareCssBlocks('first_year');
+check(
+  firstYear.some((b) => /orange-tint/.test(b)) && firstYear.some((b) => /orange-dark/.test(b)),
+  'the first-year total row gets the receipt treatment (orange-dark on orange-tint)',
+);
+check(
+  firstYear.every((b) => !/#[0-9a-f]{3,8}/i.test(b)),
+  'and introduces no new colour — existing tokens only',
 );
 check(
   declaredOn('.gymhead[', /position:sticky/),

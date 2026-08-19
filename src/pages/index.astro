@@ -310,7 +310,10 @@ const description =
   .map-toggle {
     display: none;
     position: fixed;
-    bottom: 20px;
+    /* env() for the home indicator and iOS Safari's bottom toolbar, which
+       overlay exactly this band — a plain `bottom: 20px` button can sit under
+       browser chrome on a real phone and read as missing entirely. */
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     z-index: 950;
@@ -437,9 +440,10 @@ const description =
   }
 
   @media (max-width: 920px) {
-    /* Sits above the map toggle rather than under it. */
+    /* Sits above the map toggle rather than under it, and clears the same
+       browser chrome the toggle does. */
     .cmp-pill {
-      bottom: 74px;
+      bottom: calc(74px + env(safe-area-inset-bottom, 0px));
     }
   }
 

@@ -1,0 +1,118 @@
+{
+  "slug": "jetset-pilates-south",
+  "name": "JETSET Pilates South Austin",
+  "region": "south-soco",
+  "sub_locality": "Brodie Lane",
+  "category": "pilates",
+  "access_model": "classes",
+  "website": "https://jetsetpilates.com",
+  "pricing_url": "https://jetsetpilates.com/tx/south-austin/pricing",
+  "address": "5601 Brodie Ln #530, Austin, TX 78745",
+  "lat": 30.226226,
+  "lng": -97.821975,
+  "known_for": null,
+  "amenities": [],
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": "2026-08-19",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "4 Classes Monthly",
+      "monthly": 99,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "restricted": null,
+      "note": "Auto-charged monthly with a three-month minimum, then month to month.",
+      "is_default": true,
+      "classes_per_period": 4
+    },
+    {
+      "name": "8 Classes Monthly",
+      "monthly": 169,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "restricted": null,
+      "note": "Three-month minimum.",
+      "is_default": false,
+      "classes_per_period": 8
+    },
+    {
+      "name": "12 Classes Monthly",
+      "monthly": 219,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "restricted": null,
+      "note": "Three-month minimum.",
+      "is_default": false,
+      "classes_per_period": 12
+    },
+    {
+      "name": "Monthly Unlimited",
+      "monthly": 269,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 3,
+      "restricted": null,
+      "note": "Three-month minimum. Limit one class a day.",
+      "is_default": false
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "Single class",
+      "price": 35,
+      "classes": 1,
+      "expires_days": 30
+    },
+    {
+      "name": "5-class pack",
+      "price": 145,
+      "classes": 5,
+      "expires_days": 60
+    },
+    {
+      "name": "10-class pack",
+      "price": 279,
+      "classes": 10,
+      "expires_days": 180
+    },
+    {
+      "name": "Intro single class",
+      "price": 17,
+      "classes": 1,
+      "expires_days": 30,
+      "promo": true
+    },
+    {
+      "name": "Intro BOGO 2-class pack",
+      "price": 35,
+      "classes": 2,
+      "expires_days": 30,
+      "promo": true
+    },
+    {
+      "name": "Intro single week unlimited",
+      "price": 49,
+      "classes": 7,
+      "expires_days": 7,
+      "promo": true
+    }
+  ],
+  "day_pass": 35,
+  "day_pass_qualifier": "single class",
+  "day_pass_terms": [
+    "Expires one month from purchase"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "Intro offers ($17 single class, $35 two-class BOGO, $49 unlimited week) are first-timer promotions, not standing rates. Rates match the Downtown studio exactly.",
+  "stale": false,
+  "price_history": []
+}

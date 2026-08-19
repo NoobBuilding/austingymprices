@@ -59,8 +59,43 @@ const NO_CONTENT = (reason) =>
     },
   });
 
+/**
+ * Function-level rate limit (CLAUDE.md §8: public write paths get one).
+ *
+ * Chosen over a WAF rule because it lives in the repo, deploys with the code,
+ * and cannot be silently absent on a fresh environment the way a dashboard rule
+ * can. It is a ceiling on abuse, not a precision instrument: a shared NAT could
+ * bump it, and the cost of that is an uncounted click, which is the correct
+ * thing to sacrifice.
+ *
+ * The IP is used as a key and never stored — it is not written to D1, not
+ * logged, and does not survive the request.
+ */
+const RATE_LIMIT = 60; // requests per window
+const WINDOW_MS = 60_000;
+const buckets = new Map();
+
+function overRateLimit(request) {
+  const ip = request.headers.get('CF-Connecting-IP');
+  if (!ip) return false;
+  const now = Date.now();
+  const seen = buckets.get(ip);
+  if (!seen || now - seen.start > WINDOW_MS) {
+    buckets.set(ip, { start: now, n: 1 });
+    // Bound the map so a burst of unique addresses cannot grow it without end.
+    if (buckets.size > 5000) {
+      for (const [k, v] of buckets) if (now - v.start > WINDOW_MS) buckets.delete(k);
+    }
+    return false;
+  }
+  seen.n += 1;
+  return seen.n > RATE_LIMIT;
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
+
+  if (overRateLimit(request)) return NO_CONTENT('rate-limited');
 
   // Same-origin guard. sendBeacon sends an Origin header, so a cross-site page
   // cannot quietly inflate a gym's numbers from a visitor's browser.

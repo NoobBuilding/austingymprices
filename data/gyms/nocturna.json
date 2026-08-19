@@ -1,0 +1,67 @@
+{
+  "slug": "nocturna",
+  "name": "Nocturna",
+  "region": "hyde-park",
+  "sub_locality": "West 37th Street",
+  "category": "gym-classes",
+  "access_model": "classes",
+  "website": "http://www.nocturnacoven.com",
+  "pricing_url": "http://www.nocturnacoven.com/memberships",
+  "address": "605 W 37th St Ste B, Austin, TX 78705",
+  "lat": 30.302091,
+  "lng": -97.739216,
+  "known_for": null,
+  "amenities": [],
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": "2026-08-19",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "The Enchanter",
+      "monthly": 139,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "Up to six classes a month; additional classes $23 each. Six-month commitment. New members can start on the Initiate tier at $79/mo for three months, which then renews at this rate.",
+      "is_default": true,
+      "classes_per_period": 6,
+      "promo": {
+        "price": 79,
+        "note": "Initiate tier, new members only, renews at $139"
+      }
+    },
+    {
+      "name": "The Luminary",
+      "monthly": 189,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "Up to twelve classes a month; additional classes $18 each. Includes an hour of open studio time, subject to availability.",
+      "is_default": false,
+      "classes_per_period": 12
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "New client special — 3 classes",
+      "price": 60,
+      "classes": 3,
+      "expires_days": null,
+      "promo": true
+    }
+  ],
+  "day_pass": null,
+  "day_pass_qualifier": null,
+  "day_pass_terms": [],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "The Initiate tier ($79/mo, three-month commitment, up to three classes) is an introductory rate for new members only and renews at the Enchanter tier.",
+  "stale": false,
+  "price_history": []
+}

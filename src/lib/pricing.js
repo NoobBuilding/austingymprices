@@ -64,8 +64,35 @@ export function selectDefaultPlan(plans, billingPeriod) {
       // still confirmed, so the plan stays eligible; only the badge is withheld.
       (p.commit_months === null || p.commit_months === undefined || p.commit_months <= 2),
   );
-  if (eligible.length === 0) return null;
-  return eligible.reduce((best, p) =>
+  if (eligible.length > 0) {
+    return eligible.reduce((best, p) =>
+      allInMonthly(p, billingPeriod) < allInMonthly(best, billingPeriod) ? p : best,
+    );
+  }
+
+  // Nothing at two months or less. Rather than fall through to "call for
+  // pricing" for a gym whose prices we have read and recorded, take the
+  // cheapest all-in plan at the SHORTEST available commitment — the shortest
+  // first, even if a longer lock-in is cheaper. The commitment badge then
+  // renders on the headline: **the price answers "what does it cost", the
+  // badge answers "what's the catch"**, and suppressing the first because of
+  // the second helps nobody.
+  const priced = (plans ?? []).filter(
+    (p) =>
+      p.monthly !== null &&
+      p.monthly !== undefined &&
+      (p.restricted === null || p.restricted === undefined),
+  );
+  if (priced.length === 0) return null;
+  const shortest = Math.min(
+    ...priced.map((p) => (p.commit_months === null || p.commit_months === undefined
+      ? Number.POSITIVE_INFINITY
+      : p.commit_months)),
+  );
+  const atShortest = priced.filter(
+    (p) => (p.commit_months ?? Number.POSITIVE_INFINITY) === shortest,
+  );
+  return atShortest.reduce((best, p) =>
     allInMonthly(p, billingPeriod) < allInMonthly(best, billingPeriod) ? p : best,
   );
 }
