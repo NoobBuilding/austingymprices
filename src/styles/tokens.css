@@ -28,8 +28,15 @@
   --map-label: #C4BAAD;
   --pin-stroke: #E4DDD4;
 
-  /* Muted metadata: provenance footers, photo credits */
-  --ink-faint: #A79D92;
+  /* Muted metadata: provenance footers, photo credits.
+   *
+   * DELIBERATE DEPARTURE from the mockups, which used #A79D92. That measures
+   * 2.66:1 against white — well under the 4.5:1 WCAG AA needs for small text,
+   * and this token is used for the "Prices checked {date}" line, which is
+   * exactly the kind of thing a reader needs to be able to read. Darkened
+   * along the same hue to the lightest tone that clears 4.5:1 on BOTH white
+   * and the sunk surface it sits on inside cards. */
+  --ink-faint: #7A726A;
   --dash: #D8D0C6;
 
   /* Neutral commitment badge — CLAUDE.md §3, for a 2-3 month minimum.

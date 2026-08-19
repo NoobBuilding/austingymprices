@@ -1,0 +1,223 @@
+---
+import Base from '../layouts/Base.astro';
+import { getAllGyms, getRegions } from '../lib/gyms.js';
+
+// Counts come from the data, so this page cannot drift from reality.
+const gyms = getAllGyms();
+const priced = gyms.filter((g) => g.has_price);
+const scraped = gyms.filter((g) => g.data_source === 'scrape');
+const manual = gyms.filter((g) => g.data_source === 'manual');
+const regions = getRegions();
+const withDayPass = gyms.filter((g) => g.day_pass !== null);
+const fourWeek = gyms.filter((g) => g.billing_period !== 'monthly');
+
+const title = 'FAQ — Austin Gym Prices';
+const description =
+  'Where our gym prices come from, how often they are checked, what "all-in" means, and how to report a wrong price.';
+
+const reportHref = 'mailto:reports@austingymprices.com?subject=Price%20correction';
+---
+
+<Base title={title} description={description} canonicalPath="/faq">
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="/">All gyms</a> / FAQ</nav>
+    <h1>Frequently asked questions</h1>
+    <p class="lede">
+      What this site is, where the numbers come from, and what to do when one of them
+      is wrong.
+    </p>
+
+    <h2 id="what">What is this?</h2>
+    <p>
+      A price comparison for gyms in Austin. We list {gyms.length} gyms across
+      {regions.length} parts of the city and show what each one actually costs per month
+      once enrollment and annual fees are counted, alongside contract terms and day-pass
+      rates where they are published.
+    </p>
+
+    <h2 id="all-in">What does &ldquo;all-in&rdquo; mean?</h2>
+    <p>
+      The advertised monthly rate is rarely the whole cost. A gym might charge $29.99 a
+      month and then add a $99 initiation fee and a $69 annual fee. Over a first year
+      that is $44 a month, not $29.99.
+    </p>
+    <p>
+      So every headline price on this site is the <b>all-in monthly cost</b>: the
+      monthly rate for a year, plus any enrollment fee, plus any annual fee, divided by
+      twelve. The advertised rate is still shown, inside the breakdown, because you
+      should be able to see both.
+    </p>
+    <p class="callout">
+      This changes the answer, not just the presentation. At LA Fitness Anderson Lane the
+      $29.99 plan costs more all-in than the $31.99 plan, because of the initiation fee.
+      Sorting by sticker price would put the wrong one first.
+    </p>
+
+    <h2 id="sources">Where do the prices come from?</h2>
+    <p>
+      From each gym&rsquo;s own website. {scraped.length} of the {gyms.length} gyms
+      publish their rates publicly, and we read them from the gym&rsquo;s pricing page.
+      Every gym page shows the date its price was last checked and the domain it came
+      from.
+    </p>
+    <p>
+      The other {manual.length} do not publish rates at all — mostly consult-gated
+      chains and boutique studios that quote you in person. Those are collected by hand,
+      by asking. Until we have a number we can stand behind, the gym shows
+      <b>&ldquo;call for pricing&rdquo;</b> rather than an estimate.
+    </p>
+
+    <h2 id="missing">Why do some gyms have no price?</h2>
+    <p>
+      Because we do not have one we can source. {priced.length} of {gyms.length} gyms
+      currently show a confirmed price. We would rather show a gap than a guess: a
+      plausible-looking wrong number is worse than an obvious blank, because you cannot
+      tell it is wrong until you are standing at the desk.
+    </p>
+    <p>
+      The same rule applies to details. Where a gym does not publish its contract terms,
+      no contract badge appears at all — we do not read silence as
+      &ldquo;no contract&rdquo;.
+    </p>
+
+    <h2 id="freshness">How often are prices updated?</h2>
+    <p>
+      It depends on how often the gym changes them. Chains that run frequent promotions
+      are re-checked weekly; stable independent gyms monthly. In January and June — the
+      two months gyms actually change their offers — everything moves up a tier.
+    </p>
+    <p>
+      There is no site-wide &ldquo;updated daily&rdquo; claim here, because it would not
+      be true for every gym. Each gym carries its own date instead. If a gym has not been
+      re-checked in more than two weeks, its page says so plainly rather than presenting
+      an old figure as current.
+    </p>
+
+    <h2 id="promos">What about introductory offers?</h2>
+    <p>
+      Promotional rates are shown as promotions, and the standing rate drives the
+      comparison. A $1 startup fee that expires in three weeks should not make a gym look
+      permanently cheap.
+    </p>
+    <p>
+      Where a gym publishes <em>only</em> a promotional price and never its standing rate,
+      we say the price is not published rather than treating the promo as the real one.
+    </p>
+
+    <h2 id="billing">Why does one gym show a different price to the one on its own site?</h2>
+    <p>
+      Usually because of the billing cycle. {fourWeek.length === 1 ? 'One gym bills' : `${fourWeek.length} gyms bill`}
+      every four weeks rather than monthly, which is thirteen payments a year, not twelve.
+      A membership advertised at $215 &ldquo;a month&rdquo; on that cycle costs $233 a
+      month in reality.
+    </p>
+    <p>
+      We show the gym&rsquo;s own figure and its billing cycle in the breakdown, and use
+      the true monthly equivalent for comparison. Nothing is silently converted.
+    </p>
+
+    <h2 id="daypass">Do you list day passes?</h2>
+    <p>
+      Yes, where the gym publishes one — {withDayPass.length} do so far. The Day passes
+      tab switches the whole list to single-visit pricing.
+    </p>
+
+    <h2 id="wrong">A price is wrong. How do I report it?</h2>
+    <p>
+      Please tell us: <a href={reportHref}>reports@austingymprices.com</a>. Every gym page
+      and every expanded card has a &ldquo;Report a wrong price&rdquo; link that fills in
+      the gym name for you.
+    </p>
+    <p>
+      Corrections are checked against the gym&rsquo;s own site and fixed. If you work at a
+      gym listed here, see <a href="/for-gym-owners">for gym owners</a>.
+    </p>
+
+    <h2 id="affiliation">Are you affiliated with any of these gyms?</h2>
+    <p>
+      <b>No.</b> We are not owned by, paid by, or partnered with any gym on this site.
+      Nothing here is sponsored, no gym has paid for placement, and there are no referral
+      links or lead-generation forms. Ranking is by price and nothing else.
+    </p>
+
+    <h2 id="accuracy">Should I trust these numbers?</h2>
+    <p>
+      Check them before you sign. We read what gyms publish and we publish our sources and
+      dates so you can verify any figure yourself — but pricing changes, promotions come
+      and go, and staff quote things a website does not. Treat this as the shortlist, not
+      the contract.
+    </p>
+
+    <p class="foot">
+      Still stuck? <a href={reportHref}>Email us</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .wrap {
+    max-width: 70ch;
+    margin: 0 auto;
+    padding: 34px 28px 90px;
+  }
+
+  .crumb {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+
+  .crumb a {
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .crumb a:hover {
+    color: var(--orange);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+    text-transform: uppercase;
+    line-height: 1.02;
+  }
+
+  .lede {
+    margin-top: 14px;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 40px 0 10px;
+  }
+
+  p {
+    margin-bottom: 12px;
+    line-height: 1.65;
+  }
+
+  .callout {
+    background: var(--surface-sunk);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+  }
+
+  .foot {
+    margin-top: 44px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+</style>

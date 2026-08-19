@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/build-og.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint .",
@@ -15,14 +15,16 @@
     "check": "astro check",
     "validate:data": "node scripts/validate-data.mjs",
     "check:csp": "node scripts/check-csp.mjs",
-    "verify": "npm run lint && npm run validate:data && npm run build && npm run check:csp && npm run check:search && npm run check:tabs && npm run check:map",
+    "verify": "npm run lint && npm run validate:data && npm run build && npm run check:csp && npm run check:search && npm run check:tabs && npm run check:map && npm run check:a11y",
     "smoke": "node scripts/smoke-deploy.mjs",
     "check:search": "node scripts/check-search.mjs",
     "check:tabs": "node scripts/check-tabs.mjs",
     "check:map": "node scripts/check-map.mjs",
     "test:parsers": "python3 scrapers/tests/test_parsers.py",
     "photos": "node scripts/fetch-photos.mjs",
-    "photos:check": "node scripts/fetch-photos.mjs --check"
+    "photos:check": "node scripts/fetch-photos.mjs --check",
+    "og": "node scripts/build-og.mjs",
+    "check:a11y": "node scripts/check-a11y.mjs"
   },
   "engines": {
     "node": ">=20.0.0"

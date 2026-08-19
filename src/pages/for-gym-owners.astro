@@ -1,0 +1,152 @@
+---
+import Base from '../layouts/Base.astro';
+import { getAllGyms } from '../lib/gyms.js';
+
+const gyms = getAllGyms();
+const unpriced = gyms.filter((g) => !g.has_price);
+
+const title = 'For gym owners — Austin Gym Prices';
+const description =
+  'How to correct your gym’s pricing on Austin Gym Prices, and what we will and will not do with your listing.';
+
+const correctHref =
+  'mailto:reports@austingymprices.com?subject=Listing%20correction%20%E2%80%94%20%5Byour%20gym%20name%5D';
+const hello = 'mailto:hello@austingymprices.com';
+---
+
+<Base title={title} description={description} canonicalPath="/for-gym-owners">
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="/">All gyms</a> / For gym owners</nav>
+    <h1>For gym owners</h1>
+    <p class="lede">
+      If your gym is listed here, this page explains where the numbers came from, how to
+      correct them, and what we will not do.
+    </p>
+
+    <h2>Your price is wrong. Fix it.</h2>
+    <p>
+      Email <a href={correctHref}>reports@austingymprices.com</a> with your gym name and
+      the correct figures. The useful ones are:
+    </p>
+    <ul>
+      <li>Monthly rate for a standard adult membership</li>
+      <li>Enrollment or initiation fee, and any annual fee</li>
+      <li>Contract length, or month-to-month</li>
+      <li>Day pass price, if you sell one</li>
+      <li>Anything that changes what a member actually pays — a fee charged on a delay, a
+        different billing cycle, a minimum term</li>
+    </ul>
+    <p>
+      A link to the page on your own site showing the rates is the fastest possible
+      correction, because that is exactly what we read.
+    </p>
+
+    <h2>Where your listing came from</h2>
+    <p>
+      From your own public pricing page, or from asking. Nothing here is bought, scraped
+      from a competitor, or estimated from national averages. Every gym page shows the
+      date its price was last checked and the domain it was read from.
+    </p>
+    <p>
+      {unpriced.length} of the {gyms.length} gyms listed have no price shown at all,
+      because we could not source one. If that is yours, it is not a judgement — it means
+      we have nothing we can stand behind, and one email fixes it.
+    </p>
+
+    <h2>What we will not do</h2>
+    <ul>
+      <li><b>Sell placement.</b> No gym can pay to rank higher, be featured, or be
+        excluded. Ranking is by price.</li>
+      <li><b>Take a referral fee.</b> There are no affiliate links and no lead-generation
+        forms. We do not sell your prospective members to anyone, because we do not
+        collect them.</li>
+      <li><b>Editorialise.</b> We state fees plainly, including the awkward ones, but we
+        do not editorialise about them. &ldquo;Charged 75 days after signup&rdquo; is a
+        fact worth stating; &ldquo;watch out for this trap&rdquo; is not our line.</li>
+      <li><b>Publish reviews or ratings.</b> Other sites do that. This one is about price.</li>
+    </ul>
+
+    <h2>Can I remove my gym?</h2>
+    <p>
+      Membership pricing that a business publishes on its own website is public
+      information, and comparing it is the point of the site. But if something here is
+      wrong, misleading or out of date, that is a real problem and we want to fix it
+      quickly — email <a href={correctHref}>reports@austingymprices.com</a> and it gets
+      dealt with.
+    </p>
+
+    <h2>Is there an owner portal?</h2>
+    <p>
+      Not yet. Managing your own listing — updating rates directly, adding photos and
+      amenities — is planned. For now there is no login and no form on this site at all;
+      corrections come by email and a person makes the change.
+    </p>
+
+    <h2>Anything else</h2>
+    <p>
+      General enquiries: <a href={hello}>hello@austingymprices.com</a>. More on sourcing
+      and update frequency in the <a href="/faq">FAQ</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .wrap {
+    max-width: 70ch;
+    margin: 0 auto;
+    padding: 34px 28px 90px;
+  }
+
+  .crumb {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+
+  .crumb a {
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .crumb a:hover {
+    color: var(--orange);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+    text-transform: uppercase;
+    line-height: 1.02;
+  }
+
+  .lede {
+    margin-top: 14px;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 40px 0 10px;
+  }
+
+  p {
+    margin-bottom: 12px;
+    line-height: 1.65;
+  }
+
+  ul {
+    margin: 0 0 14px 0;
+    padding-left: 20px;
+    line-height: 1.65;
+  }
+
+  li {
+    margin-bottom: 6px;
+  }
+</style>

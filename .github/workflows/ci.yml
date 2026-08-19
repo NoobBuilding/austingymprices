@@ -62,6 +62,9 @@ jobs:
       - name: Check map build
         run: npm run check:map
 
+      - name: Check accessibility and SEO
+        run: npm run check:a11y
+
       # §8: build fails on high-severity vulnerabilities.
       - name: npm audit
         run: npm audit --audit-level=high

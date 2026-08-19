@@ -68,7 +68,7 @@ const jsonLd = {
 };
 ---
 
-<Base title={title} description={description} canonicalPath={`/gyms/${gym.slug}`}>
+<Base title={title} description={description} canonicalPath={`/gyms/${gym.slug}`} ogImage={`gym-${gym.slug}`}>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div class="wrap">

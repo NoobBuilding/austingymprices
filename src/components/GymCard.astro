@@ -71,7 +71,7 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
   <details class="card-details">
     <summary class="card-top">
       <div class="card-id">
-        <h3 class="card-name">
+        <h2 class="card-name">
           {gym.name}
           {/* Commitment is a MEMBERSHIP concept — never shown on the Day
               passes tab, where a "2-mo minimum" above a $10 headline reads
@@ -79,7 +79,7 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
           {badge && (
             <span class={`tag ${badge.tone} membership-only`}>{badge.label}</span>
           )}
-        </h3>
+        </h2>
         <p class="card-meta">
           {placeLabel}<span class="sep">•</span>{CATEGORY_LABELS[gym.category] ?? gym.category}
         </p>

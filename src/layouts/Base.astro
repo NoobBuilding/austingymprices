@@ -6,10 +6,13 @@ interface Props {
   description: string;
   /** Path-only canonical, e.g. "/gyms/big-tex-gym". Defaults to the current URL. */
   canonicalPath?: string;
+  /** OG card basename in /og, without extension. Defaults to the site card. */
+  ogImage?: string;
 }
 
-const { title, description, canonicalPath } = Astro.props;
+const { title, description, canonicalPath, ogImage } = Astro.props;
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
+const ogUrl = new URL(`/og/${ogImage ?? 'default'}.png`, Astro.site);
 ---
 
 <!doctype html>
@@ -26,7 +29,12 @@ const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.href} />
     <meta property="og:site_name" content="Austin Gym Prices" />
+    <meta property="og:image" content={ogUrl.href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogUrl.href} />
 
     <!-- Self-hosted; no preconnect to a font CDN because there is no font CDN. -->
     <link
@@ -62,6 +70,21 @@ const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
     <main id="main">
       <slot />
     </main>
+
+    <footer class="site-footer">
+      <p class="foot-brand">
+        <span class="logo-accent">Austin</span><span class="logo-ink">GymPrices</span>
+      </p>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="/faq">FAQ</a>
+        <a href="/for-gym-owners">For gym owners</a>
+        <a href="mailto:reports@austingymprices.com?subject=Price%20correction">Report a wrong price</a>
+      </nav>
+      <p class="foot-note">
+        Not affiliated with any gym listed. Prices come from each gym's own website;
+        every listing shows the date it was last checked.
+      </p>
+    </footer>
   </body>
 </html>
 
@@ -113,7 +136,53 @@ const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
     color: var(--orange);
   }
 
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding: 30px 32px 48px;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .foot-brand {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .foot-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .foot-links a {
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .foot-links a:hover {
+    color: var(--orange);
+  }
+
+  .foot-note {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    max-width: 62ch;
+    line-height: 1.5;
+  }
+
   @media (max-width: 560px) {
+    .site-footer {
+      padding: 26px 18px 40px;
+    }
+
     .site-header {
       padding: 14px 18px;
       flex-wrap: wrap;

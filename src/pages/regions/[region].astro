@@ -27,7 +27,7 @@ const description = region.median_all_in
   : `${gyms.length} gyms in ${region.name}, Austin. Membership prices, fees and contract terms.`;
 ---
 
-<Base title={title} description={description} canonicalPath={`/regions/${region.id}`}>
+<Base title={title} description={description} canonicalPath={`/regions/${region.id}`} ogImage={`region-${region.id}`}>
   <div class="wrap">
     <nav class="crumb" aria-label="Breadcrumb"><a href="/">All gyms</a> / {region.name}</nav>
 

@@ -8,6 +8,8 @@ import { getAllGyms, getRegions } from '../lib/gyms.js';
 export function GET({ site }) {
   const urls = [
     { loc: new URL('/', site).href, priority: '1.0' },
+    { loc: new URL('/faq', site).href, priority: '0.5' },
+    { loc: new URL('/for-gym-owners', site).href, priority: '0.4' },
     ...getRegions().map((r) => ({ loc: new URL(`/regions/${r.id}`, site).href, priority: '0.8' })),
     ...getAllGyms().map((g) => ({
       loc: new URL(`/gyms/${g.slug}`, site).href,

@@ -66,3 +66,6 @@ desktop.ini
 # ── Astro build output ────────────────────────────────────────────────
 # (dist/ and .astro/ are already listed above under Node/Astro)
 __pycache__/
+
+# Generated OpenGraph cards — rebuilt by `npm run build`, never committed.
+public/og/
