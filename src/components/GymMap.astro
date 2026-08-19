@@ -293,5 +293,12 @@ const pins = getAllGyms()
     .mapwrap.open {
       display: block;
     }
+
+    /* Clear the Map/List toggle, which is fixed at the bottom centre and sat
+       straight across the middle of this note on a phone. */
+    .map-note {
+      bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+      right: 16px;
+    }
   }
 </style>
