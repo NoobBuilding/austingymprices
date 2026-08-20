@@ -682,9 +682,13 @@ what was built.
 
 ### Ledger
 
-**49 gyms listed, 31 with confirmed prices** (as of 2026-08-19). Per-region coverage and
-the outstanding queues are printed by `node scripts/launch-check.mjs`. Downtown is the
-weakest region and the most visible, so it leads the cherry-picking order.
+**49 gyms listed, 31 with confirmed prices** (as of 2026-08-19). This number goes stale;
+**the live one comes from asking Claude Code to run `node scripts/launch-check.mjs` and
+report the output** — the owner does not clone the repo or run local commands (§9b).
+That report also gives per-region coverage and the outstanding queues.
+
+Downtown is the weakest region in absolute terms and the most visible, so it leads the
+cherry-picking order.
 
 ### Done
 
@@ -831,7 +835,8 @@ share a mechanism.
 
 ### Launch sequence (order matters)
 
-1. `npm run verify` green; owner clicks through every gym page once.
+1. Claude Code runs `npm run verify` to green and reports it; owner clicks through every
+   gym page once on the deployed site.
 2. **Enable Cloudflare Web Analytics** (dashboard toggle — the CSP already allows it).
 3. **Confirm the D1 binding on the serving deployment** (`GET /api/event` →
    `{"bound":true}`), then **`DELETE FROM events;`** to clear test writes and start the
@@ -861,18 +866,29 @@ price-transparency site owes them.
 How this project is run. It is here because a new thread inherits the rules, not the
 habits.
 
+- **The owner does not clone the repo and does not run local commands.** Every build,
+  test, script and query is run by Claude Code and **reported back in the chat**. Where
+  this document names a command, read it as "ask Claude Code to run this and report the
+  output", never as an instruction to the owner. The owner's own hands-on surface is the
+  **deployed site in a browser** and the **Cloudflare and GitHub dashboards**.
 - **The owner reviews every findings report before anything is written to `/data`.**
   Harvests, sweeps and transcriptions produce a report; the owner cherry-picks; only then
   do rows land. Nothing about a gym's price enters the repo on an agent's own judgement.
 - **One consolidated message per round-trip.** Batch the work, batch the report. Partial
   answers and progress narration cost more than they inform.
 - **Every report states the ledger** — confirmed / total listed — so the project never has
-  to guess where it stands.
+  to guess where it stands. This includes reports that touch no data at all: a
+  documentation or infrastructure round-trip still ends with the number, because the
+  point is that it is always in view, not that it always changed.
 - **Product questions go to the owner and are never decided unilaterally.** Scope, tone,
   what counts as a gym, what a rule should be: those are the owner's. Implementation
   detail is not.
-- **Verification on the deployed URL is part of done**, and it is the owner's step. Local
-  green is necessary and not sufficient (§8).
+- **Verification on the deployed URL is part of done**, and it is the owner's step —
+  because it is the one check that needs a human with a real browser on a real device.
+  Local green is necessary and not sufficient (§8). Claude Code can drive a headless
+  browser against the deployed site and should, but that does not replace the owner
+  looking at it: the iOS Safari toolbar covering a bottom-fixed button is exactly the
+  class of defect no headless run reproduces.
 - **Measure before fixing.** Reproduce a reported bug and confirm the mechanism before
   changing code; report honestly when it does not reproduce, and say what was checked.
 - **An assertion must pin the rule, not the day's data.** Several checks in this repo were
@@ -955,17 +971,36 @@ have. `price_history` remains the groundwork for the deals feed below.
   `listing_tier` is its free/enhanced hook, planted empty. Inherits every **[phase-2]**
   rule in §8 the day it arrives — RLS default-deny, server-derived identity, rate limits
   on every write path.
-- **LLM-assisted pricing-URL discovery.** The single most expensive lesson of the
-  discovery sweep was that **"consult-gated" verdicts were mostly wrong-URL verdicts**:
-  [solidcore] publishes its full price list at `/membership-perks?siteId=…`, which no
-  path-guessing heuristic would ever reach, and Barry's, CorePower and Studio Three were
-  all written off from guessed or root URLs. `discover.py` currently tries a fixed list
-  of paths (`/membership`, `/pricing`, `/rates`, `/join`…) and a widget signature. A
-  model reading a site's own navigation and sitemap to *propose* the pricing URL would
-  find what path patterns cannot. It proposes only — the fetch, the parse and the
-  human review stay exactly as they are.
-  *(Recorded here from the sweep's evidence; if this was already scoped differently,
-  correct the framing.)*
+- **LLM-assisted pricing-URL discovery.** The goal is bigger than a scraper
+  enhancement: **remove manual URL-hunting and verification from the owner's hands
+  wherever confidence is high.**
+
+  The pipeline: pull each gym's **sitemap**, combine it with our accumulated
+  **known-dead** and **known-good URL lists**, hand the candidate set to a **cheap Haiku
+  call that classifies which URL is the pricing page**, and let **Firecrawl fetch only
+  the winner**. One model call and one credit per gym, instead of a path-guessing
+  heuristic and a human.
+
+  This exists because the discovery sweep's most expensive lesson was that
+  **"consult-gated" verdicts were mostly wrong-URL verdicts.** [solidcore] publishes its
+  full price list at `/membership-perks?siteId=…`, which no path list would ever reach,
+  and Barry's, CorePower and Studio Three were all written off from guessed or root URLs.
+  A model reading a site's own sitemap finds what `/pricing`, `/rates`, `/join` cannot.
+
+  **Three guardrails, from day one, not added later:**
+
+  1. **Low-confidence classifications queue for human review. They never ship.** The
+     model proposes a URL; it does not decide that a page is authoritative.
+  2. **The pipeline is allowed to fail into "call for pricing" — never into a guess.**
+     That is the constitution, not a preference. An unpriced gym is a gap; a wrong price
+     is the failure this site exists to prevent, and an automated pipeline that guesses
+     produces wrong prices at a rate no human ever could.
+  3. **Auto-harvested rows carry a sourcing tag distinct from human-verified**, so
+     **"verified" keeps its meaning** if a gym owner ever challenges a price. When
+     someone asks "who checked this", the answer must not be ambiguous. Expect a
+     `data_source` value alongside `scrape` / `manual` — the schema already carries the
+     field, and §3's rule that `verified_date` is a public claim applies unchanged.
+
 - **Barbell brand mark** — a minimal horizontal barbell (a bar with two plates)
   as an underline accent beneath the wordmark, and possibly a flanking treatment
   in the hero only. **Launch polish, not v1.** The header wordmark and the
