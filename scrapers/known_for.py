@@ -332,14 +332,50 @@ def main():
         rows.append({
             "gym": gym, "entry": entry, "claims": claims,
             "suppressed": suppressed, "candidates": candidates(claims),
+            # Converged claim labels, used for the collision pass below.
+            "profile": frozenset(l for l, d in claims.items() if d["n"] >= MIN_REVIEWS),
         })
         print(f"· {gym['name'][:38]:40s} reviews={len(entry.get('reviews', [])):d} "
               f"claims={sum(1 for d in claims.values() if d['n'] >= MIN_REVIEWS)} "
               f"suppressed={suppressed}", flush=True)
 
+    flag_collisions(rows)
     write_report(rows, args.out, search_calls, details_calls)
     print(f"\nAPI calls this run — searchText: {search_calls}, placeDetails: {details_calls}")
     print(f"wrote {args.out}")
+
+
+def flag_collisions(rows):
+    """Mark gyms whose converged claims are near-identical to another gym's.
+
+    Two gyms both profiling as serious-lifting + equipment + cleanliness produce
+    two lines that say the same thing about different businesses. The claims are
+    individually true and the pair is still useless — a directory where four
+    gyms share a description has described none of them. The generator cannot
+    resolve that (it has no way to know which gym owns the trait), so it does
+    the one thing it can: point at the collision and let the owner differentiate
+    or blank one.
+
+    Jaccard over the converged claim sets, which is the right shape here: it
+    catches "identical" and "one claim apart" without firing on two gyms that
+    merely share a single common trait like cleanliness.
+    """
+    for r in rows:
+        r["collisions"] = []
+    scored = [r for r in rows if r["profile"]]
+    for i, a in enumerate(scored):
+        for b in scored[i + 1:]:
+            inter = len(a["profile"] & b["profile"])
+            union = len(a["profile"] | b["profile"])
+            if union == 0:
+                continue
+            j = inter / union
+            # >= 0.6 means most of what we can say about one is what we say
+            # about the other. Below that they share a trait; above it they
+            # share an identity.
+            if j >= 0.6 and inter >= 2:
+                a["collisions"].append((b["gym"]["name"], sorted(a["profile"] & b["profile"])))
+                b["collisions"].append((a["gym"]["name"], sorted(a["profile"] & b["profile"])))
 
 
 def write_report(rows, out, search_calls, details_calls):
@@ -373,6 +409,17 @@ def write_report(rows, out, search_calls, details_calls):
           + (f" · {r['suppressed']} price-talk fragment(s) discarded" if r["suppressed"] else ""))
         if e.get("editorial"):
             A(f"\nGoogle's own summary: *{e['editorial']}*")
+        # An existing line is not a blank to fill — it is the owner's own voice,
+        # already shipped. Surface it so a candidate is judged as a REPLACEMENT
+        # rather than adopted as if the field were empty.
+        if g.get("known_for"):
+            A(f"\n> **Already has a line — compare before replacing:** {g['known_for']}")
+        if r.get("collisions"):
+            names = ", ".join(sorted({c[0] for c in r["collisions"]}))
+            shared = ", ".join(sorted({s for c in r["collisions"] for s in c[1]}))
+            A(f"\n> **⚠ Profile collision** with **{names}** — shared claims: {shared}.")
+            A(f"> Differentiate these lines or blank one; two gyms described identically")
+            A(f"> have both been described badly.")
         A("\n**Candidates**\n")
         for i, c in enumerate(r["candidates"], 1):
             A(f"{i}. {c}")
