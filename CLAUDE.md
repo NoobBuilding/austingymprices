@@ -404,7 +404,13 @@ never touches these fees, so an unstated fee there sits in the breakdown behind 
 own note. Any plan carrying a `null` fee must carry a note recording that the gym does not
 publish it — the gap is stated, never silently absorbed.
 
-**An all-in figure with an unstated fee is a FLOOR, and says so.** `all_in_monthly` folds
+**The floor state, in one sentence: where a default plan carries a `null` enrollment or
+annual fee, `all_in_monthly` is a FLOOR rather than a figure — it renders as `$35+`, the
+plan table reads "Not published" rather than "None", and the plan MUST carry a note naming
+the missing fee, without which the row fails validation, because an unexplained `+` is
+just a stranger number than the one it replaced.**
+
+`all_in_monthly` folds
 a missing fee in as `0`, which makes it right about everything it knows and silently low
 about what it does not. Gold's publishes $34.99/mo and no annual fee anywhere, and is
 historically an annual-fee chain — printing "$35/mo all-in" there would be exactly the

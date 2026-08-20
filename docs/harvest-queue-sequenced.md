@@ -185,3 +185,28 @@ time, and a scraper failure is recoverable in a way a wasted human read is not.
 - The **34 recovery candidates** from the funded second pass, which need their own
   probe-and-triage pass first (`docs/recovery-scan.md`).
 
+## Chain-branch rows folded into the wave priorities (2026-08-20)
+
+The YMCA and Anytime Fitness placeholder rows were brand names, not locations — neither
+could carry a pin or an honest price. They are now **eight branch rows** under `chain`:
+
+| Branch | Region | Wave | Sourcing status |
+|---|---|---|---|
+| Townlake YMCA | downtown | 3 | **Priced.** Association-wide rate card |
+| East Communities YMCA | east-austin | 4 | **Priced.** Association-wide rate card |
+| North Austin YMCA | hyde-park | 2 | **Priced.** Association-wide rate card |
+| Northwest YMCA of Austin | the-domain | **1** | **Priced.** Association-wide rate card |
+| Southwest Family YMCA | south-soco | 4 | **Priced.** Association-wide rate card |
+| Anytime Fitness W Anderson Lane | hyde-park | 2 | Enquiry form — needs owner contact |
+| Anytime Fitness FM 2222 | hyde-park | 2 | Enquiry form — needs owner contact |
+| Anytime Fitness Anderson Mill | the-domain | **1** | Enquiry form — needs owner contact |
+
+**The YMCA rate is association-wide, not per branch** — `austinymca.org/join` publishes one
+card and a membership admits you to every branch, so the same figures apply to all five
+with the provenance stated on each plan. That is the opposite of the Gold's case, where
+three clubs carry three different rate cards, and the difference is sourced in both
+directions rather than assumed in either.
+
+**Anytime Fitness is a floor, not a census.** Places text search returns three in-circle
+clubs against a brand claim of eleven-plus in Austin; the cap is the search, not the city.
+Expect more branch rows once the brand locator is walked properly.

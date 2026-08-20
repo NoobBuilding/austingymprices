@@ -1,17 +1,17 @@
 {
-  "slug": "ymca-greater-austin",
-  "name": "YMCA of Greater Austin",
+  "slug": "ymca-northwest",
+  "name": "Northwest YMCA of Austin",
   "chain": "ymca",
-  "region": "mueller",
-  "sub_locality": "Multiple branches",
+  "region": "the-domain",
+  "sub_locality": "McNeil",
   "category": "community",
   "access_model": "facility",
   "eligibility": null,
-  "website": "https://austinymca.org",
+  "website": "https://www.austinymca.org",
   "pricing_url": "https://www.austinymca.org/join",
-  "address": null,
-  "lat": null,
-  "lng": null,
+  "address": "5807 McNeil Dr, Austin, TX 78729",
+  "lat": 30.44317,
+  "lng": -97.76669,
   "known_for": null,
   "amenities": [],
   "sauna": null,
@@ -32,12 +32,14 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": null,
-      "note": "Standard adult rate across the 8 community fitness centers.",
+      "note": "Standard adult rate across the 8 community fitness centers. Rate published association-wide by the YMCA of Greater Austin, not per branch — membership admits you to every branch. Read from austinymca.org/join; no branch-specific variation is published, and none is assumed.",
       "is_default": true,
       "promo": {
         "enroll_fee": 0,
         "note": "$0 join fee — a $49 saving. Limited-time offer, no code needed."
-      }
+      },
+      "classes_per_period": null,
+      "cancellation_fee": null
     },
     {
       "name": "Student",
@@ -46,12 +48,14 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": "student",
-      "note": "Age-restricted. Proof of enrollment required.",
+      "note": "Age-restricted. Proof of enrollment required. Rate published association-wide by the YMCA of Greater Austin, not per branch — membership admits you to every branch. Read from austinymca.org/join; no branch-specific variation is published, and none is assumed.",
       "is_default": false,
       "promo": {
         "enroll_fee": 0,
         "note": "$0 join fee, limited-time offer."
-      }
+      },
+      "classes_per_period": null,
+      "cancellation_fee": null
     },
     {
       "name": "Young Adult (19–26)",
@@ -60,12 +64,14 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": "young-adult",
-      "note": "Age-restricted, ages 19 to 26.",
+      "note": "Age-restricted, ages 19 to 26. Rate published association-wide by the YMCA of Greater Austin, not per branch — membership admits you to every branch. Read from austinymca.org/join; no branch-specific variation is published, and none is assumed.",
       "is_default": false,
       "promo": {
         "enroll_fee": 0,
         "note": "$0 join fee, limited-time offer."
-      }
+      },
+      "classes_per_period": null,
+      "cancellation_fee": null
     },
     {
       "name": "One Adult Household",
@@ -74,12 +80,14 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": "household",
-      "note": "Household plan, one adult.",
+      "note": "Household plan, one adult. Rate published association-wide by the YMCA of Greater Austin, not per branch — membership admits you to every branch. Read from austinymca.org/join; no branch-specific variation is published, and none is assumed.",
       "is_default": false,
       "promo": {
         "enroll_fee": 0,
         "note": "$0 join fee, limited-time offer."
-      }
+      },
+      "classes_per_period": null,
+      "cancellation_fee": null
     },
     {
       "name": "Two Adult",
@@ -88,12 +96,14 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": "household",
-      "note": "Two-adult plan.",
+      "note": "Two-adult plan. Rate published association-wide by the YMCA of Greater Austin, not per branch — membership admits you to every branch. Read from austinymca.org/join; no branch-specific variation is published, and none is assumed.",
       "is_default": false,
       "promo": {
         "enroll_fee": 0,
         "note": "$0 join fee, limited-time offer."
-      }
+      },
+      "classes_per_period": null,
+      "cancellation_fee": null
     },
     {
       "name": "Two Adult Household",
@@ -102,12 +112,14 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": "household",
-      "note": "Household plan, two adults.",
+      "note": "Household plan, two adults. Rate published association-wide by the YMCA of Greater Austin, not per branch — membership admits you to every branch. Read from austinymca.org/join; no branch-specific variation is published, and none is assumed.",
       "is_default": false,
       "promo": {
         "enroll_fee": 0,
         "note": "$0 join fee, limited-time offer."
-      }
+      },
+      "classes_per_period": null,
+      "cancellation_fee": null
     }
   ],
   "class_packs": [],
@@ -116,7 +128,7 @@
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Memberships range from $25 to $114/month. Financial assistance is available. A 30-day notice is required to cancel.",
+  "pricing_note": null,
   "stale": false,
   "price_history": []
 }

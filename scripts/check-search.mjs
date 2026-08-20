@@ -89,7 +89,16 @@ expect('big tex', ['big-tex-gym']);
 expect('BIG   TEX', ['big-tex-gym']);
 
 console.log('\nSub-locality is searchable');
-expect('anderson', ['la-fitness-anderson-lane']);
+// Sub-locality search must return EVERY gym in that locality, not one. This was
+// a single-slug list until Anytime Fitness branch rows landed on W Anderson Lane
+// and Anderson Mill — three correct matches turned a passing test red. Derived
+// from the rendered search text, so it stays true as the locality fills up.
+const andersonRows = cards
+  .filter((c) => /anderson/.test(c.normalized))
+  .map((c) => c.slug)
+  .sort();
+expect('anderson', andersonRows);
+expectSome('anderson');
 expectSome('north loop');
 // "oak hill" used to stand for this and matched Los Campeones South, which is
 // now excluded (outside every region circle, Rumble precedent). A search
