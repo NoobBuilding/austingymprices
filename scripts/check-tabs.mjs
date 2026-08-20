@@ -19,9 +19,7 @@
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { JSDOM } from 'jsdom';
-
-const html = readFileSync('dist/index.html', 'utf8');
+import { bootBundle } from './lib/boot-bundle.mjs';
 
 // The built stylesheet must make `hidden` win over any author display rule.
 const css = readdirSync('dist/_astro')
@@ -43,91 +41,9 @@ check(
   '[hidden] { display: none !important } present in the built CSS',
 );
 
-// Boot the page with the bundled script executed.
-const scriptSrc = (html.match(/<script[^>]*\ssrc="([^"]+)"/) || [])[1];
-const scriptCode = readFileSync(join('dist', scriptSrc.replace(/^\//, '')), 'utf8');
-
-const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true });
-const { window } = dom;
-
-// The bundle is an ES module: it statically imports other chunks and Vite's
-// preload helper, and references import.meta — none of which is legal in
-// eval'd non-module code.
-//
-// Every chunk is INLINED rather than stubbed: they hold real code the page
-// calls during init, and a stub changes the behaviour under test rather than
-// standing in for it. Dynamic imports still fail under jsdom, which is fine —
-// the page catches those and degrades, which is itself worth exercising.
-const ASTRO_DIR = 'dist/_astro';
-const parseBindings = (clause) =>
-  clause
-    .split(',')
-    .map((b) => {
-      const [imported, local] = b.split(/\s+as\s+/).map((x) => x.trim());
-      return { imported, local: local ?? imported };
-    })
-    .filter((b) => b.imported);
-
-let prelude = '';
-let chunkCount = 0;
-
-const evalSafe = scriptCode
-  .replace(
-    /import\s*\{([^}]*)\}\s*from\s*"([^"]*)";?/g,
-    (_m, bindings, spec) => {
-      const file = spec.replace(/^\.\//, '');
-      const names = parseBindings(bindings);
-
-      // Every chunk is inlined, including Vite's preload-helper chunk.
-      // Stubbing by filename used to be safe, but Rollup now merges our own
-      // modules into that chunk — track.js landed there, got stubbed as
-      // `(fn) => fn()`, and every track() call became "fn is not a function".
-      // Inlining has no such failure mode: the code under test is the code
-      // that ships.
-      const chunk = readFileSync(join(ASTRO_DIR, file), 'utf8');
-      if (/^\s*import[\s{]/m.test(chunk)) {
-        // Nested chunk imports would need resolving too. Fail loudly rather
-        // than silently testing a half-wired bundle.
-        throw new Error(`chunk ${file} has its own imports; harness needs extending`);
-      }
-      const exported = (chunk.match(/export\s*\{([^}]*)\}\s*;?\s*$/) || [])[1] ?? '';
-      const pairs = exported
-        .split(',')
-        .map((pair) => {
-          const [localName, exportedName] = pair.split(/\s+as\s+/).map((x) => x.trim());
-          return [exportedName ?? localName, localName];
-        })
-        .filter(([ex]) => ex);
-
-      const ns = `__chunk${chunkCount++}`;
-      prelude +=
-        `const ${ns} = (() => {\n${chunk.replace(/export\s*\{[^}]*\}\s*;?\s*$/, '')}\n` +
-        `return {${pairs.map(([ex, loc]) => `${ex}:${loc}`).join(',')}};\n})();\n`;
-      return names
-        .map((b) => `const ${b.local} = ${ns}[${JSON.stringify(b.imported)}];`)
-        .join('');
-    },
-  )
-  .replace(/import\.meta/g, "({url:'file:///bundle.js',resolve:undefined})");
-
-// Stub IntersectionObserver so the lazy map loader never fires: these tests
-// cover the list and tabs, and Leaflet needs real layout that jsdom lacks.
-// The map has its own build assertions in check-map.mjs.
-// jsdom implements no layout, so scrollIntoView throws. Stub it: the tests
-// care that selection state is correct, not that a scroll happened.
-window.Element.prototype.scrollIntoView = function scrollIntoView() {};
-
-window.IntersectionObserver = class {
-  observe() {}
-  disconnect() {}
-  unobserve() {}
-};
-
-// The import.meta rewrite has to cover the inlined chunks too — Vite's preload
-// helper uses import.meta.url, and a chunk that was never rewritten throws
-// "Cannot use 'import.meta' outside a module" the moment it is eval'd.
-const IMPORT_META = "({url:'file:///bundle.js',resolve:undefined})";
-window.eval(prelude.replace(/import\.meta/g, IMPORT_META) + evalSafe);
+// Boot the page with the bundled script executed. The inlining harness is
+// shared with check-compare.mjs so both assert against the code that ships.
+const { window } = bootBundle('dist/index.html');
 
 const $ = (sel) => Array.from(window.document.querySelectorAll(sel));
 const visible = (sel) => $(sel).filter((el) => !el.hidden);
@@ -286,13 +202,37 @@ const tabs = $('.tab');
 const tabCards = () => $('.card').filter((c) => !c.hidden);
 const models = () => [...new Set(tabCards().map((c) => c.dataset.access))];
 
-check(tabs.length === 3, 'there are three tabs', tabs.map((t) => t.dataset.mode).join(', '));
-
+// The RULE, not the day's tab count: Memberships, Classes and Day passes are
+// unconditional; Recovery renders if and only if the category has reached its
+// threshold. An earlier version asserted `tabs.length === 3`, which was a fact
+// about the week it was written — it would have gone red on the day the sixth
+// recovery listing landed, for a change that is entirely correct.
+const RECOVERY_TAB_MIN = 6;
+const modes = tabs.map((t) => t.dataset.mode);
+const recoveryCards = $('.card').filter((c) => c.dataset.category === 'recovery');
+check(
+  ['membership', 'classes', 'daypass'].every((m) => modes.includes(m)),
+  'the three unconditional tabs are present',
+  modes.join(', '),
+);
+check(
+  modes.includes('recovery') === recoveryCards.length >= RECOVERY_TAB_MIN,
+  `the Recovery tab renders iff there are >= ${RECOVERY_TAB_MIN} recovery listings`,
+  `${recoveryCards.length} listed, tab ${modes.includes('recovery') ? 'present' : 'absent'}`,
+);
 clickTab('membership');
 check(
   models().length === 1 && models()[0] === 'facility',
   'the Memberships tab shows ONLY facility gyms',
   models().join(', '),
+);
+// Recovery is facility-model, so nothing about access_model keeps it off this
+// tab — only the category rule does. Asserted whether or not the tab is gated
+// on: "accumulates invisibly" has to mean invisible on every other surface too.
+check(
+  tabCards().every((c) => c.dataset.category !== 'recovery'),
+  'recovery listings never appear on the Memberships tab',
+  tabCards().filter((c) => c.dataset.category === 'recovery').length + ' leaked',
 );
 
 clickTab('classes');
@@ -322,6 +262,36 @@ check(
   tabCards().every((c) => [...c.querySelectorAll('.membership-only')].every((e) => e.hidden)),
   'commitment badges never show on the Classes tab — commitment is a membership idea',
 );
+// The bug this test exists to prevent: on the Classes tab BOTH the membership
+// receipt and the day-pass body were hidden and nothing took their place, so
+// the chevron expanded into an empty box. The invariant is not "a .detail-class
+// element exists" — it is that every tab leaves the open card with something
+// to say. Asserted per tab below, and by content, not by presence.
+const openBodies = (card) =>
+  [...card.querySelectorAll('.detail')].filter((d) => !d.hidden);
+const expandedIsEmpty = (card) => {
+  const bodies = openBodies(card);
+  if (bodies.length === 0) return true;
+  return bodies.every((b) => b.textContent.replace(/\s+/g, ' ').trim().length < 40);
+};
+check(
+  tabCards().every((c) => openBodies(c).length === 1),
+  'exactly one card body is visible on the Classes tab',
+  [...new Set(tabCards().map((c) => openBodies(c).length))].join('/'),
+);
+check(
+  tabCards().every((c) => !expandedIsEmpty(c)),
+  'expanding a Classes card shows real content, never an empty box',
+  tabCards().filter(expandedIsEmpty).map((c) => c.dataset.slug).slice(0, 3).join(', '),
+);
+check(
+  tabCards().every((c) => {
+    const body = openBodies(c)[0];
+    return body && body.classList.contains('detail-class');
+  }),
+  'and the body it shows is the per-class one',
+);
+
 const classLabels = $('.tier').map((t) => t.textContent.trim());
 check(
   classLabels.some((l) => /class/.test(l)),
@@ -339,7 +309,20 @@ check(
   $('.tier').map((t) => t.textContent.trim()).every((l) => !/class/.test(l)),
   'and the bands revert to monthly labels',
 );
+// Same emptiness invariant on Day passes. This tab was already correct — it
+// keeps its own body — but the check belongs on every tab, not on the one that
+// happened to break: the next tab added must satisfy it too.
+check(
+  tabCards().every((c) => openBodies(c).length === 1 && !expandedIsEmpty(c)),
+  'expanding a Day passes card shows real content, never an empty box',
+  tabCards().filter(expandedIsEmpty).map((c) => c.dataset.slug).slice(0, 3).join(', '),
+);
 clickTab('membership');
+check(
+  tabCards().every((c) => openBodies(c).length === 1 && !expandedIsEmpty(c)),
+  'expanding a Memberships card shows real content, never an empty box',
+  tabCards().filter(expandedIsEmpty).map((c) => c.dataset.slug).slice(0, 3).join(', '),
+);
 
 // ── Pagination ───────────────────────────────────────────────────────────
 // The unfiltered list opens at one page; any active filter shows every match,

@@ -16,8 +16,13 @@ import { join } from 'node:path';
 const GYM_DIR = 'data/gyms';
 const CATEGORIES = new Set([
   'gym-weights', 'gym-classes', 'luxury', 'crossfit-hiit', 'pilates',
-  'yoga', 'boxing', 'bjj-mma', 'climbing', 'community',
+  'yoga', 'boxing', 'bjj-mma', 'climbing', 'community', 'recovery',
 ]);
+// Sauna / steam room / cold plunge. Tri-state for the same reason
+// accepts_classpass is: `true` is confirmed from the gym's own materials,
+// `false` is a confirmed no, `null` is unconfirmed. Silence is not a no, and
+// neither a photo nor a review is a source.
+const RECOVERY_AMENITIES = ['sauna', 'steam_room', 'cold_plunge'];
 const BILLING_PERIODS = new Set(['monthly', '4-week', 'weekly']);
 const RESTRICTED = new Set([
   'student', 'youth', 'young-adult', 'senior', 'military', 'household', 'scope',
@@ -68,6 +73,22 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
     fail(`accepts_classpass must be true, false or null, got ${JSON.stringify(gym.accepts_classpass)}`);
   }
   if (!('accepts_classpass' in gym)) fail('accepts_classpass is missing (use null when unconfirmed)');
+
+  // Recovery amenities. Required PRESENT on every gym so a new file cannot
+  // silently omit them; null is the norm until someone sources the answer.
+  for (const key of RECOVERY_AMENITIES) {
+    if (!(key in gym)) fail(`${key} is missing (use null when unconfirmed)`);
+    else if (![true, false, null].includes(gym[key])) {
+      fail(`${key} must be true, false or null, got ${JSON.stringify(gym[key])}`);
+    }
+  }
+
+  // A recovery business sells access to a room, not instructed sessions — the
+  // Recovery tab is judged per month on the same all-in figure as Memberships.
+  // A "classes" recovery row would be measured in a unit it does not sell.
+  if (gym.category === 'recovery' && gym.access_model !== 'facility') {
+    fail('category "recovery" must have access_model "facility"');
+  }
 
   // Monetization plumbing, planted empty (CLAUDE.md §10). Required PRESENT so a
   // new gym file cannot silently omit them, but null/standard is the norm.

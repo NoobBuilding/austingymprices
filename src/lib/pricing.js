@@ -225,6 +225,74 @@ export function fromPerClass(gym) {
 }
 
 /**
+ * WHERE the `from $X/class` figure came from — the winning candidate itself,
+ * not just its value.
+ *
+ * The Classes card has to show its working ("$27.90 = $279 10-pack ÷ 10"), and
+ * a receipt that recomputed the minimum separately from `fromPerClass` would be
+ * free to disagree with the headline above it. So both read this one function:
+ * the number and its explanation cannot drift apart.
+ *
+ * Returns null wherever `fromPerClass` returns null.
+ */
+export function fromPerClassSource(gym) {
+  let best = null;
+  const consider = (value, source) => {
+    if (value === null) return;
+    if (best === null || value < best.value) best = { value, ...source };
+  };
+
+  for (const plan of gym.plans ?? []) {
+    if (plan.restricted !== null && plan.restricted !== undefined) continue;
+    const commit = plan.commit_months;
+    if (!(commit === null || commit === undefined || commit <= 2)) continue;
+    consider(perClassOfPlan(plan, gym.billing_period), {
+      kind: 'plan',
+      name: plan.name,
+      price: normalizedMonthly(plan, gym.billing_period),
+      classes: plan.classes_per_period,
+      note: plan.note ?? null,
+    });
+  }
+  for (const pack of gym.class_packs ?? []) {
+    if (pack.promo) continue;
+    consider(perClassOfPack(pack), {
+      kind: 'pack',
+      name: pack.name,
+      price: pack.price,
+      classes: pack.classes,
+      expires_days: pack.expires_days ?? null,
+      note: pack.note ?? null,
+    });
+  }
+  if (best === null) return null;
+  // Round exactly as fromPerClass does, so the headline and the receipt agree
+  // to the cent rather than to within a rounding error.
+  return { ...best, value: Math.round(best.value * 100) / 100 };
+}
+
+/**
+ * The per-class receipt in words: how the headline figure was reached.
+ *
+ * ONE function, used by the index card's expanded state and by the compare
+ * table's derivation row, because two copies of this sentence would eventually
+ * disagree about the same gym — and a receipt that contradicts the number above
+ * it is worse than no receipt.
+ *
+ * Returns null wherever there is no figure to explain.
+ */
+export function perClassDerivation(source, money) {
+  if (!source) return null;
+  // A single class needs no arithmetic. "$35 ÷ 1 classes" shows working that
+  // does not exist and reads as a broken template.
+  if (source.classes === 1) {
+    return `the published price of one ${String(source.name ?? 'class').toLowerCase()}`;
+  }
+  const unit = source.kind === 'plan' ? 'classes a month' : 'classes';
+  return `${money(source.price)} ${source.name} ÷ ${source.classes} ${unit}`;
+}
+
+/**
  * Price tier for the Classes tab. Bands are fitted to what Austin studios
  * actually charge — the observed cluster is $18-33 a class — rather than to a
  * round number that would drop nearly everything into tier 1.

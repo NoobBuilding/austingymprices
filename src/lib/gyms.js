@@ -19,6 +19,7 @@ import {
   selectDefaultPlan,
   classTier,
   fromPerClass,
+  fromPerClassSource,
   unlimitedMonthly,
 } from './pricing.js';
 
@@ -68,6 +69,9 @@ function decorateGym(gym) {
     // class counts are not published — which renders as no figure, not a guess.
     from_per_class: fromPerClass(gym),
     class_tier: classTier(fromPerClass(gym)),
+    // The winning candidate behind that figure, so the Classes card can show
+    // its working from the same source the headline was computed from.
+    from_per_class_source: fromPerClassSource(gym),
     unlimited_monthly: unlimitedMonthly(gym),
     has_class_price: fromPerClass(gym) !== null,
     // A gym is "no contract" for filtering purposes on its headline plan.

@@ -46,10 +46,12 @@ silently dropped):
   page states billing begins 30 days after its Grand Opening and whose "Founders"
   rates are launch promotions, not standing prices. No row, no "coming soon"
   placeholder.
-- **Pure personal-training and recovery studios.** Forge Strength (8-session PT packs
-  at $999/$1498, no membership) and Generator Athlete Lab (a $65 assessment and
-  recovery passes). Listing them would put a $124.88/session rate beside F45 at
-  $23/class.
+- **Pure personal-training studios.** Forge Strength (8-session PT packs at $999/$1498,
+  no membership). Listing it would put a $124.88/session rate beside F45 at $23/class.
+  ~~Superseded: "and recovery studios."~~ **Recovery-only businesses are now IN scope**
+  as the `recovery` category (§3, §6), which **reverses the exclusion of Generator
+  Athlete Lab** — it publishes a day pass and recovery passes, and the reason it was set
+  aside was that there was nowhere to put it. There is now.
 - **Gone dark, or never locatable.** FeV Iron Vault (site entirely down, no confirmed
   address, possibly closed — keeps a recheck condition, so a live site puts it back in
   the pipeline) and Rumble Boxing South Austin (only an intro offer published, and the
@@ -101,7 +103,8 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "region": "hyde-park",            // one of the 6 region ids below
   "access_model": "facility",        // "facility" (buy door access) | "classes" (buy sessions)
   "category": "gym-weights",         // gym-weights | gym-classes | luxury | crossfit-hiit |
-                                     // pilates | yoga | boxing | bjj-mma | climbing | community
+                                     // pilates | yoga | boxing | bjj-mma | climbing |
+                                     // community | recovery
   "website": "https://bigtexgym.com",
   "pricing_url": "https://bigtexgym.com/membership",
   "address": "1921 Cedar Bend Dr, Austin, TX 78758",
@@ -109,6 +112,9 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "lng": -97.7015,
   "known_for": "Serious lifting crowd, old-school and specialty equipment, loud floor, 24/7 key-tag access.",
   "amenities": ["24/7", "Infrared sauna", "Parking"],
+  "sauna": null,                     // true | false | null — tri-state, like accepts_classpass.
+  "steam_room": null,                //   Sourced from the gym's OWN materials only: never
+  "cold_plunge": null,               //   inferred from a photo, a review or an amenity string.
   "photo": "google-places",          // "google-places" | filename in /public/photos | null
   "data_source": "scrape",           // "scrape" | "manual"
   "verified_date": "2026-08-16",
@@ -173,6 +179,17 @@ appears only as one secondary line ("Membership from $X/mo all-in — Full detai
 concept, and a "2-mo minimum" badge above a $10 headline reads as a contradiction.
 Day-pass restrictions live in `day_pass_terms` as structured data so they render from the
 data rather than being buried in prose.
+
+**Every tab answers the accordion.** A card's chevron must never open onto an empty box.
+The Classes tab did exactly that for a while: it hid the membership receipt, hid the
+day-pass body, and had nothing of its own to put in their place. The **Classes expanded
+state is exactly three elements, and nothing else**: (a) the **receipt line** showing how
+the per-class figure was derived — "$27.90/class = $279 10-class pack ÷ 10 classes",
+read from the same function that computed the headline so the two cannot disagree;
+(b) the **promo flag** where a deal exists, standard treatment; (c) **one "what's
+included" line, only where the gym published one**. No schedules, no amenities — those
+answer a different question and belong on the detail page. Where a studio publishes no
+class count there is no receipt, and the card says so rather than inventing an arithmetic.
 
 **Show the math on multi-day passes.** Where a week/month/punchcard pass sits next to a
 single-day price, state what it includes *and* how it compares — "Week pass $35 — 7 days
@@ -322,6 +339,28 @@ offer ends. Class price tiers are **1 (< $22), 2 ($22–32), 3 ($32+)**, fitted 
 what Austin studios actually charge rather than to round numbers that would drop
 nearly everything into tier 1.
 
+**`sauna` / `steam_room` / `cold_plunge` rules:** three tri-state booleans on **every**
+gym, obeying the same rule as `accepts_classpass`. `true` is confirmed from the gym's own
+materials, `false` is a confirmed no, `null` is unconfirmed — and **absence renders
+absence**. They are never inferred from a photo, a review, or a Places attribute: a
+picture of a wooden room is not a published amenity. There is **no site-wide population
+pass**; they fill in opportunistically as rows are touched for other reasons, which is
+why `null` is the honest majority state rather than a backlog.
+
+**The `recovery` category and its gated fourth tab.** Recovery businesses — sauna houses,
+cold-plunge studios, contrast therapy — are `category: "recovery"` and
+`access_model: "facility"`. They are facility-model in the full sense: **the same all-in
+math, the same day-pass economics, nothing new**. What they do not get is a row on the
+Memberships tab, because "$45/mo for a sauna" beside "$23/mo unlimited gym access" is
+precisely the category error the Classes tab exists to prevent.
+
+The **Recovery tab renders only once 6 or more recovery listings exist**. Below that it
+does not render at all and the category **accumulates invisibly**. The gate is
+constitutional, not cosmetic: a chip that filters badly is annoying, but an **empty tab is
+a broken promise** — it invites a click and answers with nothing. Computed at build time
+like the ClassPass chip, so the tab appears on its own the day the sixth listing lands,
+with no code change.
+
 **`cancellation_fee` rules:** a nullable number on a plan, for contingent exit
 costs (Castle Hill charges $300 to leave a 12-month plan early). It renders on
 the plan row and **never enters all-in math**: all-in is what you *will* pay,
@@ -376,6 +415,20 @@ A gym with no confirmed price ships in the "call for pricing" state, never with 
      and the page says so in words.
    - Compare **refuses to mix access models**: a facility is priced per month and a studio
      per class, and putting both under one heading compares nothing.
+   - **Compare is TAB-AWARE, exactly as the cards are.** A comparison inherits the
+     question the tab was asking, carried in the URL as `&tab=` — because the URL is the
+     view's only state, and a comparison that loses its question when reloaded or pasted
+     to a friend only looks shareable. From **Classes**: the per-class from-price leads,
+     its derivation follows (the same receipt line the card's chevron shows, from the
+     same function, so the two cannot drift), then the single-class/drop-in price —
+     **relabelled**, because "Day pass" beside a per-class headline invites a comparison
+     against a gym's all-day access. From **Day passes**: the pass leads and membership
+     economics follow. From **Memberships**: unchanged, and it stays the shape the static
+     HTML ships in so the no-JS table is still membership-shaped.
+     Rows are **reordered and relabelled, never dropped for being demoted** — a fact that
+     stops being the headline is still a fact. The one exception is a lead-only row on a
+     tab that does not lead with it: a per-class derivation under "Advertised rate"
+     explains a figure no longer on screen.
    - **`noindex`** and out of the sitemap: the useful URLs are query strings with a
      combinatorial number of values and no search value.
 5. **`/faq`** — data sourcing, update cadence, correction policy, "not affiliated with any gym.
@@ -537,6 +590,43 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   of the actual downtown, so East 7th Street and Springdale Road addresses fall into it.
   The bucket is a search grouping; **a row's real region is settled at geocoding time.**
 
+- **A checkout shell carries another club's data until you tell it otherwise.** Gold's
+  `/join/` renders with **Gold's Gym Venice, 360 Hampton Dr, CA** preselected and a
+  `Passport Gold Plus` plan at `$0.00`, on the Austin Downtown *and* Austin Burnet URLs
+  alike. Any figure lifted from that page before walking the location selector belongs to
+  a gym 1,400 miles away. Same class of error as pairing probe results by index: the page
+  looked like it was about the club whose URL fetched it, and it was not.
+
+**Scope precedents — what counts as a gym.** Triage law, applied to every candidate
+before anything else is asked about it. These are the owner's rulings, recorded so a new
+thread inherits them rather than re-litigating each studio one at a time:
+
+- **Dance: technique out, sweat in.** A business selling technique or social/art-form
+  instruction is **excluded** — ballet, tango, salsa, ballroom, competition and
+  performance training. **Dance-fitness is in scope, as Classes** — Zumba-style and
+  cardio-dance, where the product is a workout that happens to be choreographed. The test
+  is **what is being sold: technique, or sweat.** Auditions, syllabi, levels, recitals and
+  wedding-dance lessons are technique markers; calories, conditioning and "no experience
+  needed" are sweat markers.
+- **Martial arts: in scope as Classes, where an adult can actually buy.** A martial-arts
+  school lists **where adult class or drop-in pricing exists** — the Old Guard precedent,
+  which sells a $165/mo two-day plan and a $25 drop-in. A school publishing only
+  kids' programmes and a "contact us" fails the adult test, not the martial-arts test.
+- **PT: the exclusion is for PURE personal training only.** A business is excluded when
+  1-on-1 training is the **sole product** and there is no self-directed membership and no
+  group-class price to list — the Forge Strength and Generator Athlete Lab precedent,
+  generalised. **PT offered as an add-on never affects a listing**: we list the
+  membership and class economics and ignore the PT rates entirely. Nearly every gym sells
+  personal training, and letting that disqualify them would empty the site.
+- **Recovery: recovery-only businesses are IN scope**, as the `recovery` category —
+  sauna houses, cold-plunge studios, contrast therapy. See §3 and the gated fourth tab.
+  This **reverses the original exclusion** of Generator Athlete Lab, which was set aside
+  as a "recovery studio" before the category existed.
+- **Youth-only: excluded. An adult offering is required to list.** A gym with no product
+  a walk-in adult can buy is not a gym this site can price. Where an adult price exists,
+  a youth price is simply another plan — OPTML's youth rate stays, because its **adult
+  price anchors the row**. The rule excludes youth-*only* businesses, never youth pricing.
+
 **Walled site → human transcription.** Where we will not or cannot read a page, the owner
 reads it and transcribes. `docs/price-transcription.md` is the paste-friendly sheet, and
 **a transcribed price carries exactly the same provenance burden as a scraped one**: one
@@ -564,6 +654,8 @@ so it must be the day the page was actually read.
   harvest-queue.md          # probe-confirmed pricing URLs awaiting owner approval
   harvest-findings*.md      # per-gym findings tables awaiting owner review
   discovery-triage.md       # the sweep split three ways: keeps / needs-judgement / excludes
+  triage-verdicts.md        # the 21 judgement items ruled on against the §6 scope rules
+  recovery-scan.md          # why the Recovery category is empty and what would fill it
   awaiting-classification.md# every unpriced listed gym and what it would take to price it
   recheck-ledger.md         # excluded businesses + the condition to revisit each
   price-transcription.md    # paste-friendly sheet for owner-read (walled) prices
@@ -853,6 +945,17 @@ share a mechanism.
   owner judgement, 144 obvious excludes** — of which **118 are simply "site reads fine,
   publishes no price"**, which is the real shape of the long tail. Only 3 are bot walls.
   **114 distinct sourceable businesses remain unlisted.**
+  The 21 are now **ruled on against the §6 scope precedents** in
+  `docs/triage-verdicts.md`: **10 in, 9 out, 2 the rules genuinely do not decide**
+  (Shuffle HQ; StretchLab). All 10 are Classes-model, so they change the Classes tab
+  rather than the Memberships coverage number.
+- **The Recovery category is empty, and structurally so.** `docs/recovery-scan.md`: the
+  Places sweep asks for `gym`, `fitness_center` and `yoga_studio` only, and `EXCLUDE_NAME`
+  filters out `wellness center|massage|spa\b` — so sauna houses and plunge studios were
+  **never enumerated**, not excluded. Exactly **one** sourceable recovery candidate exists
+  (Generator Athlete Lab), against a gate of six. Filling the tab needs a second discovery
+  pass aimed at the category, with `EXCLUDE_NAME` narrowed in the same change or it
+  deletes the results on the way in. Proposed, not done — it is a credit spend.
 - **The 18 awaiting gyms are classified** in `docs/awaiting-classification.md` as
   sourceable-scrapeable / sourceable-human / needs-owner-contact / dead-end. Five are
   confirmable without owner contact — Studio Three, CorePower, both Gold's clubs and

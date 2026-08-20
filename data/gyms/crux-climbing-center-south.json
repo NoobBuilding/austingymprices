@@ -16,6 +16,9 @@
     "Yoga classes",
     "Fitness classes"
   ],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",

@@ -5,7 +5,13 @@
  * Nothing here ranks, recommends, weights, or marks a winner. It arranges facts
  * side by side and stops. A "best value" badge would be our opinion wearing the
  * costume of a measurement.
+ *
+ * Tab-awareness follows the same rule as the cards (§3): the active tab defines
+ * the question, and the table answers THAT question first. It reorders and
+ * relabels rows — it never hides one, because a fact that stops being the
+ * headline is still a fact the reader may want.
  */
+import { perClassDerivation } from './pricing.js';
 
 /** Hard cap. Four columns is what fits before a comparison stops comparing. */
 export const MAX_COMPARE = 4;
@@ -89,9 +95,65 @@ export function parseCompareParam(raw, knownSlugs) {
   return out;
 }
 
-/** The shareable URL for a selection. */
-export function compareHref(slugs) {
-  return `/compare?gyms=${slugs.slice(0, MAX_COMPARE).join(',')}`;
+/**
+ * The tabs a comparison can be reached from. The compare view inherits the
+ * question the tab was asking — a comparison opened from Classes that leads
+ * with a monthly rate is answering a question the reader did not ask.
+ */
+export const COMPARE_TABS = ['membership', 'classes', 'daypass', 'recovery'];
+
+/** Unknown or absent tab falls back to the membership shape, which is the
+ *  no-JS default the table is server-rendered in. */
+export function parseCompareTab(raw) {
+  return COMPARE_TABS.includes(String(raw ?? '')) ? String(raw) : 'membership';
+}
+
+/**
+ * The shareable URL for a selection.
+ *
+ * The tab rides in the URL because the URL is the compare view's ONLY state
+ * (§4): a comparison that loses its question on reload or when pasted to a
+ * friend is not shareable, it just looks shareable. Membership is the default
+ * shape, so it is left off rather than written out.
+ */
+export function compareHref(slugs, tab = 'membership') {
+  const gyms = slugs.slice(0, MAX_COMPARE).join(',');
+  const t = parseCompareTab(tab);
+  return `/compare?gyms=${gyms}${t === 'membership' ? '' : `&tab=${t}`}`;
+}
+
+/**
+ * Row order per originating tab. Order and LABEL only — every row is
+ * server-rendered for every tab, so this rearranges facts rather than
+ * choosing which ones the reader is allowed to see. The membership rows
+ * always follow as context; they are demoted, never dropped.
+ */
+const LEAD_ROWS = {
+  membership: [],
+  recovery: [],
+  classes: ['per_class', 'per_class_from', 'day_pass'],
+  daypass: ['day_pass'],
+};
+
+export function compareRowOrder(rows, tab) {
+  const lead = LEAD_ROWS[parseCompareTab(tab)] ?? [];
+  const byKey = new Map(rows.map((r) => [r.key, r]));
+  const ordered = lead.map((k) => byKey.get(k)).filter(Boolean);
+  const seen = new Set(ordered.map((r) => r.key));
+  // Rows that only make sense as a lead are dropped from the tail rather than
+  // repeated: the per-class derivation under "Advertised rate" is noise.
+  for (const r of rows) {
+    if (seen.has(r.key)) continue;
+    if (r.leadOnly && !seen.has(r.key) && !lead.includes(r.key)) continue;
+    ordered.push(r);
+  }
+  return ordered;
+}
+
+/** The row label for a given tab — a row can be called different things
+ *  depending on the question being asked of it. */
+export function rowLabel(row, tab) {
+  return row.labels?.[parseCompareTab(tab)] ?? row.label;
 }
 
 /**
@@ -118,7 +180,11 @@ export function priceRows(money) {
       value: (g) => plan(g)?.commitment_badge?.text ?? null },
     { key: 'first_year', label: 'First-year total', headline: true,
       value: (g) => (g.first_year_total === null ? null : money(g.first_year_total)) },
+    // Same number, different question. At a studio the "day pass" IS the
+    // single-class drop-in rate, and calling it a day pass beside a per-class
+    // headline invites the reader to compare it against a gym's all-day access.
     { key: 'day_pass', label: 'Day pass',
+      labels: { classes: 'Single class (drop-in)' },
       value: (g) =>
         nullish(g.day_pass)
           ? null
@@ -132,5 +198,14 @@ export function priceRows(money) {
           : null },
     { key: 'verified', label: 'Prices checked',
       value: (g) => g.verified_date ?? null },
+    // The Classes lead, declared LAST on purpose. Source order is the order the
+    // static HTML ships in, and that has to be the membership shape: with JS
+    // off the table is the whole list, and leading every gym with a per-class
+    // figure most of them do not have would answer a question nobody asked.
+    // compareRowOrder() lifts these to the top when the tab calls for it.
+    { key: 'per_class', label: 'From, per class', headline: true, leadOnly: true,
+      value: (g) => (nullish(g.from_per_class) ? null : `${money(g.from_per_class)}/class`) },
+    { key: 'per_class_from', label: 'How that rate is reached', leadOnly: true,
+      value: (g) => perClassDerivation(g.from_per_class_source, money) },
   ];
 }

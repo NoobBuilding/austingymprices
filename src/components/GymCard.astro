@@ -9,6 +9,7 @@
  * renders the "call for pricing" state — never a number, never a guess.
  */
 import { getRegion } from '../lib/gyms.js';
+import { perClassDerivation } from '../lib/pricing.js';
 import { compactSearch, gymSearchText, normalizeSearch } from '../lib/search.js';
 
 /** `compare` opts the card into the compare picker. Only the index wires that
@@ -53,6 +54,30 @@ const sourceDomain = gym.pricing_url
 const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURIComponent(
   `Price correction: ${gym.name}`,
 )}`;
+
+// ── Classes tab: the three elements of the expanded state ──────────────────
+// (a) the receipt — the winning candidate behind "from $X/class", read from
+//     the same function that computed the headline so the two cannot disagree.
+const classSource = gym.from_per_class_source ?? null;
+
+// (b) the promo flag, where a deal exists. A promo never derives a number
+//     (§6), so this is a FLAG beside the standing rate, never a substitute for
+//     it. The headline plan's promo speaks first; failing that, a promo pack.
+const promoPack = (gym.class_packs ?? []).find((k) => k.promo && k.note);
+const classPromo = plan?.promo?.note ?? promoPack?.note ?? null;
+
+// (c) one "what's included" line, ONLY where the gym published one. A pack
+//     states its own expiry; a plan states whatever its note says. Silence
+//     renders nothing rather than an invented description.
+const classIncluded =
+  classSource === null
+    ? null
+    : classSource.kind === 'pack'
+      ? (classSource.note ??
+        (classSource.expires_days
+          ? `${classSource.classes} classes, valid ${classSource.expires_days} days from purchase`
+          : null))
+      : (classSource.note ?? null);
 ---
 
 <article
@@ -222,6 +247,46 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
         {/* A gym whose scrape has been failing for >14 days says so in the
             warning style rather than presenting a stale number as current
             (CLAUDE.md §6). */}
+        <span class={gym.stale ? 'stale' : ''}>
+          {verified
+            ? gym.stale
+              ? `Prices last confirmed ${verified} — we have not been able to re-check since`
+              : `Prices checked ${verified}${sourceDomain ? ` · from ${sourceDomain}` : ''}`
+            : 'Price not yet confirmed'}
+        </span>
+        <span class="dfoot-links">
+          <a href={gym.url}>Full details →</a>
+          <a href={reportHref}>Report a wrong price</a>
+        </span>
+      </div>
+    </div>
+
+    {/* Classes tab. EXACTLY three elements, and nothing else: the receipt line
+        showing how the per-class figure was derived, a promo flag where a deal
+        exists, and one "what's included" line only where the gym published
+        one. No schedules, no amenities — those answer a different question and
+        belong on the detail page. Cards scan; detail pages explain (§3). */}
+    <div class="detail detail-class" hidden>
+      {classSource ? (
+        <>
+          <p class="plan-label">How this rate is reached</p>
+          <p class="receipt-line">
+            <strong>{money(classSource.value)}</strong>/class ={' '}
+            {perClassDerivation(classSource, money)}
+          </p>
+        </>
+      ) : (
+        <p class="note">
+          This studio does not publish how many classes a membership includes, so there
+          is no per-class figure to show.
+        </p>
+      )}
+
+      {classPromo && <p class="note promo">{classPromo}</p>}
+
+      {classIncluded && <p class="secondary included">{classIncluded}</p>}
+
+      <div class="dfoot">
         <span class={gym.stale ? 'stale' : ''}>
           {verified
             ? gym.stale
@@ -647,6 +712,27 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
     padding-top: 12px;
     border-top: 1px dashed var(--line);
     font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  /* The per-class receipt. Shows its working in the card's own voice: the
+     figure in the display face, the arithmetic behind it in plain text. */
+  .receipt-line {
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .receipt-line strong {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  /* "What's included" is a statement of fact, not a fee warning — it gets the
+     quiet secondary treatment, never the orange the receipt total owns. */
+  .included {
     color: var(--ink-soft);
   }
 

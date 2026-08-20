@@ -8,6 +8,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { bootBundle } from './lib/boot-bundle.mjs';
 
 const html = readFileSync('dist/compare/index.html', 'utf8');
 const dom = new JSDOM(html);
@@ -289,6 +290,104 @@ check(
   [...indexDoc.querySelectorAll('.cmp-pick')].every((p) => !p.closest('summary')),
   'the checkbox is NOT inside <summary>, where it would fight the accordion for the click',
 );
+
+
+// ── Tab-awareness: the comparison inherits the tab's question ─────────────
+// Executed against the REAL bundle with a REAL query string, because the row
+// order lives inside the client script. Asserting the pure helper alone would
+// stay green while the shipped page still led with the wrong row (§9b).
+console.log('\nTab-awareness (real bundle, real query string)');
+
+const CMP_URL = 'https://austingymprices.com/compare';
+const pair = (tab) => {
+  const { window: w, errors } = bootBundle('dist/compare/index.html', {
+    url: `${CMP_URL}?gyms=jetset-pilates-downtown,club-pilates-austin&tab=${tab}`,
+  });
+  // The page swallows its own exceptions by design so a JS failure degrades to
+  // the static table. In a test that must be surfaced, not inherited.
+  check(errors.length === 0, `the ${tab} view runs clean — no swallowed exception`, errors[0] ?? '');
+  const rows = [...w.document.querySelectorAll('.cmp tbody tr:not(.amenity)')]
+    .filter((tr) => !tr.hidden);
+  return {
+    window: w,
+    keys: rows.map((tr) => tr.dataset.row),
+    labelOf: (key) =>
+      w.document.querySelector(`tr[data-row="${key}"] .rowhead`)?.textContent.trim(),
+  };
+};
+
+const classesView = pair('classes');
+check(
+  classesView.keys[0] === 'per_class',
+  'from Classes, the per-class figure leads',
+  classesView.keys.slice(0, 4).join(' > '),
+);
+check(
+  classesView.keys[1] === 'per_class_from',
+  'and its derivation follows immediately — the receipt line from the card',
+  classesView.keys.slice(0, 4).join(' > '),
+);
+check(
+  classesView.keys[2] === 'day_pass',
+  'then the single-class/drop-in price',
+  classesView.keys.slice(0, 4).join(' > '),
+);
+check(
+  classesView.labelOf('day_pass') === 'Single class (drop-in)',
+  'and it is RELABELLED — "Day pass" beside a per-class headline compares nothing',
+  String(classesView.labelOf('day_pass')),
+);
+check(
+  ['all_in', 'sticker', 'first_year'].every((k) => classesView.keys.includes(k)),
+  'membership rows still follow underneath as context — demoted, never dropped',
+  classesView.keys.join(' > '),
+);
+
+const daypassView = pair('daypass');
+check(
+  daypassView.keys[0] === 'day_pass',
+  'from Day passes, the day-pass row leads',
+  daypassView.keys.slice(0, 3).join(' > '),
+);
+check(
+  daypassView.labelOf('day_pass') === 'Day pass',
+  'and it keeps its own name there',
+  String(daypassView.labelOf('day_pass')),
+);
+check(
+  daypassView.keys.includes('all_in') && daypassView.keys.indexOf('all_in') > 0,
+  'with membership economics below it',
+);
+check(
+  !daypassView.keys.includes('per_class_from'),
+  'and no per-class derivation, which would explain a figure that is not shown',
+);
+
+const membershipView = pair('membership');
+check(
+  membershipView.keys[0] === 'all_in',
+  'from Memberships, the shape is unchanged',
+  membershipView.keys.slice(0, 3).join(' > '),
+);
+check(
+  membershipView.labelOf('day_pass') === 'Day pass',
+  'and the day-pass row keeps its default label',
+);
+check(
+  !membershipView.keys.includes('per_class'),
+  'lead-only rows do not linger on tabs that do not lead with them',
+);
+
+// The no-JS state must stay membership-shaped: source order IS what ships.
+const staticKeys = [...doc.querySelectorAll('.cmp tbody tr:not(.amenity)')].map(
+  (tr) => tr.dataset.row,
+);
+check(
+  staticKeys[0] === 'all_in',
+  'with JS off the table is still membership-shaped — source order leads with all-in',
+  staticKeys.slice(0, 3).join(' > '),
+);
+
 
 console.log(
   failures.length === 0 ? '\nOK — compare view behaves.' : `\n${failures.length} check(s) FAILED.`,

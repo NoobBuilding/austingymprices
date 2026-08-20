@@ -62,8 +62,20 @@ const rows = priceRows(money);
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr data-row={row.key} class={row.headline ? 'headline' : ''}>
-              <th scope="row" class="rowhead">{row.label}</th>
+            <tr
+              data-row={row.key}
+              class={row.headline ? 'headline' : ''}
+              data-lead-only={row.leadOnly ? 'true' : null}
+              {...Object.fromEntries(
+                Object.entries(row.labels ?? {}).map(([tab, label]) => [
+                  `data-label-${tab}`,
+                  label,
+                ]),
+              )}
+            >
+              {/* Both labels ship in the markup. The client swaps text, never
+                  fetches — a relabel must not depend on a round trip. */}
+              <th scope="row" class="rowhead" data-label-default={row.label}>{row.label}</th>
               {gyms.map((g) => {
                 const value = row.value(g);
                 return (
@@ -178,18 +190,60 @@ const rows = priceRows(money);
   // The URL is the only state. Read it, keep the named columns, drop the rest.
   // With JS off none of this runs and the full table stands, which is why the
   // page is server-rendered with every gym rather than an empty shell.
-  import { MAX_COMPARE, parseCompareParam } from '../lib/compare.js';
+  import {
+    MAX_COMPARE,
+    compareRowOrder,
+    parseCompareParam,
+    parseCompareTab,
+    rowLabel,
+  } from '../lib/compare.js';
 
   try {
     const table = document.querySelector('.cmp');
     if (table) {
+      const params = new URLSearchParams(window.location.search);
       const known = new Set(
         [...table.querySelectorAll('th.gymhead')].map((th) => th.dataset.slug),
       );
-      const wanted = parseCompareParam(
-        new URLSearchParams(window.location.search).get('gyms'),
-        known,
+      const wanted = parseCompareParam(params.get('gyms'), known);
+
+      // ── Tab-awareness ────────────────────────────────────────────────────
+      // The comparison inherits the question its originating tab was asking.
+      // Rows are REORDERED and RELABELLED, never dropped for being demoted:
+      // membership economics still follow underneath as context.
+      const tab = parseCompareTab(params.get('tab'));
+      const tbody = table.querySelector('tbody');
+      const priceRowEls = [...table.querySelectorAll('tbody tr:not(.amenity)')];
+      const ordered = compareRowOrder(
+        priceRowEls.map((tr) => ({
+          key: tr.dataset.row,
+          leadOnly: tr.dataset.leadOnly === 'true',
+          el: tr,
+        })),
+        tab,
       );
+      const keptRows = new Set(ordered.map((r) => r.key));
+      for (const tr of priceRowEls) {
+        // A lead-only row on a tab that does not lead with it is noise, not
+        // context — the per-class derivation under "Advertised rate" explains
+        // a figure that is no longer on screen.
+        if (!keptRows.has(tr.dataset.row)) tr.hidden = true;
+      }
+      // Insert before the first amenity row so the amenity block stays put.
+      const firstAmenity = table.querySelector('tbody tr.amenity');
+      for (const row of ordered) {
+        tbody.insertBefore(row.el, firstAmenity);
+        const head = row.el.querySelector('.rowhead');
+        if (head) {
+          head.textContent = rowLabel(
+            {
+              label: head.dataset.labelDefault ?? head.textContent,
+              labels: { classes: row.el.dataset.labelClasses },
+            },
+            tab,
+          );
+        }
+      }
 
       if (wanted.length > 0) {
         const keep = new Set(wanted);
@@ -214,19 +268,23 @@ const rows = priceRows(money);
         if (countEl) countEl.textContent = String(wanted.length);
         if (selected) selected.hidden = false;
 
-        // Neutral spread. Reads the rendered all-in cells rather than
-        // recomputing, so it can never disagree with the table above it.
-        const allIn = wanted
-          .map((s) => table.querySelector(`tr[data-row="all_in"] td[data-slug="${CSS.escape(s)}"] .v`))
+        // Neutral spread. Reads the rendered cells of whichever row now LEADS
+        // rather than recomputing, so it can never disagree with the table
+        // above it — and never states a monthly range under a per-class
+        // headline, which would be two units in one thought.
+        const leadRow = ordered[0]?.key ?? 'all_in';
+        const unit = leadRow === 'per_class' ? '/class' : '/mo all-in';
+        const figures = wanted
+          .map((s) => table.querySelector(`tr[data-row="${leadRow}"] td[data-slug="${CSS.escape(s)}"] .v`))
           .map((cell) => Number((cell?.textContent ?? '').replace(/[^0-9.]/g, '')))
           .filter((n) => Number.isFinite(n) && n > 0);
         const rangeEl = document.getElementById('compare-range');
-        if (rangeEl && allIn.length >= 2) {
-          const lo = Math.min(...allIn);
-          const hi = Math.max(...allIn);
+        if (rangeEl && figures.length >= 2) {
+          const lo = Math.min(...figures);
+          const hi = Math.max(...figures);
           rangeEl.textContent =
-            lo === hi ? `All ${allIn.length} at $${lo}/mo all-in`
-                      : `Range: $${lo}–${hi}/mo all-in`;
+            lo === hi ? `All ${figures.length} at $${lo}${unit}`
+                      : `Range: $${lo}–${hi}${unit}`;
           rangeEl.hidden = false;
         }
 

@@ -23,6 +23,15 @@ const CLASSPASS_CHIP_MIN = 5;
 const classpassCount = gyms.filter((g) => g.accepts_classpass === true).length;
 const showClasspassChip = classpassCount >= CLASSPASS_CHIP_MIN;
 
+// The Recovery tab obeys the same gate, and for a stronger reason: a chip that
+// filters badly is annoying, but an EMPTY TAB is a broken promise — it invites
+// a click and answers with nothing. Below the threshold the category
+// accumulates invisibly and the tab does not render at all; it appears on its
+// own the day the sixth listing lands, with no code change.
+const RECOVERY_TAB_MIN = 6;
+const recoveryCount = gyms.filter((g) => g.category === 'recovery').length;
+const showRecoveryTab = recoveryCount >= RECOVERY_TAB_MIN;
+
 const activities = [
   ['gym-weights', 'Gym / weights'],
   ['gym-classes', 'Gym + classes'],
@@ -34,6 +43,7 @@ const activities = [
   ['bjj-mma', 'BJJ / MMA'],
   ['climbing', 'Climbing'],
   ['community', 'Community gym'],
+  ['recovery', 'Recovery'],
 ];
 
 const title = 'Austin Gym Prices — Compare gym membership costs in Austin';
@@ -61,6 +71,16 @@ const description =
       <button class="tab" data-mode="daypass" role="tab" aria-selected="false">
         Day passes
       </button>
+      {/* Fourth tab, gated. Recovery businesses are facility-model — the same
+          all-in math and the same day-pass economics — but a sauna house is
+          not comparable per month to a gym, so it gets its own surface rather
+          than a row on Memberships. The gate is constitutional, not cosmetic:
+          below RECOVERY_TAB_MIN this renders nothing at all. */}
+      {showRecoveryTab && (
+        <button class="tab" data-mode="recovery" role="tab" aria-selected="false">
+          Recovery
+        </button>
+      )}
     </div>
 
     <div class="search">
@@ -517,6 +537,9 @@ const description =
     function applyTabVisibility() {
       const daypass = state.mode === 'daypass';
       const classes = state.mode === 'classes';
+      // Recovery is facility-model: it is judged per month on the same all-in
+      // figure as Memberships, so it wears the membership price and receipt.
+      // Only the tab it lives on differs.
       const swap = (selector, hide) => {
         document.querySelectorAll(selector).forEach((el) => {
           el.hidden = hide;
@@ -526,6 +549,10 @@ const description =
       swap('.price-class', !classes);
       swap('.price-daypass', !daypass);
       swap('.detail-membership', daypass || classes);
+      // Every tab now answers the accordion. The Classes tab used to hide the
+      // membership receipt and have nothing of its own to put in its place, so
+      // the chevron opened onto an empty box.
+      swap('.detail-class', !classes);
       swap('.detail-daypass', !daypass);
       // Commitment is a membership concept. It is just as wrong above a
       // per-class headline as above a day-pass one.
@@ -595,11 +622,19 @@ const description =
 
       for (const card of cards) {
         const price = num(card, sortKey);
+        const isRecovery = card.dataset.category === 'recovery';
+        // Recovery businesses get their own tab and are kept OFF Memberships:
+        // "$45/mo for a sauna" beside "$23/mo unlimited gym access" is the same
+        // category error the Classes tab exists to prevent. Day passes stays
+        // access-model-blind — a day pass is a day pass whatever it buys.
         const rightTab =
-          state.mode === 'daypass' ||
-          (state.mode === 'classes'
-            ? card.dataset.access === 'classes'
-            : card.dataset.access === 'facility');
+          state.mode === 'daypass'
+            ? true
+            : state.mode === 'recovery'
+              ? isRecovery
+              : state.mode === 'classes'
+                ? card.dataset.access === 'classes' && !isRecovery
+                : card.dataset.access === 'facility' && !isRecovery;
         // ATTRIBUTE filters — everything except region. The map draws exactly
         // this set: region is a camera move there, not a filter, so a gym just
         // over the boundary stays visible and clickable.
@@ -758,6 +793,10 @@ const description =
         state.mode = tab.dataset.mode;
         track('tab', state.mode);
         apply();
+        // The compare link carries the tab, so it has to be rebuilt when the
+        // tab changes — not only when a pick changes. Otherwise a comparison
+        // opened after switching tabs arrives asking the previous question.
+        syncPicks();
       });
     });
 
@@ -948,7 +987,10 @@ const description =
         const ready = picks.length >= MIN_COMPARE;
         // At one pick the pill is a prompt, not a destination. Dropping the
         // href stops it being a link to a comparison that cannot exist yet.
-        if (ready) pillEl.setAttribute('href', compareHref(picks));
+        // The active tab rides along: a comparison opened from Classes has to
+        // arrive still asking the Classes question. syncPicks() also runs on
+        // every tab switch, so the href never goes stale against the tab.
+        if (ready) pillEl.setAttribute('href', compareHref(picks, state.mode));
         else pillEl.removeAttribute('href');
         pillEl.setAttribute('aria-disabled', String(!ready));
         pillEl.classList.toggle('waiting', !ready);
