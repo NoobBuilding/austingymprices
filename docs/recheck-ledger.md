@@ -11,9 +11,18 @@ revisited. Recorded rather than deleted so nobody rediscovers them as finds.
 | **EOS Fitness Parmer** | Does not open until 2027 (§1). | 2027. |
 | **FeV Iron Vault Gym** | Website entirely down; possibly closed. | Needs a does-it-still-exist check before launch. |
 
+## Harvested but not writable
+
+| Business | What it publishes | Needs |
+|---|---|---|
+| **Mesa Rim Climbing Center**<br><sub>1205 Sheldon Cove Bldg 3 · north Austin</sub> | The page gives a **discounted** membership rate ($89/mo for military and similar), youth rates ($50/mo, ages 11–17), a $20 youth day pass and a $25 startup fee — but the **standard adult monthly rate is not in the fetched page**. | A human read, or a second look at a page section that may render client-side. Writing $89 as the headline would ship a discounted rate as a standing one. |
+| **Shine Hot Pilates + Sculpt**<br><sub>117 Lavaca St · downtown</sub> | Only the **virtual** platform ($19.99/mo, $199.99/yr) and a $20 first class. The in-studio rate is not published. | Owner contact, or a human read of the booking flow. |
+
 ## Listed but still incomplete
 
 | Gym | What is missing |
 |---|---|
 | **Flow Pilates ATX** | Publishes only its introductory offer ($34.99 for two classes, plus $30 off a first month). `/pricing` returns the same page — the standing membership rates are not on the site. Listed in the "call for pricing" state; needs owner contact or a later recheck. |
 | **OPTML Performance** | Both tiers are published as "starting at" with no class count, so no per-class rate can be shown. |
+| **The Old Guard Thai Boxing Club** | Nominatim returned **no result** for 1702 Aldridge Dr, so `lat`/`lng` stay null and no pin is drawn (§9 step 4a). Needs an owner pin-drop. Its region is assigned by judgement, not by coordinates, and should be checked at the same time. |
+| **Rumble Boxing South Austin** | Proposed for exclusion — see `docs/awaiting-classification.md`. Only an intro offer is published, and the studio the discovery probe found (Southpark Meadows) is outside all six region circles. |

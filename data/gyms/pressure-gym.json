@@ -1,0 +1,61 @@
+{
+  "slug": "pressure-gym",
+  "name": "Pressure Gym",
+  "region": "east-austin",
+  "sub_locality": "East 7th Street",
+  "category": "crossfit-hiit",
+  "access_model": "classes",
+  "website": "http://pressuregym.com",
+  "pricing_url": "http://pressuregym.com",
+  "address": "1923 E 7th St Unit 100, Austin, TX 78702",
+  "lat": 30.261978,
+  "lng": -97.721173,
+  "known_for": null,
+  "amenities": [],
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": "2026-08-19",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Unlimited Monthly",
+      "monthly": 150,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "All classes included, month to month.",
+      "is_default": true
+    },
+    {
+      "name": "Paid in Full (annual)",
+      "monthly": 127.5,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "$1,530 for the year — the studio quotes it as about 15% off. Full access to classes and the facility.",
+      "is_default": false
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "Intro — 4 classes",
+      "price": 65,
+      "classes": 4,
+      "expires_days": null,
+      "promo": true
+    }
+  ],
+  "day_pass": 30,
+  "day_pass_qualifier": "one-time access",
+  "day_pass_terms": [],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "First class is free and four classes for $65 is a limited-time introductory offer, not a standing rate.",
+  "stale": false,
+  "price_history": []
+}

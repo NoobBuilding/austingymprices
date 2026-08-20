@@ -1,0 +1,63 @@
+{
+  "slug": "kawi-crossfit",
+  "name": "Kawi CrossFit",
+  "region": "east-austin",
+  "sub_locality": "East 7th Street",
+  "category": "crossfit-hiit",
+  "access_model": "classes",
+  "website": "http://bekawi.com",
+  "pricing_url": "http://bekawi.com",
+  "address": "4812 E 7th St, Austin, TX 78702",
+  "lat": 30.254948,
+  "lng": -97.699445,
+  "known_for": null,
+  "amenities": [],
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": "2026-08-19",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "2x/Week",
+      "monthly": 170,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Automatic monthly renewal.",
+      "is_default": true
+    },
+    {
+      "name": "3x/Week",
+      "monthly": 200,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Automatic monthly renewal.",
+      "is_default": false
+    },
+    {
+      "name": "Unlimited Membership",
+      "monthly": 230,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited access to all classes. Automatic monthly renewal.",
+      "is_default": false
+    }
+  ],
+  "class_packs": [],
+  "day_pass": null,
+  "day_pass_qualifier": null,
+  "day_pass_terms": [],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "Plans are sold by weekly cadence rather than a monthly class count, so no per-class rate is derived.",
+  "stale": false,
+  "price_history": []
+}

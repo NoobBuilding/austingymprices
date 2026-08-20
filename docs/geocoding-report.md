@@ -10,15 +10,17 @@ studio. A plausible-but-wrong pin is the map version of a plausible-but-wrong pr
 
 | | Gym | Source | Address found | Lat / Lng | Confidence | Check on OSM |
 |---|---|---|---|---|---|---|
-| ✓ | Fitcidence | address | 2921 E 17th St Ste 100, Austin, TX 78702 | 30.27903, -97.71031 | high | [view](https://www.openstreetmap.org/?mlat=30.279035&mlon=-97.710314#map=18/30.279035/-97.710314) |
-| ✓ | Flow Pilates ATX | address | 908 E 5th St Ste 114, Austin, TX 78702 | 30.26442, -97.73321 | high | [view](https://www.openstreetmap.org/?mlat=30.264421&mlon=-97.733210#map=18/30.264421/-97.733210) |
-| ✓ | JETSET Pilates Downtown | address | 1011 W 5th St #140, Austin, TX 78703 | 30.27057, -97.75581 | high | [view](https://www.openstreetmap.org/?mlat=30.270566&mlon=-97.755810#map=18/30.270566/-97.755810) |
-| ✓ | JETSET Pilates South Austin | address | 5601 Brodie Ln #530, Austin, TX 78745 | 30.22623, -97.82198 | high | [view](https://www.openstreetmap.org/?mlat=30.226226&mlon=-97.821975#map=18/30.226226/-97.821975) |
-| ✓ | Nocturna | address | 605 W 37th St Ste B, Austin, TX 78705 | 30.30209, -97.73922 | high | [view](https://www.openstreetmap.org/?mlat=30.302091&mlon=-97.739216#map=18/30.302091/-97.739216) |
-| ✓ | OPTML Performance | address | 410 Pressler St, Austin, TX 78703 | 30.27227, -97.76120 | high | [view](https://www.openstreetmap.org/?mlat=30.272267&mlon=-97.761203#map=18/30.272267/-97.761203) |
+| ⚠️ | The Old Guard Thai Boxing Club | address | 1702 Aldridge Dr A1, Austin, TX 78754 | — | low | — |
+| ✓ | Bouldering Project Westgate | address | 4477 S Lamar Blvd Suite 600, Austin, TX 78745 | 30.23069, -97.79989 | high | [view](https://www.openstreetmap.org/?mlat=30.230688&mlon=-97.799886#map=18/30.230688/-97.799886) |
+| ✓ | Kawi CrossFit | address | 4812 E 7th St, Austin, TX 78702 | 30.25495, -97.69944 | high | [view](https://www.openstreetmap.org/?mlat=30.254948&mlon=-97.699445#map=18/30.254948/-97.699445) |
+| ✓ | Pressure Gym | address | 1923 E 7th St Unit 100, Austin, TX 78702 | 30.26198, -97.72117 | high | [view](https://www.openstreetmap.org/?mlat=30.261978&mlon=-97.721173#map=18/30.261978/-97.721173) |
 
 ## Summary
 
-- **6** geocoded with high confidence and written to /data
-- **0** need your eyes (⚠️): 0 low-confidence, 0 multi-location brands
-- **0** could not be geocoded at all — genuine gap list
+- **3** geocoded with high confidence and written to /data
+- **1** need your eyes (⚠️): 1 low-confidence, 0 multi-location brands
+- **1** could not be geocoded at all — genuine gap list
+
+### Genuine gap list — nothing found
+
+- **The Old Guard Thai Boxing Club** — no result from Nominatim

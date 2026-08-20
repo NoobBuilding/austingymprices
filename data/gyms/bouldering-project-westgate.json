@@ -1,0 +1,63 @@
+{
+  "slug": "bouldering-project-westgate",
+  "name": "Bouldering Project Westgate",
+  "region": "south-soco",
+  "sub_locality": "South Lamar",
+  "category": "climbing",
+  "access_model": "facility",
+  "website": "https://boulderingproject.com",
+  "pricing_url": "https://boulderingproject.com/location/westgate/membership",
+  "address": "4477 S Lamar Blvd Suite 600, Austin, TX 78745",
+  "lat": 30.230688,
+  "lng": -97.799886,
+  "known_for": null,
+  "amenities": [],
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "manual",
+  "verified_date": "2026-08-19",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Adult (21+)",
+      "monthly": 95,
+      "enroll_fee": 55,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "One membership covers both Austin locations, Springdale and Westgate. The $55 activation fee is charged again if you cancel and later reactivate.",
+      "is_default": true
+    },
+    {
+      "name": "Young Adult (14–20)",
+      "monthly": 85,
+      "enroll_fee": 55,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": "young-adult",
+      "note": null,
+      "is_default": false
+    },
+    {
+      "name": "Youth (13 & under)",
+      "monthly": 55,
+      "enroll_fee": 55,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": "youth",
+      "note": null,
+      "is_default": false
+    }
+  ],
+  "class_packs": [],
+  "day_pass": null,
+  "day_pass_qualifier": null,
+  "day_pass_terms": [],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "Memberships can be frozen for up to three months at a time, at $8 a month. Rates match the Springdale location exactly. A day-pass rate is not published on this page.",
+  "stale": false,
+  "price_history": []
+}
