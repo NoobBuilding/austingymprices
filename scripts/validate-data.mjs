@@ -273,7 +273,13 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
         for (const fee of ['enroll_fee', 'annual_fee']) {
           const v = plan[fee];
           if (v === undefined) fail(`plan "${plan.name}" is missing ${fee} (use null when unstated)`);
-          else if (v === null && plan.is_default && gym.access_model === 'facility') {
+          // A null fee on a facility default is legal ONLY because the site now
+          // renders that figure as a FLOOR ("$35+/mo all-in") and names the gap
+          // on the card. Without that rendering it would be a silent
+          // understatement, which is why this check existed at all. The note is
+          // the load-bearing part: it is what turns "we don't know" from a
+          // hidden assumption into published information.
+          else if (v === null && plan.is_default && gym.access_model === 'facility' && !plan.note) {
             // Only bites where all-in IS the published headline. A facility gym
             // is sold per month, so an unstated fee folded in as 0 publishes a
             // number lower than the truth. A studio is sold per CLASS, and the
@@ -282,9 +288,9 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
             // the gap. Blocking both would have meant refusing to list studios
             // whose prices we had read, to protect a headline they do not show.
             fail(
-              `plan "${plan.name}" is the default plan of a facility gym and has ${fee}: null ` +
-                `(unstated). The headline all-in folds it in as 0 and would understate the ` +
-                `price — source the figure rather than publishing a number we cannot stand behind.`,
+              `plan "${plan.name}" is the default plan of a facility gym with ${fee}: null and ` +
+                `NO note. The headline renders as a floor ("$35+"), and the note is what tells ` +
+                `the reader which fee is missing — without it the "+" is unexplained.`,
             );
           } else if (v !== null && (typeof v !== 'number' || v < 0)) {
             fail(`plan "${plan.name}" has an invalid ${fee}`);

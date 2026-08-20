@@ -2,7 +2,7 @@
   "slug": "los-campeones-north",
   "name": "Los Campeones Gym North",
   "chain": "los-campeones",
-  "region": "mueller",
+  "region": "hyde-park",
   "sub_locality": "Highland",
   "category": "gym-weights",
   "access_model": "facility",
@@ -10,8 +10,8 @@
   "website": "https://loscampeonesaustin.com",
   "pricing_url": "https://www.loscampeonesaustin.com/austin-gym-memberships",
   "address": "6406 N I-35 Frontage Rd, Suite 2450, Austin, TX 78752",
-  "lat": null,
-  "lng": null,
+  "lat": 30.32559,
+  "lng": -97.707766,
   "known_for": null,
   "amenities": [
     "Opens 4am weekdays"

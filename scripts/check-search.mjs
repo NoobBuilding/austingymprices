@@ -29,6 +29,7 @@ const cards = html
     slug: (p.match(/data-slug="([^"]+)"/) || [])[1],
     normalized: decode((p.match(/data-search="([^"]*)"/) || [])[1] ?? ''),
     compact: decode((p.match(/data-search-compact="([^"]*)"/) || [])[1] ?? ''),
+    chain: (p.match(/data-chain="([^"]*)"/) || [])[1] ?? '',
   }))
   .filter((c) => c.slug);
 
@@ -63,9 +64,17 @@ function expectSome(query, atLeast = 1) {
 console.log(`check-search: ${cards.length} cards from dist/index.html\n`);
 
 console.log('Punctuation and spacing normalisation');
-expect('golds', ['golds-gym-downtown', 'golds-gym-burnet']);
-expect('golds gym', ['golds-gym-downtown', 'golds-gym-burnet']);
-expect("gold's", ['golds-gym-downtown', 'golds-gym-burnet']);
+// Derived from the data, not hard-coded: a brand search must return EVERY
+// location of that brand, and a literal list goes red the day a club opens —
+// which is what happened when Gold's South Central was added. The chain field
+// is the source of truth for "every location of this brand".
+const goldsRows = cards
+  .filter((c) => c.chain === 'golds-gym')
+  .map((c) => c.slug)
+  .sort();
+expect('golds', goldsRows);
+expect('golds gym', goldsRows);
+expect("gold's", goldsRows);
 // Three Austin studios, split per the 24 Hour Fitness precedent, so a brand
 // search must return all of them rather than one arbitrary location.
 expect('solidcore', [
@@ -82,7 +91,12 @@ expect('BIG   TEX', ['big-tex-gym']);
 console.log('\nSub-locality is searchable');
 expect('anderson', ['la-fitness-anderson-lane']);
 expectSome('north loop');
-expectSome('oak hill');
+// "oak hill" used to stand for this and matched Los Campeones South, which is
+// now excluded (outside every region circle, Rumble precedent). A search
+// assertion must not depend on a row that may legitimately be delisted, so this
+// asserts the RULE — every sub_locality on a listed gym is findable — rather
+// than one neighbourhood that happened to exist the day it was written.
+expectSome('ben white');
 
 console.log('\nProgressive typing never empties while a match exists');
 for (const prefix of ['l', 'la', 'laf', 'lafi', 'lafit', 'lafitn']) {

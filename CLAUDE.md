@@ -404,6 +404,19 @@ never touches these fees, so an unstated fee there sits in the breakdown behind 
 own note. Any plan carrying a `null` fee must carry a note recording that the gym does not
 publish it — the gap is stated, never silently absorbed.
 
+**An all-in figure with an unstated fee is a FLOOR, and says so.** `all_in_monthly` folds
+a missing fee in as `0`, which makes it right about everything it knows and silently low
+about what it does not. Gold's publishes $34.99/mo and no annual fee anywhere, and is
+historically an annual-fee chain — printing "$35/mo all-in" there would be exactly the
+understatement this site exists to prevent. Refusing the row is no better: we read the
+price, and dropping it loses real information.
+
+So where the default plan carries a `null` enrollment or annual fee, the headline renders
+**"$35+"**, the card names which fee is missing, and the plan table says **"Not published"**
+rather than "None". The `+` is not decoration — it is the difference between a number we
+can stand behind and one we cannot. A plan in that state **must** carry a note, and the
+validator enforces it: without the note the `+` is unexplained.
+
 **`cancellation_fee` rules:** a nullable number on a plan, for contingent exit
 costs (Castle Hill charges $300 to leave a 12-month plan early). It renders on
 the plan row and **never enters all-in math**: all-in is what you *will* pay,

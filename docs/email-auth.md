@@ -87,20 +87,20 @@ they behave very differently:
    Today, with no DMARC published, receivers fall back to their own heuristics — which is
    precisely the "lands in spam" symptom you are trying to prevent.
 
-**Case 2 is the one worth fixing, and it needs a decision.** Free Gmail cannot DKIM-sign a
-custom domain — only Google Workspace can. So sending branded outreach that authenticates
-means one of:
+**DECIDED 2026-08-20: case 1. No Workspace, no external sender.** Outreach sends from the
+project Gmail as itself. That removes the alignment problem by removing the claim — there
+is no branded `From:` to fail DMARC — and it means **no sending-domain work is needed at
+all**. The SPF and DKIM records already in place cover inbound routing to `hello@`, which
+is the only thing this domain does with mail.
 
-- **Google Workspace** on the domain (~$7/user/mo): add `include:_spf.google.com` to the
-  existing SPF record — *edit it, do not add a second* — and publish the `google._domainkey`
-  record Workspace generates. Both align, DMARC passes, and the Founder Campaign (§10)
-  goes out from `hello@` properly authenticated.
-- **Keep sending from personal Gmail** and accept that outreach is not branded. Free, and
-  it removes the alignment problem by removing the claim.
+The consequence to accept knowingly: outreach arrives from a Gmail address rather than
+from `hello@austingymprices.com`. For the Founder Campaign (§10) that is arguably the
+right register anyway — it is a personal note from the owner, sent by hand, and §10 is
+explicit that no AI writes it. A personal address is what a personal note comes from.
 
-Either is defensible. What is not defensible is case 2 as it stands — branded `From:`,
-no aligned authentication — because it is the configuration most likely to be filtered,
-and it would be filtered on the one campaign that only gets sent once.
+If that is ever revisited, the route is Google Workspace: **edit** the existing SPF record
+to add `include:_spf.google.com` — never add a second record — and publish the
+`google._domainkey` record Workspace generates.
 
 ## Summary
 
@@ -110,4 +110,4 @@ and it would be filtered on the one campaign that only gets sent once.
 | Confirm DKIM | **Confirmed present and valid** — `cf2024-1`, RSA-2048. |
 | Add DMARC to austingymprices.com | **Recommended, not applied** — no credentials. Record above. |
 | Lock down atxgymprices.com | **Recommended, not applied.** Records above. |
-| Outbound alignment for outreach | **Needs your decision** — Workspace, or unbranded sending. |
+| Outbound alignment for outreach | **Decided — send from the project Gmail.** No sending-domain work needed. |

@@ -142,7 +142,9 @@ const classIncluded =
         <div class="price price-membership">
           {gym.has_price ? (
             <>
-              <span class="n">{money(gym.all_in_monthly)}</span>
+              {/* "$35+" where a fee is unstated: the figure is a FLOOR, and a
+                  bare "$35" would be a number we cannot stand behind. */}
+              <span class="n">{money(gym.all_in_monthly)}{gym.all_in_is_floor ? '+' : ''}</span>
               <span class="u">/mo all-in</span>
             </>
           ) : (
@@ -211,11 +213,11 @@ const classIncluded =
           )}
           <div class="drow">
             <span class="k">Enrollment fee</span>
-            <span class="v">{plan.enroll_fee ? money(plan.enroll_fee) : 'None'}</span>
+            <span class="v">{plan.enroll_fee === null || plan.enroll_fee === undefined ? 'Not published' : plan.enroll_fee ? money(plan.enroll_fee) : 'None'}</span>
           </div>
           <div class="drow">
             <span class="k">Annual fee</span>
-            <span class="v">{plan.annual_fee ? `${money(plan.annual_fee)}/yr` : 'None'}</span>
+            <span class="v">{plan.annual_fee === null || plan.annual_fee === undefined ? 'Not published' : plan.annual_fee ? `${money(plan.annual_fee)}/yr` : 'None'}</span>
           </div>
           <div class="drow">
             <span class="k">Commitment</span>
@@ -227,10 +229,17 @@ const classIncluded =
                   : badge?.label}
             </span>
           </div>
+          {gym.all_in_is_floor && (
+            <p class="note">
+              This gym does not publish its {gym.unstated_fees.join(' or ')}, so the all-in
+              figure is a floor — the real cost is this or higher. We would rather show a
+              number with a gap in it than a tidy one that is wrong.
+            </p>
+          )}
           <div class="drow total">
             <span class="k">First-year total</span>
             <span class="v">
-              {money(plan.first_year_total)} · {money(gym.all_in_monthly)}/mo all-in
+              {money(plan.first_year_total)}{gym.all_in_is_floor ? '+' : ''} · {money(gym.all_in_monthly)}{gym.all_in_is_floor ? '+' : ''}/mo all-in
             </span>
           </div>
           {plan.note && <p class="note">{plan.note}</p>}

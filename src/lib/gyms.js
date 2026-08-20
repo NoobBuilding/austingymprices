@@ -57,6 +57,35 @@ function decorateGym(gym) {
   const hasPrice = defaultPlan !== null;
   const allIn = defaultPlan?.all_in_monthly ?? null;
 
+  // Is the all-in figure COMPLETE, or a floor?
+  //
+  // allInMonthly folds a missing fee in as 0, so a plan with an unstated
+  // enrollment or annual fee produces a number that is right about everything
+  // it knows and silently low about what it does not. Gold's publishes
+  // $34.99/mo and no annual fee anywhere, and they are historically an
+  // annual-fee chain — printing "$35/mo all-in" there would be the exact
+  // understatement this site exists to prevent.
+  //
+  // The answer is neither to refuse the row nor to invent a zero: it is to say
+  // "$35+" and name the gap. What we know gets published; what we do not know
+  // is visible as missing rather than assumed away.
+  const allInIsFloor =
+    defaultPlan !== null &&
+    (defaultPlan.enroll_fee === null ||
+      defaultPlan.enroll_fee === undefined ||
+      defaultPlan.annual_fee === null ||
+      defaultPlan.annual_fee === undefined);
+  const unstatedFees = !defaultPlan
+    ? []
+    : [
+        defaultPlan.enroll_fee === null || defaultPlan.enroll_fee === undefined
+          ? 'enrollment fee'
+          : null,
+        defaultPlan.annual_fee === null || defaultPlan.annual_fee === undefined
+          ? 'annual fee'
+          : null,
+      ].filter(Boolean);
+
   return {
     ...gym,
     plans,
@@ -65,6 +94,8 @@ function decorateGym(gym) {
     all_in_monthly: allIn,
     first_year_total: defaultPlan?.first_year_total ?? null,
     price_tier: priceTier(allIn),
+    all_in_is_floor: allInIsFloor,
+    unstated_fees: unstatedFees,
     // Classes-tab economics. Null for facility gyms and for any studio whose
     // class counts are not published — which renders as no figure, not a guess.
     from_per_class: fromPerClass(gym),
