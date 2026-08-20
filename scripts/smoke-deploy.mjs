@@ -66,7 +66,11 @@ for (const src of srcs) {
 }
 
 console.log('\nContent rendered');
-const cards = (html.match(/class="card"/g) || []).length;
+// Match the class TOKEN, not the whole attribute. Cards now carry a state
+// modifier ("card card-unpriced"), and an exact-attribute match counted zero
+// while 95 cards rendered perfectly — a smoke test that fails on a class name
+// changing is testing the wrong thing.
+const cards = (html.match(/class="card(?:\s[^"]*)?"/g) || []).length;
 check(cards > 0, 'gym cards are server-rendered', `${cards} cards`);
 check(
   !/\$NaN|\$undefined|\$null/.test(html),
