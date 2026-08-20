@@ -1,12 +1,13 @@
 {
   "slug": "corepower-yoga-austin",
-  "name": "CorePower Yoga Austin",
+  "name": "CorePower Yoga Mueller",
   "region": "downtown",
-  "sub_locality": "Downtown",
+  "sub_locality": "Mueller",
   "category": "yoga",
   "access_model": "classes",
+  "eligibility": null,
   "website": "https://corepoweryoga.com",
-  "pricing_url": null,
+  "pricing_url": "https://www.corepoweryoga.com/yoga-studios/tx/austin/mueller",
   "address": "Aldrich Street, Austin, Texas, 78723",
   "lat": 30.298337,
   "lng": -97.70588,
@@ -20,16 +21,76 @@
   "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-20",
   "billing_period": "monthly",
-  "plans": [],
-  "class_packs": [],
+  "plans": [
+    {
+      "name": "All Access Membership",
+      "monthly": 189,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited studio, live and on-demand classes. The page states no enrollment or annual fee, but discloses unquantified \"CorePower surcharges\" on top of taxes, and that membership purchases are nonrefundable.",
+      "is_default": true,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": {
+        "price": 99,
+        "note": "New members pay $99 for an intro month, then $189/mo."
+      }
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "Single class",
+      "price": 35,
+      "classes": 1,
+      "expires_days": 30,
+      "promo": false
+    },
+    {
+      "name": "5-class pack",
+      "price": 169,
+      "classes": 5,
+      "expires_days": 180,
+      "promo": false
+    },
+    {
+      "name": "10-class pack",
+      "price": 279,
+      "classes": 10,
+      "expires_days": 365,
+      "promo": false
+    },
+    {
+      "name": "20-class pack",
+      "price": 530,
+      "classes": 20,
+      "expires_days": 365,
+      "promo": false
+    },
+    {
+      "name": "30-class pack",
+      "price": 765,
+      "classes": 30,
+      "expires_days": 548,
+      "promo": false
+    },
+    {
+      "name": "50-class pack",
+      "price": 1225,
+      "classes": 50,
+      "expires_days": 548,
+      "promo": false
+    }
+  ],
   "day_pass": null,
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published — call the gym. All-access memberships and class packs vary by studio.",
+  "pricing_note": null,
   "stale": false,
   "price_history": []
 }

@@ -5,6 +5,7 @@
   "sub_locality": "Downtown",
   "category": "pilates",
   "access_model": "classes",
+  "eligibility": null,
   "website": "https://solidcore.co",
   "pricing_url": null,
   "address": "204 Colorado Street, Austin, TX 78701",

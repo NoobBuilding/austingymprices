@@ -5,6 +5,7 @@
   "sub_locality": "Hancock",
   "category": "gym-weights",
   "access_model": "facility",
+  "eligibility": null,
   "website": "https://24hourfitness.com",
   "pricing_url": null,
   "address": "1000 East 41st Street, Austin, TX",

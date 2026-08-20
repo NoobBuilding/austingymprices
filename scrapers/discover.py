@@ -54,20 +54,32 @@ FIELDS = ("places.id,places.displayName,places.formattedAddress,places.location,
           "places.websiteUri,places.primaryType,places.types,places.businessStatus")
 
 # Places types that reliably mean "a place a person works out".
-INCLUDED_TYPES = ["gym", "fitness_center", "yoga_studio"]
+# `spa` and `wellness_center` were added when the recovery category arrived: the
+# original three types could not reach a sauna house or a plunge studio, which
+# is why the first sweep returned zero of them and the re-scan of the excludes
+# found nothing. They were never enumerated, not excluded.
+INCLUDED_TYPES = ["gym", "fitness_center", "yoga_studio", "spa", "wellness_center"]
 
 # Categories Places does not type well, so they are asked for by name instead.
 TEXT_QUERIES = [
     "pilates studio", "climbing gym", "boxing gym", "brazilian jiu jitsu gym",
     "crossfit gym", "martial arts gym", "barre studio", "dance fitness studio",
+    # Recovery. Places types these inconsistently, so they are asked for by name.
+    "sauna studio", "cold plunge", "contrast therapy", "recovery studio",
+    "bathhouse", "infrared sauna",
 ]
 
 # Out of scope for v1 (§1): personal-training-only studios and public rec
 # centres. Flagged, never silently dropped — the report says what it set aside
 # and why, so the owner can overrule it.
+# NOTE the words that are NOT here. `wellness center`, `massage` and `spa` were
+# removed when the recovery category arrived — they are exactly the words these
+# businesses use, so leaving them in would have deleted the new category on the
+# way in, silently, while the type filter above was busy inviting it. Widening
+# the search and narrowing this filter are one change, not two.
 EXCLUDE_NAME = re.compile(
     r"personal training|physical therapy|chiropract|recreation center|rec center|"
-    r"community center|physio|wellness center|massage|spa\b|nutrition|"
+    r"community center|physio|nutrition|"
     r"school district|ymca of|country club",
     re.I,
 )
@@ -319,7 +331,8 @@ def region_for(place):
 def category_guess(place):
     types = " ".join(place.get("types", []) + [place.get("primaryType", "")]).lower()
     via = (place.get("via") or "").lower()
-    for pat, cat in [("yoga", "yoga"), ("pilates", "pilates"), ("climb", "climbing"),
+    for pat, cat in [("sauna|plunge|contrast|bathhouse|recovery|cryo", "recovery"),
+                     ("yoga", "yoga"), ("pilates", "pilates"), ("climb", "climbing"),
                      ("box", "boxing"), ("jiu|martial", "bjj-mma"),
                      ("crossfit", "crossfit-hiit"), ("dance|barre", "gym-classes")]:
         if re.search(pat, types) or re.search(pat, via):

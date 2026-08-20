@@ -23,6 +23,12 @@ const CATEGORIES = new Set([
 // `false` is a confirmed no, `null` is unconfirmed. Silence is not a no, and
 // neither a photo nor a review is a source.
 const RECOVERY_AMENITIES = ['sauna', 'steam_room', 'cold_plunge'];
+// WHO may join, which is a different question from `restricted` (what a plan
+// buys you). Austin Women's Boxing Club is open to any adult woman on every
+// plan it sells — that is not a "limited access" plan, it is a limited
+// membership base, and overloading `restricted` would have made the plan table
+// claim something false about the product.
+const ELIGIBILITY = new Set(['women_only', 'men_only', 'students', 'seniors', 'members_only']);
 const BILLING_PERIODS = new Set(['monthly', '4-week', 'weekly']);
 const RESTRICTED = new Set([
   'student', 'youth', 'young-adult', 'senior', 'military', 'household', 'scope',
@@ -81,6 +87,11 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
     else if (![true, false, null].includes(gym[key])) {
       fail(`${key} must be true, false or null, got ${JSON.stringify(gym[key])}`);
     }
+  }
+
+  if (!('eligibility' in gym)) fail('eligibility is missing (use null when open to any adult)');
+  else if (gym.eligibility !== null && !ELIGIBILITY.has(gym.eligibility)) {
+    fail(`eligibility "${gym.eligibility}" is not in the enum`);
   }
 
   // A recovery business sells access to a room, not instructed sessions — the
@@ -240,13 +251,39 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
             `"No contract" badge) but the gym has no verified_date to back it`,
         );
       }
-      // A price with undefined fees would silently understate the all-in.
+      // Fees carry the §3 distinction, and it is a real one: `0` means the page
+      // says the fee is zero, `null` means the page does not say. A SOURCED
+      // ZERO is always legal.
+      //
+      // `null` is legal too — but never on the plan that sets the headline.
+      // all_in folds a missing fee in as 0, so an unstated fee on the DEFAULT
+      // plan would quietly publish a number lower than the truth, which is the
+      // single failure this site exists to prevent. On a non-default plan the
+      // figure appears in the breakdown, where the plan's own note carries the
+      // gap — so the gym can still be listed honestly while a fee is unknown,
+      // instead of being blocked or, worse, given an invented zero.
       if (plan.monthly !== null) {
-        if (plan.enroll_fee === null || plan.enroll_fee === undefined) {
-          fail(`plan "${plan.name}" has a monthly rate but no enroll_fee`);
-        }
-        if (plan.annual_fee === null || plan.annual_fee === undefined) {
-          fail(`plan "${plan.name}" has a monthly rate but no annual_fee`);
+        for (const fee of ['enroll_fee', 'annual_fee']) {
+          const v = plan[fee];
+          if (v === undefined) fail(`plan "${plan.name}" is missing ${fee} (use null when unstated)`);
+          else if (v === null && plan.is_default && gym.access_model === 'facility') {
+            // Only bites where all-in IS the published headline. A facility gym
+            // is sold per month, so an unstated fee folded in as 0 publishes a
+            // number lower than the truth. A studio is sold per CLASS, and the
+            // per-class figure never touches enrollment or annual fees — its
+            // all-in appears in the breakdown, where the plan's note carries
+            // the gap. Blocking both would have meant refusing to list studios
+            // whose prices we had read, to protect a headline they do not show.
+            fail(
+              `plan "${plan.name}" is the default plan of a facility gym and has ${fee}: null ` +
+                `(unstated). The headline all-in folds it in as 0 and would understate the ` +
+                `price — source the figure rather than publishing a number we cannot stand behind.`,
+            );
+          } else if (v !== null && (typeof v !== 'number' || v < 0)) {
+            fail(`plan "${plan.name}" has an invalid ${fee}`);
+          } else if (v === null && !plan.note) {
+            fail(`plan "${plan.name}" has ${fee}: null but no note recording that the gym does not publish it`);
+          }
         }
       } else if (!plan.promo && !plan.note) {
         fail(`plan "${plan.name}" has no price and no promo/note explaining why`);

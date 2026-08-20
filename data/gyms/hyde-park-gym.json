@@ -5,6 +5,7 @@
   "sub_locality": "Hyde Park",
   "category": "gym-weights",
   "access_model": "facility",
+  "eligibility": null,
   "website": "https://hydeparkgym.com",
   "pricing_url": "https://www.hydeparkgym.com/membership-info",
   "address": "4125, Guadalupe Street, Austin, Texas, 78751",

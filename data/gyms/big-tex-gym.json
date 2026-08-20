@@ -5,6 +5,7 @@
   "sub_locality": "North Loop",
   "category": "gym-weights",
   "access_model": "facility",
+  "eligibility": null,
   "website": "https://bigtexgym.com",
   "pricing_url": "https://www.bigtexgym.com/membership",
   "address": "1921, Cedar Bend Drive, Austin, Texas, 78758",

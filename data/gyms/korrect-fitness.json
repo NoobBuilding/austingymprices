@@ -5,6 +5,7 @@
   "sub_locality": "South-East Austin",
   "category": "gym-classes",
   "access_model": "facility",
+  "eligibility": null,
   "website": "https://korrectfitness.com",
   "pricing_url": null,
   "address": "4401 Freidrich Ln, Austin, TX",

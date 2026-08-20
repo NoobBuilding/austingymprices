@@ -5,6 +5,7 @@
   "sub_locality": "East Austin",
   "category": "gym-weights",
   "access_model": "classes",
+  "eligibility": null,
   "website": "https://traviscountystrength.com",
   "pricing_url": null,
   "address": "813 Morrow St, Austin, TX 78757",

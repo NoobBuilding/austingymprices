@@ -5,6 +5,7 @@
   "sub_locality": "South Austin",
   "category": "gym-weights",
   "access_model": "facility",
+  "eligibility": null,
   "website": "https://crunch.com",
   "pricing_url": "https://www.crunch.com/locations/south-austin",
   "address": "4625 W William Cannon Dr, Austin, TX 78749",

@@ -5,6 +5,7 @@
   "sub_locality": "East Austin",
   "category": "gym-classes",
   "access_model": "classes",
+  "eligibility": null,
   "website": "https://fitcidence.com",
   "pricing_url": "https://fitcidence.com",
   "address": "2921 E 17th St Ste 100, Austin, TX 78702",

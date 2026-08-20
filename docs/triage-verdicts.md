@@ -9,9 +9,9 @@ read is thin, and that is marked rather than glossed over.
 
 | | count |
 |---|---|
-| decided IN | 10 |
+| decided IN | 11 |
 | decided OUT | 9 |
-| rules genuinely do not decide | 2 |
+| parked pending the recovery pass | 1 |
 
 ---
 
@@ -30,6 +30,7 @@ read is thin, and that is marked rather than glossed over.
 | Dance Austin Studio | OUT | Adult drop-in classes, but in dance styles taught as technique (ballet among them), not as a workout. Drop-in pricing is not the test; what is being sold is. |
 | Evenground Dance Studio | OUT | Auditions and choreography — performance training. |
 | BB Dance Collective | OUT | Adult and teen ballet. **Thin evidence** — the site rendered 881 characters to an honest fetch; verdict rests on "ballet" plus the studio's own framing. |
+| Shuffle HQ Dance and Fitness Studio | **IN — Classes** | **Owner ruling 2026-08-20.** They sell it as a workout and price it as fitness classes. The sweat test is about **what the customer buys**, not whether a technique exists to be taught — which resolves the tie the evidence could not. |
 | Austin Ecstatic Dance Center | OUT | Ecstatic dance is a free-form social movement gathering — it sells neither instruction nor a workout, and rule 1 excludes social/art-form. **The closest call in this set**: read "sweat" broadly and it flips. Flagging rather than hiding it. |
 
 ## Martial arts — rule 2 (in as Classes where adult class or drop-in pricing exists)
@@ -40,7 +41,7 @@ read is thin, and that is marked rather than glossed over.
 | East Austin Jiujitsu Parlor | **IN — Classes** | Adults, day pass at $20, memberships $110–$200. Also publishes a **steam room** — feeds `steam_room: true` when the row is written. |
 | Fighting Fit Kickboxing & Jiu Jitsu | **IN — Classes** | Adult, men's and women's classes; day pass and drop-in; $39 entry figure. |
 | Black Widow MMA | **IN — Classes** | Adult programme, drop-in and walk-in, $15 single visit. |
-| Austin Women's Boxing Club | **IN — Classes** | Adult, drop-in, first class free, $30/$35. See the open question below on women-only. |
+| Austin Women's Boxing Club | **IN — Classes** | Adult, drop-in, first class free, $30/$35. Carries `eligibility: "women_only"` (see below). |
 | AMP BJJ Northwest Hills | **IN — Classes** | Adult programme alongside kids'; $39–$198 tiers. Adult offering present, so rule 5 is satisfied too. |
 | Shield Brazilian Jiu-Jitsu | **IN — Classes** | Day pass published at $20, membership $150. Clears rule 2 on the drop-in limb. |
 | TITLE Boxing Club Austin North | **IN — Classes** | National adult fitness-boxing franchise. Prices sit behind a ClubReady widget, so it joins the human-read list — but its scope is not in doubt. |
@@ -54,41 +55,41 @@ read is thin, and that is marked rather than glossed over.
 
 ---
 
-## The rules genuinely do not decide these two
+## Ruled and parked
 
-1. **Shuffle HQ Dance and Fitness Studio.** Shuffle is an art-form with a technique to
-   learn, and the studio sells it as fitness — its own name claims both halves of rule 1's
-   test. The site rendered 2.4k characters and offered "technique" and "drop-in" and
-   nothing that breaks the tie. **Your call.**
-2. **StretchLab Mueller.** Surfaced by the recovery re-scan rather than the 21. Assisted
-   1-on-1 stretching: rule 3 says pure 1-on-1 with no self-directed offering is out,
-   rule 4 says recovery is in, and it is genuinely both. It also fails item 2's own test
-   for the category — it is **not facility-model**, being appointment-based, so it would
-   not price like the sauna houses the Recovery tab is being built for. **Your call.**
+- **Shuffle HQ — ruled IN as Classes** (owner, 2026-08-20). The sweat test asks what the
+  customer buys, not whether a technique exists. Moved into the dance table above.
+- **StretchLab Mueller — parked**, pending the recovery pass, which is likely to settle
+  the category logic it sits inside. One row does not change launch.
 
 ---
 
 ## Consequences the rules force elsewhere
 
-- **Generator Athlete Lab is back in scope.** Rule 4 reverses its §1 exclusion outright —
-  it was set aside as a "recovery studio" when there was nowhere to put one. It publishes
-  a day pass, $65/$75/$99 figures, and sauna / infrared / red light. Whether it is
-  `recovery` or `classes` needs one read: it markets as an endurance-performance lab, and
-  the category turns on whether recovery is the whole product or half of it.
-- **Ballet Austin splits from its own Butler Center.** `Ballet Austin's Butler Center for
-  Dance & Fitness` is a **separate candidate** in the sweep, publishing adult drop-in
-  fitness classes at $3–$5. Rule 1 sends the ballet company out and the dance-fitness arm
-  in. It sits in pile (a), not the 21, so it is flagged rather than ruled on here.
+- **Generator Athlete Lab — back in scope, and the read is done.** Rule 4 reverses its §1
+  exclusion. The read settles the category: its product is the **Recovery Lab** — a
+  Day Pass at **$75 + tax**, a 5-pack at **$325** and a 10-pack at **$550**, each session
+  "a private full-spectrum infrared sauna" of 1–1.5 hours, plus monthly memberships and a
+  $65 assessment. Massage and personal training are add-ons and are **ignored under rule 3**.
+  **Verdict: `category: "recovery"`, `access_model: "facility"`** — you buy access to a
+  room, priced per visit, with day-pass economics. Not written; awaiting your pass.
+- **Ballet Austin splits from its own Butler Center — now its own entity** (owner ruling,
+  2026-08-20). `Ballet Austin's Butler Center for Dance & Fitness` publishes adult drop-in
+  fitness at $3–$5 and enters the judgment pile in its own right; the parent ballet
+  company stays excluded. Two businesses at one address, ruled separately.
 - **The East Austin Jiujitsu Parlor's PT arm stops mattering.** "Physical Therapy — East
   Austin Jiujitsu Parlor" sits in the sweep's set-aside pile as out of v1 scope. Rule 3
   resolves it: PT offered alongside is ignored, and the parlor lists on its BJJ economics.
-- **Austin Women's Boxing Club raises a schema question, not a scope one.** A solo adult
-  woman can buy it; a man cannot. The `restricted` enum has no value for that, and
-  `"scope"` means partial *access*, not eligibility. It is in scope either way — but the
-  badge needs a ruling before the row is written.
+- **Austin Women's Boxing Club — resolved by a new field** (owner ruling, 2026-08-20).
+  `eligibility` now exists alongside `restricted`, because who may join and what a plan
+  buys are different questions: overloading `restricted` would have made the plan table
+  claim the product was limited when it is the membership base that is. The club proceeds
+  under `eligibility: "women_only"`.
 
 ## If every IN verdict is written
 
-10 businesses join the pipeline: 1 dance-fitness, 8 martial-arts (one pending a read),
-1 multi-discipline studio. All are **Classes**-model, so they land on the Classes tab and
-are judged per class. None of them moves the Memberships coverage number.
+11 businesses join the pipeline: 2 dance-fitness (Jazzercise, Shuffle HQ), 8 martial-arts
+(one pending a read), 1 multi-discipline studio. All are **Classes**-model, so they land
+on the Classes tab and are judged per class. **None moves the Memberships coverage
+number** — which is worth saying plainly, because the ledger is a Memberships figure and
+eleven new rows would not shift it by one.

@@ -5,6 +5,7 @@
   "sub_locality": "West 37th Street",
   "category": "gym-classes",
   "access_model": "classes",
+  "eligibility": null,
   "website": "http://www.nocturnacoven.com",
   "pricing_url": "http://www.nocturnacoven.com/memberships",
   "address": "605 W 37th St Ste B, Austin, TX 78705",

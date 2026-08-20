@@ -5,8 +5,9 @@
   "sub_locality": "Downtown",
   "category": "crossfit-hiit",
   "access_model": "classes",
+  "eligibility": null,
   "website": "https://studiothree.com",
-  "pricing_url": null,
+  "pricing_url": "https://studiothree.com/buy",
   "address": null,
   "lat": null,
   "lng": null,
@@ -20,16 +21,146 @@
   "listing_tier": "standard",
   "photo": null,
   "data_source": "manual",
-  "verified_date": null,
+  "verified_date": "2026-08-20",
   "billing_period": "monthly",
-  "plans": [],
-  "class_packs": [],
-  "day_pass": null,
-  "day_pass_qualifier": null,
-  "day_pass_terms": [],
+  "plans": [
+    {
+      "name": "Flex 4",
+      "monthly": 119,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Four classes a month. 30-day terms, no commitment. Studio Three does not publish an enrollment or annual fee on its pricing or FAQ pages; neither is confirmed either way.",
+      "is_default": true,
+      "classes_per_period": 4,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Off-Peak",
+      "monthly": 175,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "restricted": "scope",
+      "note": "Unlimited classes at off-peak times only. Studio Three does not publish an enrollment or annual fee on its pricing or FAQ pages; neither is confirmed either way.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "U27",
+      "monthly": 204,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "restricted": "young-adult",
+      "note": "Unlimited classes for members aged 27 and under. Studio Three does not publish an enrollment or annual fee on its pricing or FAQ pages; neither is confirmed either way.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Couples",
+      "monthly": 205,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "restricted": "household",
+      "note": "Per person, for two members at one address; proof of partnership required. Studio Three does not publish an enrollment or annual fee on its pricing or FAQ pages; neither is confirmed either way.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "All Access",
+      "monthly": 229,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited classes, 30-day terms, no commitment. Studio Three does not publish an enrollment or annual fee on its pricing or FAQ pages; neither is confirmed either way.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Early Booking",
+      "monthly": 319,
+      "enroll_fee": null,
+      "annual_fee": null,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited classes with early booking privileges. Studio Three does not publish an enrollment or annual fee on its pricing or FAQ pages; neither is confirmed either way.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "single class",
+      "price": 40,
+      "classes": 1,
+      "expires_days": null,
+      "promo": false,
+      "note": null
+    },
+    {
+      "name": "5-class pack",
+      "price": 170,
+      "classes": 5,
+      "expires_days": null,
+      "promo": false,
+      "note": null
+    },
+    {
+      "name": "10-class pack",
+      "price": 340,
+      "classes": 10,
+      "expires_days": null,
+      "promo": false,
+      "note": null
+    },
+    {
+      "name": "20-class pack",
+      "price": 600,
+      "classes": 20,
+      "expires_days": null,
+      "promo": false,
+      "note": null
+    },
+    {
+      "name": "50-class pack",
+      "price": 1400,
+      "classes": 50,
+      "expires_days": 365,
+      "promo": false,
+      "note": "Fifty classes, valid one year. Packs are usable at Studio Three locations in Austin and Chicago."
+    },
+    {
+      "name": "3-class intro",
+      "price": 60,
+      "classes": 3,
+      "expires_days": null,
+      "promo": true,
+      "note": "$60 for three classes, new customers only."
+    }
+  ],
+  "day_pass": 40,
+  "day_pass_qualifier": "single class",
+  "day_pass_terms": [
+    "Drop-in rate for one class"
+  ],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published — call the gym. Class-pack model across three studios.",
+  "pricing_note": null,
   "stale": false,
   "price_history": []
 }

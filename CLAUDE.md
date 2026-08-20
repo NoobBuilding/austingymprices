@@ -102,6 +102,9 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "name": "Big Tex Gym",
   "region": "hyde-park",            // one of the 6 region ids below
   "access_model": "facility",        // "facility" (buy door access) | "classes" (buy sessions)
+  "eligibility": null,               // null | women_only | men_only | students | seniors |
+                                     //   members_only — WHO may join. Distinct from a
+                                     //   plan's `restricted`, which is what a plan buys.
   "category": "gym-weights",         // gym-weights | gym-classes | luxury | crossfit-hiit |
                                      // pilates | yoga | boxing | bjj-mma | climbing |
                                      // community | recovery
@@ -360,6 +363,24 @@ constitutional, not cosmetic: a chip that filters badly is annoying, but an **em
 a broken promise** — it invites a click and answers with nothing. Computed at build time
 like the ClassPass chip, so the tab appears on its own the day the sixth listing lands,
 with no code change.
+
+**`eligibility` rules:** a nullable string on the GYM saying who may join, and it is a
+different question from a plan's `restricted`, which says what a given plan buys you.
+Austin Women's Boxing Club sells every plan to any adult woman: nothing about the product
+is limited, so marking its plans `restricted: "scope"` would have made the plan table
+state something false. `null` means open to any adult and renders nothing. The value
+renders once, on the gym, never as a per-plan badge — and it never affects the
+default-plan rule, because a plan a member of the eligible group can freely buy is not a
+restricted plan.
+
+**Fee fields carry the §3 distinction, and the validator now enforces it.** `0` means the
+page states the fee is zero — a **sourced zero**, always legal. `null` means the page does
+not say. `null` is legal too, with one hard exception: **never on the default plan of a
+facility gym**, because `all_in` folds a missing fee in as `0` and the headline would
+publish a number lower than the truth. A studio is sold per class and its per-class figure
+never touches these fees, so an unstated fee there sits in the breakdown behind the plan's
+own note. Any plan carrying a `null` fee must carry a note recording that the gym does not
+publish it — the gap is stated, never silently absorbed.
 
 **`cancellation_fee` rules:** a nullable number on a plan, for contingent exit
 costs (Castle Hill charges $300 to leave a 12-month plan early). It renders on
@@ -949,13 +970,18 @@ share a mechanism.
   `docs/triage-verdicts.md`: **10 in, 9 out, 2 the rules genuinely do not decide**
   (Shuffle HQ; StretchLab). All 10 are Classes-model, so they change the Classes tab
   rather than the Memberships coverage number.
-- **The Recovery category is empty, and structurally so.** `docs/recovery-scan.md`: the
-  Places sweep asks for `gym`, `fitness_center` and `yoga_studio` only, and `EXCLUDE_NAME`
-  filters out `wellness center|massage|spa\b` — so sauna houses and plunge studios were
-  **never enumerated**, not excluded. Exactly **one** sourceable recovery candidate exists
-  (Generator Athlete Lab), against a gate of six. Filling the tab needs a second discovery
-  pass aimed at the category, with `EXCLUDE_NAME` narrowed in the same change or it
-  deletes the results on the way in. Proposed, not done — it is a credit spend.
+- **The Recovery category has inventory — the first sweep just never asked.**
+  `docs/recovery-scan.md`. The original sweep requested `gym`, `fitness_center` and
+  `yoga_studio` only, while `EXCLUDE_NAME` filtered out `wellness center|massage|spa\b`;
+  sauna houses and plunge studios were therefore **never enumerated**, not excluded, which
+  is why re-reading the 144 excludes found nothing. The funded second pass (2026-08-20)
+  widened the types to `spa` and `wellness_center`, added six recovery text queries, and
+  **narrowed `EXCLUDE_NAME` in the same change** — those two edits are one change, because
+  widening the search while the filter still deletes the results is a no-op that looks
+  like a finding. It returned **115 raw places, 34 core recovery businesses with a site,
+  ~20 distinct brands**, comfortably past the gate of six. **Not yet probed for published
+  prices** — enumeration says how many exist, the probe says how many we can source, and
+  only the second number ships rows.
 - **The 18 awaiting gyms are classified** in `docs/awaiting-classification.md` as
   sourceable-scrapeable / sourceable-human / needs-owner-contact / dead-end. Five are
   confirmable without owner contact — Studio Three, CorePower, both Gold's clubs and

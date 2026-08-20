@@ -1,10 +1,11 @@
 {
   "slug": "old-guard-thai-boxing",
   "name": "The Old Guard Thai Boxing Club",
-  "region": "mueller",
+  "region": "hyde-park",
   "sub_locality": "Aldridge Drive",
   "category": "boxing",
   "access_model": "classes",
+  "eligibility": null,
   "website": "http://www.theogthaiboxingclub.com",
   "pricing_url": "http://www.theogthaiboxingclub.com/pricing",
   "address": "1702 Aldridge Dr A1, Austin, TX 78754",

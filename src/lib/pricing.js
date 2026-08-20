@@ -289,7 +289,18 @@ export function perClassDerivation(source, money) {
     return `the published price of one ${String(source.name ?? 'class').toLowerCase()}`;
   }
   const unit = source.kind === 'plan' ? 'classes a month' : 'classes';
-  return `${money(source.price)} ${source.name} ÷ ${source.classes} ${unit}`;
+  const base = `${money(source.price)} ${source.name} ÷ ${source.classes} ${unit}`;
+  // The expiry rides WITH the price, not in a footnote. "From $28/class" is
+  // only true if you use all fifty, and a deadline you have to scroll for is a
+  // catch we would be helping to hide. Same instinct as all-in pricing: state
+  // the condition next to the number it conditions.
+  const days = source.expires_days;
+  if (!days) return base;
+  const window =
+    days % 365 === 0 ? `${days / 365} year${days === 365 ? '' : 's'}`
+      : days % 30 === 0 ? `${days / 30} months`
+        : `${days} days`;
+  return `${base}, used within ${window}`;
 }
 
 /**
