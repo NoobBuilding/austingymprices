@@ -60,3 +60,14 @@ found two different rate cards — the chain still has to be harvested club by c
 keeps its own pin**. So the harvest has somewhere to land: a new sibling row joins its
 chain automatically, with no code change and no roll-up page (§10).
 
+## F45 folded in as a chain-branch case (2026-08-20)
+
+`f45-downtown` is renamed **F45 Training Hilton Downtown** — the Places match was always
+correct, the row name simply hid which club it was. Its review set is 5-of-5 venue
+contaminated (hotel guests describing the Hilton's pool and sauna, none of which an F45
+membership buys), so `known_for` stays blank and the pipeline now flags that class
+automatically.
+
+**Austin has 14 F45 locations**, 11 inside our circles. Like the YMCA and Anytime, this is
+one brand standing in for a dozen rows. Branch enumeration folds into the census and wave
+work rather than getting special handling.
