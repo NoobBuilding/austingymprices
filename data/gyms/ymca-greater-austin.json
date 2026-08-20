@@ -1,6 +1,7 @@
 {
   "slug": "ymca-greater-austin",
   "name": "YMCA of Greater Austin",
+  "chain": "ymca",
   "region": "mueller",
   "sub_locality": "Multiple branches",
   "category": "community",

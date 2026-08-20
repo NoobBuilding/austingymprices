@@ -1,6 +1,7 @@
 {
   "slug": "golds-gym-burnet",
   "name": "Gold's Gym Austin (Burnet)",
+  "chain": "golds-gym",
   "region": "hyde-park",
   "sub_locality": "Burnet Road",
   "category": "gym-weights",

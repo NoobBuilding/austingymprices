@@ -1,6 +1,7 @@
 {
   "slug": "orangetheory-austin",
   "name": "Orangetheory Austin",
+  "chain": "orangetheory",
   "region": "mueller",
   "sub_locality": "Mueller",
   "category": "crossfit-hiit",

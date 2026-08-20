@@ -1,6 +1,7 @@
 {
   "slug": "solidcore-domain-northside",
   "name": "[solidcore] Domain Northside",
+  "chain": "solidcore",
   "region": "the-domain",
   "sub_locality": "Domain Northside",
   "category": "pilates",

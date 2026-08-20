@@ -58,6 +58,9 @@ check(visible('.membership-only').length > 0, 'membership badges visible on Memb
 check(visible('.detail-daypass').length === 0, 'no day-pass bodies visible');
 check(visible('.price-daypass').length === 0, 'no day-pass prices visible');
 
+const currentVisibleSet = () =>
+  window.__filters?.currentState?.().visible ?? new Set();
+
 const clickTab = (mode) => {
   const tab = $('.tab').find((t) => t.dataset.mode === mode);
   tab.dispatchEvent(new window.Event('click', { bubbles: true }));
@@ -133,11 +136,78 @@ const activeMode = $('.tab').find((t) => t.classList.contains('active'))?.datase
 const belongsHere = (c) =>
   activeMode === 'daypass' ||
   (activeMode === 'classes' ? c.dataset.access === 'classes' : c.dataset.access === 'facility');
-check(
-  $('.card').filter((c) => !c.hidden).length === $('.card').filter(belongsHere).length,
-  'every card for this tab is visible again after Clear filters',
-  `${$('.card').filter((c) => !c.hidden).length} of ${$('.card').filter(belongsHere).length}`,
+// Not "every card is visible": chains COLLAPSE to one row, which is list
+// presentation, not filtering. The invariant that matters is that collapsing
+// never loses a gym — every card for this tab is either on screen or folded
+// behind a visible chain head that says so. Asserting raw visibility would have
+// gone red for a feature working exactly as specified, while a chain that
+// silently swallowed a gym would have passed.
+const openChainHeads = new Set(
+  $('.card')
+    .filter((c) => !c.hidden && c.dataset.chain)
+    .map((c) => c.dataset.chain),
 );
+const accountedFor = (c) => !c.hidden || openChainHeads.has(c.dataset.chain);
+check(
+  $('.card').filter(belongsHere).every(accountedFor),
+  'after Clear filters every gym is on screen or folded behind its chain head',
+  `${$('.card').filter((c) => !c.hidden).length} shown of ${$('.card').filter(belongsHere).length}`,
+);
+check(
+  $('.card')
+    .filter((c) => c.hidden && belongsHere(c) && c.dataset.chain)
+    .every((c) => openChainHeads.has(c.dataset.chain)),
+  'a folded gym always has a visible sibling standing for it — collapse never swallows a row',
+);
+
+// ── Chain collapse ───────────────────────────────────────────────────────
+console.log('\nChain collapse (the list folds; the map does not)');
+clickTab('membership');
+const chainHead = $('.card').find(
+  (c) => !c.hidden && c.dataset.chain && !c.querySelector('.chain-note').hidden,
+);
+check(!!chainHead, 'a multi-location chain collapses to one row', chainHead?.dataset.chain ?? 'none');
+if (chainHead) {
+  const chain = chainHead.dataset.chain;
+  const family = $('.card').filter((c) => c.dataset.chain === chain);
+  const before = family.filter((c) => !c.hidden).length;
+  check(before === 1, 'exactly one row stands for the chain', `${before} of ${family.length}`);
+  // The cheapest location leads: it is the number a reader of a chain listing
+  // came for, and picking any other would bury it behind a pricier sibling.
+  const prices = family.map((c) => Number(c.dataset.allin)).filter((n) => Number.isFinite(n) && n > 0);
+  check(
+    Number(chainHead.dataset.allin) === Math.min(...prices),
+    'and it is the CHEAPEST location, not the first alphabetically',
+    `${chainHead.dataset.allin} vs min ${Math.min(...prices)}`,
+  );
+  const btn = chainHead.querySelector('.chain-note button');
+  check(!!btn && /\+\s*\d+ more location/.test(btn.textContent), 'the fold announces itself', btn?.textContent);
+  check(btn.getAttribute('aria-expanded') === 'false', 'and reports its collapsed state');
+
+  // THE POINT: collapsing is a list decision. Every location keeps its pin.
+  let mapDetail = null;
+  window.document.addEventListener('filters:changed', (e) => { mapDetail = e.detail; });
+  btn.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  check(
+    family.filter((c) => !c.hidden).length === family.length,
+    'expanding reveals every sibling in place',
+    `${family.filter((c) => !c.hidden).length} of ${family.length}`,
+  );
+  check(
+    chainHead.querySelector('.chain-note button').getAttribute('aria-expanded') === 'true',
+    'and the control now reports itself expanded',
+  );
+  const visibleToMap = mapDetail?.visible ?? currentVisibleSet();
+  check(
+    family.every((c) => visibleToMap.has(c.dataset.slug)),
+    'EVERY location keeps its own pin, folded or not — the map is not collapsed',
+    `${family.filter((c) => visibleToMap.has(c.dataset.slug)).length} of ${family.length} pinned`,
+  );
+  chainHead.querySelector('.chain-note button').dispatchEvent(
+    new window.MouseEvent('click', { bubbles: true }),
+  );
+  check(family.filter((c) => !c.hidden).length === 1, 'and it folds back up');
+}
 
 // ── Selection: one state, both directions ────────────────────────────────
 console.log('\nSelection sync (card -> pin direction, the one that was dead)');

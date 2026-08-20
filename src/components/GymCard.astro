@@ -91,6 +91,7 @@ const classIncluded =
   data-nocontract={gym.is_no_contract === true ? 'true' : 'false'}
   data-classpass={gym.accepts_classpass === true ? 'true' : 'false'}
   data-access={gym.access_model}
+  data-chain={gym.chain ?? ''}
   data-perclass={gym.from_per_class ?? ''}
   data-classtier={gym.class_tier ?? ''}
   data-name={gym.name}
@@ -128,6 +129,10 @@ const classIncluded =
             explains why the card is here rather than letting the filter look
             broken. */}
         <p class="outside-note" hidden></p>
+        {/* Injected by the index when this card stands for a whole chain.
+            Server-rendered empty and hidden so a no-JS visitor sees every
+            location as its own row, which is the correct ungrouped list. */}
+        <p class="chain-note" hidden></p>
         <p class="card-meta">
           {placeLabel}<span class="sep">•</span>{CATEGORY_LABELS[gym.category] ?? gym.category}
         </p>
@@ -486,6 +491,25 @@ const classIncluded =
     font-weight: 700;
     font-size: 1rem;
     line-height: 1.3;
+  }
+
+  /* The chain expander. Quiet, and a real button: it changes what the list
+     shows, so it must be reachable by keyboard and announce its state. */
+  .chain-note {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-bottom: 3px;
+  }
+
+  .chain-note button {
+    font: inherit;
+    color: var(--orange-dark);
+    font-weight: 700;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
   }
 
   .outside-note {

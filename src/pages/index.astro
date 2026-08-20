@@ -509,7 +509,7 @@ const description =
 
     // ONE piece of selection state. Both the list and the map render from it;
     // neither keeps its own copy.
-    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', classpass: false, selected: null };
+    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', classpass: false, selected: null, openChains: new Set() };
 
     // Slugs the map should draw. Recomputed by apply(); held here so
     // currentState() can hand it to a map that boots later.
@@ -677,12 +677,68 @@ const description =
         if (bv === null) return -1;
         return state.sort === 'priciest' ? bv - av : av - bv;
       });
-      for (const card of visible) container.appendChild(card);
+      // ── Chain collapse ───────────────────────────────────────────────────
+      // A chain with four Austin locations was four near-identical rows pushing
+      // everything else down the list, which reads as padding. One row stands
+      // for the chain — the CHEAPEST location, because that is the number a
+      // reader of a chain listing is looking for — and an expander reveals the
+      // rest in place.
+      //
+      // The map is deliberately untouched: `mapVisible` was built above from
+      // `matchesAttributes`, before any of this, so EVERY location keeps its own
+      // pin. Collapsing is a property of the list, and the list and the map
+      // answer different questions (§9). Selecting a pin whose card is folded
+      // away opens its chain, so a tap is still never swallowed.
+      const chainShown = new Map();
+      for (const card of visible) {
+        const chain = card.dataset.chain;
+        if (!chain) continue;
+        if (!chainShown.has(chain)) chainShown.set(chain, []);
+        chainShown.get(chain).push(card);
+      }
+      const collapsed = [];
+      for (const [chain, members] of chainShown) {
+        const note = members[0].querySelector('.chain-note');
+        if (members.length < 2) {
+          if (note) note.hidden = true;
+          continue;
+        }
+        // The selection always wins: a folded chain containing the selected gym
+        // opens, so the card the map just pointed at is actually on screen.
+        const holdsSelection = members.some((c) => c.dataset.slug === state.selected);
+        const open = state.openChains.has(chain) || holdsSelection;
+        if (!open) {
+          for (const c of members.slice(1)) {
+            c.hidden = true;
+            collapsed.push(c);
+          }
+        }
+        if (note) {
+          note.hidden = false;
+          const n = members.length - 1;
+          // replaceChildren, not innerHTML: §8 bans innerHTML outright on this
+          // page because gym data is attacker-influenced, and "but it's only an
+          // empty string" is exactly how that rule erodes.
+          note.replaceChildren();
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.dataset.chain = chain;
+          btn.setAttribute('aria-expanded', String(open));
+          btn.textContent = open
+            ? `Hide ${n} other location${n === 1 ? '' : 's'}`
+            : `+ ${n} more location${n === 1 ? '' : 's'} in Austin`;
+          note.appendChild(btn);
+        }
+      }
+      const listed = visible.filter((c) => !c.hidden);
+      shown -= collapsed.length;
+
+      for (const card of listed) container.appendChild(card);
 
       if (countEl) countEl.textContent = String(shown);
       if (emptyEl) emptyEl.hidden = shown !== 0;
 
-      applyPagination(visible);
+      applyPagination(listed);
 
       // The map follows the list rather than filtering independently, so the
       // two can never disagree about what is shown.
@@ -778,6 +834,22 @@ const description =
       state.classpass = !state.classpass;
       classpassBtn.classList.toggle('active', state.classpass);
       classpassBtn.setAttribute('aria-pressed', String(state.classpass));
+      apply();
+    });
+
+    // Chain expander. Delegated, because the buttons are rebuilt on every
+    // apply() — a handler bound to the element would die on the first re-render.
+    container.addEventListener('click', (e) => {
+      const btn = e.target.closest('.chain-note button');
+      if (!btn) return;
+      // The expander lives inside <summary>; without this the click would also
+      // toggle the accordion, so one tap would both open the chain and open a
+      // card the user never aimed at.
+      e.preventDefault();
+      e.stopPropagation();
+      const chain = btn.dataset.chain;
+      if (state.openChains.has(chain)) state.openChains.delete(chain);
+      else state.openChains.add(chain);
       apply();
     });
 

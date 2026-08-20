@@ -506,13 +506,22 @@ check(
 check(bubbles().every((b) => !b.active), 'nothing is active when nothing is selected');
 check(api.getDisplay() === 'prices', 'prices is the DEFAULT display mode', api.getDisplay());
 
-// THE POINT OF THE REDESIGN: 41 gyms is not NYC. Nothing merges in the real
-// data, at any zoom, so every gym shows its own price.
-check(
-  bubbles().every((b) => !b.merged),
-  'the real payload merges NOTHING at the default zoom — every pin shows its own price',
-  bubbles().filter((b) => b.merged).map((b) => b.label).join(', ') || 'no merged bubbles',
-);
+// THE POINT OF THE REDESIGN: Austin is not NYC, and the price on the pin is the
+// reason the map exists. The RULE is that the great majority of pins show their
+// own price — §9 fixes it at 80%. This used to assert that NOTHING merged at the
+// default zoom, which was a fact about a 34-pin dataset at zoom 12; it went red
+// the moment the default frame widened to stop cutting off south-west Austin,
+// for a change that made the map strictly better. Assert the invariant.
+{
+  const drawn = bubbles();
+  const merged = drawn.filter((b) => b.merged);
+  const share = drawn.length === 0 ? 1 : (drawn.length - merged.length) / drawn.length;
+  check(
+    share >= 0.8,
+    'at the DEFAULT frame, the great majority of pins show their own price',
+    `${merged.length} merged of ${drawn.length} drawn (${Math.round(share * 100)}%)`,
+  );
+}
 // Zooming OUT can legitimately merge a genuinely co-located pair — Austin
 // Bouldering Project and Lift ATX are 4.4px apart at zoom 11. Asserting "never
 // merges" pinned a property of the dataset on the day it was written; the rule
@@ -541,10 +550,23 @@ for (const z of [11, 12, 14, 16]) {
 }
 api.map.setZoom(12);
 api.render();
+// The rule is that PRICE RANGES are gone (§9): "$15–259" told you nothing you
+// came for and read like one gym's pricing. A merged "$38 +1" is not a range —
+// it is the specified label, cheapest price plus how many more are underneath.
+// Asserting "plain price only" outlawed the very format the spec requires two
+// paragraphs earlier, and passed only while nothing happened to merge.
 check(
-  bubbles().filter((b) => b.label !== 'Call').every((b) => /^\$[\d.]+$/.test(b.label)),
-  'every priced bubble shows a plain price — no ranges, no "+N"',
-  bubbles().find((b) => b.label !== 'Call' && !/^\$[\d.]+$/.test(b.label))?.label ?? 'all plain',
+  bubbles()
+    .filter((b) => b.label !== 'Call')
+    .every((b) => /^\$[\d.]+$/.test(b.label) || /^\$[\d.]+ \+\d+$/.test(b.label)),
+  'every priced bubble is a plain price or a "cheapest +N" — never a range',
+  bubbles().find(
+    (b) => b.label !== 'Call' && !/^\$[\d.]+$/.test(b.label) && !/^\$[\d.]+ \+\d+$/.test(b.label),
+  )?.label ?? 'all conform',
+);
+check(
+  !bubbles().some((b) => /[–-]\s*\$?\d/.test(b.label.replace(/^\$[\d.]+/, ''))),
+  'and no bubble label contains a range separator',
 );
 
 // Selecting from the list.
@@ -605,18 +627,29 @@ check(
 // Region is a CAMERA. Changing it must move the viewport and leave the pin
 // set alone; changing an attribute filter must do the opposite.
 mapState.selected = null;
+// A region chip is a CAMERA, so it changes the zoom — and zoom changes how many
+// bubbles a fixed set of gyms collapses into. Counting DOM elements across a
+// camera move therefore measures merging, not filtering. Pin the zoom on both
+// sides so the count answers the question actually being asked: does choosing a
+// region remove any gym from the map? (It must not.)
+const atFixedZoom = () => {
+  api.map.setZoom(12);
+  api.render();
+  return pinEls().length;
+};
+
 mapState.region = 'all';
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
-const pinsAll = pinEls().length;
+const pinsAll = atFixedZoom();
 const centreAll = api.map.getCenter();
 
 mapState.region = 'the-domain';
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
 const movedTo = api.map.getCenter();
 check(
-  pinEls().length === pinsAll,
+  atFixedZoom() === pinsAll,
   'a region chip does NOT change how many pins are drawn',
-  `${pinsAll} -> ${pinEls().length}`,
+  `${pinsAll} -> ${atFixedZoom()}`,
 );
 check(
   Math.abs(movedTo.lat - centreAll.lat) > 0.005 || Math.abs(movedTo.lng - centreAll.lng) > 0.005,
@@ -626,8 +659,14 @@ check(
 
 mapState.region = 'all';
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+// Asserted against the DEFAULT CENTRE itself, not against whatever the camera
+// happened to be showing when the baseline was captured — earlier tests pan the
+// map on selection, so that baseline was not necessarily the default frame at
+// all. §9's rule is that "All of Austin" returns to the default central frame;
+// this now checks that claim rather than a coincidence.
 check(
-  Math.abs(api.map.getCenter().lat - centreAll.lat) < 0.005,
+  Math.abs(api.map.getCenter().lat - 30.2711) < 0.01 &&
+    Math.abs(api.map.getCenter().lng - -97.7437) < 0.01,
   '"All of Austin" returns to the default central frame, never a fitBounds over outliers',
 );
 
@@ -648,7 +687,13 @@ check(
 );
 mapState.visible = fullSet;
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
-check(pinEls().length === pinsAll, 'and clearing it brings them back');
+// Measured at the same fixed zoom as the baseline, so this compares gyms drawn
+// rather than bubbles merged.
+check(
+  atFixedZoom() === pinsAll,
+  'and clearing it brings them back',
+  `${pinsAll} -> ${atFixedZoom()}`,
+);
 
 // ── Mobile ───────────────────────────────────────────────────────────────
 // The map lives behind a toggle on a phone; without it the map is unreachable
@@ -774,6 +819,9 @@ console.log('\nMap display modes');
 // The interaction-model section above deliberately cleared the selection.
 mapState.selected = target.slug;
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+// Baseline the grouping in PRICES mode first, so the dots comparison below is
+// against what this dataset actually does rather than against a constant.
+const pricesMergedCount = bubbles().filter((b) => b.merged).length;
 api.setDisplay('dots');
 const dots = bubbles();
 check(dots.every((b) => b.dot), 'dots mode puts every pin in dot form', `${dots.length} pins`);
@@ -789,11 +837,15 @@ check(
   dots.filter((b) => b.active).length === 1 && dots.find((b) => b.active)?.dot === true,
   'selection survives the display switch and is still the one active pin',
 );
-// Dots mode changes what a bubble prints, never which bubbles exist — so the
-// real payload merges nothing here either, and a co-located pair still merges.
+// Dots mode changes what a bubble PRINTS, never which bubbles exist. So the
+// invariant is not "nothing merges" — that was a fact about a sparser dataset,
+// and it went red the moment the default frame widened. The rule is that the
+// two display modes merge IDENTICALLY: if switching to dots changed the
+// grouping, the toggle would be moving pins around rather than relabelling them.
 check(
-  dots.every((b) => !b.merged),
-  'dots mode merges nothing in the real payload, same as prices mode',
+  dots.filter((b) => b.merged).length === pricesMergedCount,
+  'dots mode merges exactly as prices mode does — the toggle relabels, it never regroups',
+  `dots ${dots.filter((b) => b.merged).length} vs prices ${pricesMergedCount}`,
 );
 api2.setDisplay('dots');
 const mergedDot = [...win2.document.querySelectorAll(PIN_SEL)].find((el) =>

@@ -84,6 +84,37 @@ function decorateGym(gym) {
 
 const gyms = rawGyms.map(decorateGym).sort((a, b) => a.name.localeCompare(b.name));
 
+// ── Chain siblings ─────────────────────────────────────────────────────────
+// Attached after the full list exists, because a gym cannot know its siblings
+// until every gym is loaded. Siblings are the OTHER locations of the same
+// chain, cheapest-first, so "Also in Austin" leads with the best price rather
+// than with whatever happened to sort first alphabetically.
+//
+// Deliberately NOT a roll-up page (§10). A chain page is a different product
+// with its own SEO story; this is one line on a detail page answering the
+// question a reader of a chain listing actually has — is there a cheaper one
+// of these near me?
+const byChain = new Map();
+for (const g of gyms) {
+  if (!g.chain) continue;
+  if (!byChain.has(g.chain)) byChain.set(g.chain, []);
+  byChain.get(g.chain).push(g);
+}
+for (const g of gyms) {
+  const family = g.chain ? (byChain.get(g.chain) ?? []) : [];
+  g.siblings = family
+    .filter((s) => s.slug !== g.slug)
+    .sort((a, b) => {
+      // Priced siblings first — an unpriced one cannot answer "from $X".
+      if (a.has_price !== b.has_price) return a.has_price ? -1 : 1;
+      if (a.has_price && b.has_price) return a.all_in_monthly - b.all_in_monthly;
+      return a.name.localeCompare(b.name);
+    });
+  // The count INCLUDING this location, which is what "3 locations in Austin"
+  // means to a reader. Off-by-one here would be a small lie repeated 16 times.
+  g.chain_size = g.chain ? family.length : 1;
+}
+
 /** Region medians, computed across the DEFAULT plans of priced gyms only. */
 const regionMedians = Object.fromEntries(
   rawRegions.map((r) => [

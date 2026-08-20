@@ -1,6 +1,7 @@
 {
   "slug": "la-fitness-s-lamar",
   "name": "LA Fitness S. Lamar",
+  "chain": "la-fitness",
   "region": "south-soco",
   "sub_locality": "South Lamar",
   "category": "gym-weights",

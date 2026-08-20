@@ -37,7 +37,18 @@ function ensureLeafletCss() {
 // central Austin, where nearly every gym is, became unreadable. Outliers stay
 // reachable by panning; they do not set the frame (CLAUDE.md §9 step 4).
 const DEFAULT_CENTER = [30.2711, -97.7437];
-const DEFAULT_ZOOM = 12;
+// Zoom 11, not 12. At 12 the frame was ~12.5km wide on a phone, which cut off
+// the entire south-west cluster — Life Time South, Crunch South Austin, Club
+// Pilates and JETSET South all sit ~9km west of centre. Ten of 35 priced pins
+// were off-screen on mobile before a single deliberate pan.
+//
+// Re-centring does not fix it: the pin distribution's 10-90 midpoint is 1.5km
+// from this centre, and moving there recovers one pin. The frame was not
+// pointed in the wrong direction, it was too tight. Zoom 11 shows 34 of 35 on
+// a phone and 34 of 35 on desktop; the one it still excludes is Life Time
+// North at Lakeline, 22km out, which is exactly the outlier the paragraph
+// above says must not set the frame.
+const DEFAULT_ZOOM = 11;
 
 // Pins closer together than this many pixels are treated as the same place —
 // the same plaza, a shared building. Deliberately tiny: anything further apart

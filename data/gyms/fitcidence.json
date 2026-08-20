@@ -1,6 +1,7 @@
 {
   "slug": "fitcidence",
   "name": "Fitcidence",
+  "chain": null,
   "region": "east-austin",
   "sub_locality": "East Austin",
   "category": "gym-classes",

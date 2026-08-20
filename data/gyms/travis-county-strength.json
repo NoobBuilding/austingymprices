@@ -1,6 +1,7 @@
 {
   "slug": "travis-county-strength",
   "name": "Travis County Strength",
+  "chain": null,
   "region": "east-austin",
   "sub_locality": "East Austin",
   "category": "gym-weights",

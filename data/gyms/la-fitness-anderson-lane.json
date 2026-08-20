@@ -1,6 +1,7 @@
 {
   "slug": "la-fitness-anderson-lane",
   "name": "LA Fitness Anderson Lane",
+  "chain": "la-fitness",
   "region": "hyde-park",
   "sub_locality": "Anderson Lane",
   "category": "gym-weights",

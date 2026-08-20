@@ -1,6 +1,7 @@
 {
   "slug": "los-campeones-north",
   "name": "Los Campeones Gym North",
+  "chain": "los-campeones",
   "region": "mueller",
   "sub_locality": "Highland",
   "category": "gym-weights",

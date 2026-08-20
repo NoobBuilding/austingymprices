@@ -101,6 +101,9 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "slug": "big-tex-gym",
   "name": "Big Tex Gym",
   "region": "hyde-park",            // one of the 6 region ids below
+  "chain": null,                     // kebab-case brand key shared by sibling
+                                     //   locations, or null for an independent.
+                                     //   Links rows; creates NO page (§10).
   "access_model": "facility",        // "facility" (buy door access) | "classes" (buy sessions)
   "eligibility": null,               // null | women_only | men_only | students | seniors |
                                      //   members_only — WHO may join. Distinct from a
@@ -363,6 +366,25 @@ constitutional, not cosmetic: a chip that filters badly is annoying, but an **em
 a broken promise** — it invites a click and answers with nothing. Computed at build time
 like the ClassPass chip, so the tab appears on its own the day the sixth listing lands,
 with no code change.
+
+**`chain` rules:** a kebab-case brand key shared by every location of the same chain,
+`null` for an independent. It does three things and deliberately no more:
+
+- **Detail pages carry one "Also in Austin" line** — sibling locations, priced ones first
+  and cheapest first, because "is there a cheaper one of these near me" is the actual next
+  question a chain listing raises. An unpriced sibling is still named: "there is one in
+  Mueller" is useful even where we cannot price it.
+- **The index folds a chain to ONE row**, the cheapest location, with an expander that
+  reveals the rest in place. Four near-identical rows pushing everything else down the
+  list reads as padding.
+- **The map is not folded. Every location keeps its own pin.** Collapsing is a property of
+  the LIST, and the list and the map answer different questions (§9) — a chain that
+  vanished from the map would hide exactly the thing a map is for. Selecting a pin whose
+  card is folded opens its chain, so a tap is still never swallowed.
+
+It creates **no roll-up page**: that is §10, a different product with its own SEO story.
+The field costs nothing now and means the harvest has somewhere to land — a new sibling
+row joins its chain with no code change.
 
 **`eligibility` rules:** a nullable string on the GYM saying who may join, and it is a
 different question from a plan's `restricted`, which says what a given plan buys you.
@@ -639,8 +661,15 @@ thread inherits them rather than re-litigating each studio one at a time:
   generalised. **PT offered as an add-on never affects a listing**: we list the
   membership and class economics and ignore the PT rates entirely. Nearly every gym sells
   personal training, and letting that disqualify them would empty the site.
-- **Recovery: recovery-only businesses are IN scope**, as the `recovery` category —
-  sauna houses, cold-plunge studios, contrast therapy. See §3 and the gated fourth tab.
+- **Recovery: the category is recovery-as-PRIMARY-PRODUCT**, and it includes
+  recovery-**tech** studios — cryotherapy, compression, red light, IV-adjacent hyper-wellness
+  chains — not only sauna houses, cold-plunge studios and contrast therapy. The test is
+  whether recovery is what the business sells, not which device it sells it with.
+  Correspondingly, **device-level amenities are `known_for` material at most, never
+  schema**: a room full of cryo chambers does not earn a `cryo` field. `sauna`,
+  `steam_room` and `cold_plunge` exist because they are the three a *gym* is asked about,
+  and the list is closed for that reason — extending it per modality would turn the
+  schema into an equipment inventory. See §3 and the gated fourth tab.
   This **reverses the original exclusion** of Generator Athlete Lab, which was set aside
   as a "recovery studio" before the category existed.
 - **Youth-only: excluded. An adult offering is required to list.** A gym with no product

@@ -1,6 +1,7 @@
 {
   "slug": "equinox-domain",
   "name": "Equinox Domain",
+  "chain": "equinox",
   "region": "the-domain",
   "sub_locality": "The Domain",
   "category": "luxury",

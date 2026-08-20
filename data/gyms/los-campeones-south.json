@@ -1,6 +1,7 @@
 {
   "slug": "los-campeones-south",
   "name": "Los Campeones Gym South",
+  "chain": "los-campeones",
   "region": "south-soco",
   "sub_locality": "Oak Hill",
   "category": "gym-weights",

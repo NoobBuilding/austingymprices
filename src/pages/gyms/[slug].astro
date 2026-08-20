@@ -112,6 +112,26 @@ const jsonLd = {
       </div>
     )}
 
+    {/* Chain siblings. Someone reading a chain listing has an obvious next
+        question — is there another one of these, and is it cheaper? — and
+        answering it here costs one line. Priced siblings lead, cheapest first,
+        because "from $X" is the part that is worth reading; an unpriced sibling
+        is still named, because "there is one in Mueller" is useful even when we
+        cannot price it yet. No roll-up page: that is §10 and a different
+        product. */}
+    {gym.siblings.length > 0 && (
+      <p class="siblings">
+        <span class="k">Also in Austin</span>
+        {gym.siblings.map((s, i) => (
+          <>
+            {i > 0 && <span class="sep">·</span>}
+            <a href={s.url}>{s.sub_locality ?? getRegion(s.region)?.name ?? s.name}</a>
+            {s.has_price && <span class="from"> from ${s.all_in_monthly}/mo</span>}
+          </>
+        ))}
+      </p>
+    )}
+
     {/* Nominative use only: the plain name of a third-party service this gym
         accepts, as a statement of fact. No logo, no mark, no link — we are not
         a ClassPass affiliate and must not look like one. `false` (a confirmed
@@ -277,6 +297,14 @@ const jsonLd = {
   .headline b.below { color: var(--green); }
   .headline b.above { color: var(--orange-dark); }
   .headline.callfor { color: var(--ink-soft); }
+  /* One quiet line, not a card: the siblings answer a follow-up question, and a
+     boxed panel would compete with the price this page exists to state. */
+  .siblings { margin-top: 12px; font-size: .86rem; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 7px; align-items: baseline; }
+  .siblings .k { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
+  .siblings a { color: var(--orange-dark); font-weight: 600; }
+  .siblings .from { color: var(--ink-soft); font-weight: 500; }
+  .siblings .sep { color: var(--line); }
+
   .known { margin-top: 14px; font-size: .92rem; color: var(--ink-soft); background: var(--surface-sunk); border: 1px solid var(--line); border-radius: 10px; padding: 11px 15px; display: flex; gap: 9px; align-items: baseline; }
   .known .k { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--orange-dark); flex: none; }
   /* Plain factual line, styled like body copy rather than a badge — it is a

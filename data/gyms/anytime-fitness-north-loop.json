@@ -1,6 +1,7 @@
 {
   "slug": "anytime-fitness-north-loop",
   "name": "Anytime Fitness North Loop",
+  "chain": "anytime-fitness",
   "region": "hyde-park",
   "sub_locality": "North Loop",
   "category": "gym-weights",

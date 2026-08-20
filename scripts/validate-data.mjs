@@ -89,6 +89,13 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
     }
   }
 
+  // Chain key. A slug-shaped brand id shared by sibling locations, or null for
+  // an independent. It links rows; it does not create a page (roll-ups are §10).
+  if (!('chain' in gym)) fail('chain is missing (use null for an independent gym)');
+  else if (gym.chain !== null && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(gym.chain)) {
+    fail(`chain "${gym.chain}" must be a kebab-case key or null`);
+  }
+
   if (!('eligibility' in gym)) fail('eligibility is missing (use null when open to any adult)');
   else if (gym.eligibility !== null && !ELIGIBILITY.has(gym.eligibility)) {
     fail(`eligibility "${gym.eligibility}" is not in the enum`);

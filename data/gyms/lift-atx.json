@@ -1,6 +1,7 @@
 {
   "slug": "lift-atx",
   "name": "Lift ATX",
+  "chain": null,
   "region": "downtown",
   "sub_locality": "Downtown",
   "category": "gym-weights",

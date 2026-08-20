@@ -1,6 +1,7 @@
 {
   "slug": "pressure-gym",
   "name": "Pressure Gym",
+  "chain": null,
   "region": "east-austin",
   "sub_locality": "East 7th Street",
   "category": "crossfit-hiit",

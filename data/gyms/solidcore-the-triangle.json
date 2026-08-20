@@ -1,6 +1,7 @@
 {
   "slug": "solidcore-the-triangle",
   "name": "[solidcore] The Triangle",
+  "chain": "solidcore",
   "region": "hyde-park",
   "sub_locality": "The Triangle",
   "category": "pilates",

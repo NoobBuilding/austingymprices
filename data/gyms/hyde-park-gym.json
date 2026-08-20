@@ -1,6 +1,7 @@
 {
   "slug": "hyde-park-gym",
   "name": "Hyde Park Gym",
+  "chain": null,
   "region": "hyde-park",
   "sub_locality": "Hyde Park",
   "category": "gym-weights",

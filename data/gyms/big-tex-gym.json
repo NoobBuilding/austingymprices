@@ -1,6 +1,7 @@
 {
   "slug": "big-tex-gym",
   "name": "Big Tex Gym",
+  "chain": null,
   "region": "hyde-park",
   "sub_locality": "North Loop",
   "category": "gym-weights",

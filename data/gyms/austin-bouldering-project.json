@@ -1,6 +1,7 @@
 {
   "slug": "austin-bouldering-project",
   "name": "Austin Bouldering Project",
+  "chain": "bouldering-project",
   "region": "east-austin",
   "sub_locality": "East Austin",
   "category": "climbing",

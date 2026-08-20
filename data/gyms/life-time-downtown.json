@@ -1,6 +1,7 @@
 {
   "slug": "life-time-downtown",
   "name": "Life Time Austin Downtown",
+  "chain": "life-time",
   "region": "downtown",
   "sub_locality": "Downtown",
   "category": "luxury",
@@ -8,9 +9,9 @@
   "eligibility": null,
   "website": "https://lifetime.life",
   "pricing_url": "https://www.lifetime.life/locations/tx/austin-downtown/memberships.html",
-  "address": null,
-  "lat": null,
-  "lng": null,
+  "address": "907 W 5th St, Austin, TX 78703, USA",
+  "lat": 30.269586,
+  "lng": -97.753809,
   "known_for": null,
   "amenities": [
     "Pool",
