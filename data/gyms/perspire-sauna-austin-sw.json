@@ -1,0 +1,70 @@
+{
+  "slug": "perspire-sauna-austin-sw",
+  "name": "Perspire Sauna Studio Austin SW",
+  "chain": "perspire-sauna",
+  "region": "south-soco",
+  "sub_locality": "William Cannon",
+  "category": "recovery",
+  "access_model": "facility",
+  "eligibility": null,
+  "website": "https://www.perspiresaunastudio.com/tx/austin-southwest/",
+  "pricing_url": "https://www.perspiresaunastudio.com/tx/austin-southwest",
+  "address": "4404 W William Cannon Dr Ste C, Austin, TX 78749, USA",
+  "lat": 30.223885199999998,
+  "lng": -97.83914399999999,
+  "known_for": null,
+  "amenities": [],
+  "sauna": true,
+  "steam_room": null,
+  "cold_plunge": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "iRecover",
+      "monthly": 179,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Eight sessions a month, month-to-month, access to all studio locations. Month-to-month with a single published rate and no enrollment or annual fee stated anywhere on the page — recorded as sourced zeros under the CorePower precedent.",
+      "is_default": true,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "iRitual",
+      "monthly": 219,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited sessions a month, access to all studio locations. Month-to-month with a single published rate and no enrollment or annual fee stated anywhere on the page — recorded as sourced zeros under the CorePower precedent.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    }
+  ],
+  "class_packs": [],
+  "day_pass": 30,
+  "day_pass_qualifier": "intro session",
+  "day_pass_terms": [
+    "First visit rate"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [
+    "Week pass $35 — 7 days with sauna and 24/7 key-tag access, against $70 for seven day passes",
+    "Military, police, fire and first responders: $45/mo + tax, in-person signup only",
+    "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
+  ],
+  "pricing_note": null,
+  "stale": false,
+  "price_history": []
+}

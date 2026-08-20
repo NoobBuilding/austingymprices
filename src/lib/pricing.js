@@ -175,12 +175,31 @@ export function restrictedLabel(plan) {
 // beside "$23/mo unlimited access" misleads in both directions. On the Classes
 // tab the comparable unit is the PER-CLASS price.
 
-/** Per-class price of a plan, or null where the class count is not finite. */
+/**
+ * Per-class price of a plan, or null where the class count is not finite.
+ *
+ * Divides the plan's OWN rate by the classes included in that same period —
+ * NOT the normalized monthly. `classes_per_period` counts classes per BILLING
+ * period, so on a 4-week gym "12 classes for $235" is $19.58 a class; dividing
+ * the normalized monthly ($254.58) by 12 gives $21.22 and compares a
+ * calendar-month figure against a 4-week class count. Two units, one division.
+ *
+ * Latent until OTL Fitness — the only other 4-week gym publishes no class
+ * counts — and it would have shipped a per-class price 8% too high on the tab
+ * whose entire purpose is making studios comparable.
+ *
+ * Normalization still belongs everywhere it did before: all-in, medians, tiers
+ * and map pins all compare gyms per calendar month. It just has no business
+ * inside a ratio whose denominator is already per-period.
+ */
 export function perClassOfPlan(plan, billingPeriod) {
   const n = plan?.classes_per_period;
   if (typeof n !== 'number' || n <= 0) return null;
-  const monthly = normalizedMonthly(plan, billingPeriod);
-  return monthly === null ? null : monthly / n;
+  if (plan?.monthly === null || plan?.monthly === undefined) return null;
+  // periodsPerYear is validated here so an unknown billing_period still throws
+  // rather than silently producing a figure.
+  periodsPerYear(billingPeriod);
+  return plan.monthly / n;
 }
 
 /** Per-class price of a pack. Packs have no commitment, so they always count. */
@@ -249,8 +268,13 @@ export function fromPerClassSource(gym) {
     consider(perClassOfPlan(plan, gym.billing_period), {
       kind: 'plan',
       name: plan.name,
-      price: normalizedMonthly(plan, gym.billing_period),
+      // The plan's OWN rate, matching perClassOfPlan's numerator. Showing the
+      // normalized monthly here made the receipt contradict its own headline:
+      // "$19.58/class = $254.58 ÷ 12" is arithmetic that does not work, and a
+      // receipt that fails its own division is worse than no receipt.
+      price: plan.monthly,
       classes: plan.classes_per_period,
+      period: gym.billing_period,
       note: plan.note ?? null,
     });
   }
@@ -288,7 +312,17 @@ export function perClassDerivation(source, money) {
   if (source.classes === 1) {
     return `the published price of one ${String(source.name ?? 'class').toLowerCase()}`;
   }
-  const unit = source.kind === 'plan' ? 'classes a month' : 'classes';
+  // "a month" is only true on monthly billing. A 4-week plan includes its
+  // classes per CYCLE, and calling that a month misstates what you are buying
+  // thirteen times a year.
+  const unit =
+    source.kind !== 'plan'
+      ? 'classes'
+      : source.period === '4-week'
+        ? 'classes per 4-week cycle'
+        : source.period === 'weekly'
+          ? 'classes a week'
+          : 'classes a month';
   const base = `${money(source.price)} ${source.name} ÷ ${source.classes} ${unit}`;
   // The expiry rides WITH the price, not in a footnote. "From $28/class" is
   // only true if you use all fifty, and a deadline you have to scroll for is a

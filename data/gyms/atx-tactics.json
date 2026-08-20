@@ -1,0 +1,56 @@
+{
+  "slug": "atx-tactics",
+  "name": "ATX Tactics",
+  "chain": null,
+  "region": "hyde-park",
+  "sub_locality": "Northwest Hills",
+  "category": "bjj-mma",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "http://www.atxtactics.com/",
+  "pricing_url": "http://www.atxtactics.com/pricing",
+  "address": "7020 E Hwy 290 Ste B, Austin, TX 78723, USA",
+  "lat": 30.322325,
+  "lng": -97.6854893,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Full Year Membership",
+      "monthly": 1550,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "Paid once, up front, for a year of unlimited classes. The site states this as equivalent to about $116/mo.",
+      "is_default": true,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": {
+        "price": 1400,
+        "note": "$150 off annual memberships in the August sale — the standing rate is $1,550."
+      }
+    }
+  ],
+  "class_packs": [],
+  "day_pass": 50,
+  "day_pass_qualifier": "trial month",
+  "day_pass_terms": [
+    "One-month trial, not a single visit"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": null,
+  "stale": false,
+  "price_history": []
+}

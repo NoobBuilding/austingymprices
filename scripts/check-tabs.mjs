@@ -133,9 +133,20 @@ check(emptyEl.hidden, 'empty state clears after Clear filters');
 // clears filters — it does not merge a studio's per-class economics into the
 // Memberships tab. Every card belonging to the current tab comes back.
 const activeMode = $('.tab').find((t) => t.classList.contains('active'))?.dataset.mode;
-const belongsHere = (c) =>
-  activeMode === 'daypass' ||
-  (activeMode === 'classes' ? c.dataset.access === 'classes' : c.dataset.access === 'facility');
+// Mirrors the real rule in index.astro. Recovery is facility-model but has its
+// own tab, so it belongs on NEITHER Memberships nor Classes — this helper
+// predated the category and counted 14 recovery rows as Memberships cards that
+// had gone missing, which is the collapse assertion failing for a reason that
+// has nothing to do with collapse.
+const belongsHere = (c) => {
+  const isRecovery = c.dataset.category === 'recovery';
+  if (activeMode === 'daypass') return true;
+  if (activeMode === 'recovery') return isRecovery;
+  if (isRecovery) return false;
+  return activeMode === 'classes'
+    ? c.dataset.access === 'classes'
+    : c.dataset.access === 'facility';
+};
 // Not "every card is visible": chains COLLAPSE to one row, which is list
 // presentation, not filtering. The invariant that matters is that collapsing
 // never loses a gym — every card for this tab is either on screen or folded

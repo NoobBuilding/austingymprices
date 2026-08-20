@@ -1,0 +1,70 @@
+{
+  "slug": "true-rest-austin-north",
+  "name": "True REST Float Spa Austin North",
+  "chain": "true-rest",
+  "region": "the-domain",
+  "sub_locality": "Research Blvd",
+  "category": "recovery",
+  "access_model": "facility",
+  "eligibility": null,
+  "website": "https://truerest.com/locations/austin-north/?utm_source=google&utm_medium=maps&utm_campaign=gmb&utm_content=austin-north-tx",
+  "pricing_url": "https://truerest.com/locations/austin-north/?utm_source=google&utm_medium=maps&utm_campaign=gmb&utm_content=austin-north-tx",
+  "address": "10721 Research Blvd Ste B-170, Austin, TX 78759, USA",
+  "lat": 30.398551800000003,
+  "lng": -97.7443595,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Essential",
+      "monthly": 109,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Two sessions a month, plus one shared user. Month-to-month with a single published rate and no enrollment or annual fee stated anywhere on the page — recorded as sourced zeros under the CorePower precedent.",
+      "is_default": true,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Elevate",
+      "monthly": 159,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Four sessions a month, plus two shared users. Month-to-month with a single published rate and no enrollment or annual fee stated anywhere on the page — recorded as sourced zeros under the CorePower precedent.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    }
+  ],
+  "class_packs": [],
+  "day_pass": 89,
+  "day_pass_qualifier": "60-minute float",
+  "day_pass_terms": [
+    "Vitality Suite session is $65"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [
+    "Week pass $35 — 7 days with sauna and 24/7 key-tag access, against $70 for seven day passes",
+    "Military, police, fire and first responders: $45/mo + tax, in-person signup only",
+    "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
+  ],
+  "pricing_note": null,
+  "stale": false,
+  "price_history": []
+}

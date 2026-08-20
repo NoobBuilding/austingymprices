@@ -670,6 +670,18 @@ thread inherits them rather than re-litigating each studio one at a time:
   is **what is being sold: technique, or sweat.** Auditions, syllabi, levels, recitals and
   wedding-dance lessons are technique markers; calories, conditioning and "no experience
   needed" are sweat markers.
+- **Fitness sold as fitness is in, whatever the medium.** Pole fitness (Brass Ovaries) and
+  shuffle (Shuffle HQ) both pass rule 1's sweat test: the customer is buying a workout, and
+  the fact that a technique exists to be learned does not make it a technique school. The
+  line runs between **dance INSTRUCTION** — ballet, ballroom, tango, competition and
+  performance training — and **movement sold and priced as exercise**. Medium is not the
+  test; what is being sold is.
+- **A dollar sign is not a price.** Probe hits must be read in the sentence around them.
+  Wave 1 found "$300" and "$25-$30" at Solomon — a **pet fee** and a **pet management fee**
+  at an apartment complex — and "$549" and "$65" at Texas Barbell Club, which are a **USAW
+  seminar fee** and a **meet entry**. AMLI Branch Park's "$1/$2/$3" were rental-page noise.
+  Every one would have passed a numbers-only reading; two of the businesses were not gyms
+  at all. The probe proposes figures, it does not identify them.
 - **Martial arts: in scope as Classes, where an adult can actually buy.** A martial-arts
   school lists **where adult class or drop-in pricing exists** — the Old Guard precedent,
   which sells a $165/mo two-day plan and a $25 drop-in. A school publishing only

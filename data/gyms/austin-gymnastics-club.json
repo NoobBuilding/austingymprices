@@ -1,0 +1,49 @@
+{
+  "slug": "austin-gymnastics-club",
+  "name": "Austin Gymnastics Club",
+  "chain": null,
+  "region": "the-domain",
+  "sub_locality": "North Austin",
+  "category": "gym-classes",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "http://www.austingymnasticsclub.com/",
+  "pricing_url": "http://www.austingymnasticsclub.com",
+  "address": "13776 US-183, Austin, TX 78750, USA",
+  "lat": 30.4624107,
+  "lng": -97.797052,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [],
+  "class_packs": [
+    {
+      "name": "Adult class",
+      "price": 20,
+      "classes": 1,
+      "expires_days": null,
+      "promo": false,
+      "note": "Adult classes, ages 18+, coach-led, sold per class."
+    }
+  ],
+  "day_pass": 10,
+  "day_pass_qualifier": "adult open-gym",
+  "day_pass_terms": [
+    "Adults 18+",
+    "Open-gym only, not a coached class"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "No adult membership is published: adult training is sold per class at $20, with adult open-gym at $10. Youth programmes are published as monthly rates — $75 and $140 for preschool once or twice a week, $95 and $170 for the graded levels — but a youth rate cannot anchor an adult listing.",
+  "stale": false,
+  "price_history": []
+}

@@ -1,0 +1,61 @@
+{
+  "slug": "melt-well-sauna-plunge",
+  "name": "Melt Well Sauna & Plunge Studio",
+  "chain": null,
+  "region": "south-soco",
+  "sub_locality": "Brodie Lane",
+  "category": "recovery",
+  "access_model": "facility",
+  "eligibility": null,
+  "website": "https://www.melt-well.com/austin",
+  "pricing_url": "https://www.melt-well.com/austin",
+  "address": "5400 Brodie Ln Ste 250, Austin, TX 78745, USA",
+  "lat": 30.2291284,
+  "lng": -97.8226778,
+  "known_for": null,
+  "amenities": [],
+  "sauna": true,
+  "steam_room": null,
+  "cold_plunge": true,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "SAUNAWELL",
+      "monthly": 189,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited sauna, one monthly guest pass and one monthly contrast session. Month-to-month with a single published rate and no enrollment or annual fee stated anywhere on the page — recorded as sourced zeros under the CorePower precedent.",
+      "is_default": true,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": {
+        "price": 139,
+        "note": "$139/month on the FOUNDING150 founding-member rate — the standing rate is $189."
+      }
+    }
+  ],
+  "class_packs": [],
+  "day_pass": 25,
+  "day_pass_qualifier": "intro sauna session",
+  "day_pass_terms": [
+    "First visit rate",
+    "Contrast intro session is $45"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [
+    "Week pass $35 — 7 days with sauna and 24/7 key-tag access, against $70 for seven day passes",
+    "Military, police, fire and first responders: $45/mo + tax, in-person signup only",
+    "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
+  ],
+  "pricing_note": null,
+  "stale": false,
+  "price_history": []
+}
