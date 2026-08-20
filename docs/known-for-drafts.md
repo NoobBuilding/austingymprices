@@ -18,7 +18,7 @@ the candidates are assembled mechanically and are meant as raw material, not pro
   Prices come from the gym's own dated page and nothing else goes near them.
 - Gyms where nothing converged appear at the bottom **with no candidates at all**.
 
-**41 gyms have candidates; 15 produced nothing.**
+**39 gyms have candidates; 17 produced nothing.**
 
 ---
 
@@ -43,7 +43,7 @@ the candidates are assembled mechanically and are meant as raw material, not pro
 
 `24-hour-fitness-research-blvd` · 4.1★ of 922 ratings · 5 reviews read
 
-> **⚠ Profile collision** with **Gold's Gym Austin (Burnet), Life Time Austin Downtown, Planet Fitness E. Riverside** — shared claims: attentive staff, cleanliness.
+> **⚠ Profile collision** with **Gold's Gym Austin (Burnet), Life Time Austin Downtown, Life Time Austin South** — shared claims: attentive staff, cleanliness.
 > Differentiate these lines or blank one; two gyms described identically
 > have both been described badly.
 
@@ -90,27 +90,6 @@ the candidates are assembled mechanically and are meant as raw material, not pro
 | a community feel _(below threshold)_ | 0 | **yes** |  |
 | veteran or local ownership _(below threshold)_ | 0 | **yes** |  |
 
-### Anytime Fitness FM 2222
-
-`anytime-fitness-fm-2222` · 4.1★ of 61 ratings · 5 reviews read
-
-**Candidates**
-
-1. Reviewers consistently mention cleanliness.
-2. Reviewers consistently mention cleanliness; the gym itself highlights 24/7 access.
-
-**The claims behind them**
-
-| Claim | Reviews | On their own site | Evidence |
-|---|---|---|---|
-| cleanliness | 2 | — | …compromise. The facilities are consistently clean, well maintained and equipped with a comprehensive range of mach… |
-| a wide equipment range _(below threshold)_ | 1 | — | The most convenient and well equipped gym in Austin! Anytime Fitness in Austin is an absolute winner i… |
-| attentive staff _(below threshold)_ | 1 | — | …ginners and experienced gym goers alike. The staff is friendly, professional and always available to offer support and guidance… |
-| showers and lockers _(below threshold)_ | 1 | — | …complaints made. Plz fix we pay too much to shower in cold water. I workout on my lunch break and need to be quick… |
-| 24/7 access _(below threshold)_ | 0 | **yes** |  |
-| a community feel _(below threshold)_ | 0 | **yes** |  |
-| veteran or local ownership _(below threshold)_ | 0 | **yes** |  |
-
 ### Anytime Fitness W Anderson Lane
 
 `anytime-fitness-anderson-lane` · 4.3★ of 205 ratings · 5 reviews read
@@ -143,6 +122,8 @@ the candidates are assembled mechanically and are meant as raw material, not pro
 
 Google's own summary: *Gym offering strength-training programs & private coaching in a no-nonsense warehouse.*
 
+> **Already has a line — compare before replacing:** Coaching-led strength in a no-nonsense warehouse — regulars rave about the community, with sauna and cold plunge in the membership.
+
 > **⚠ Profile collision** with **Kollective** — shared claims: a community feel, sauna and recovery.
 > Differentiate these lines or blank one; two gyms described identically
 > have both been described badly.
@@ -166,6 +147,8 @@ Google's own summary: *Gym offering strength-training programs & private coachin
 ### Austin Bouldering Project
 
 `austin-bouldering-project` · 4.8★ of 1913 ratings · 5 reviews read
+
+> **Already has a line — compare before replacing:** Climbers talk about it as a community hub as much as a gym — with a sauna and cold plunge to back it up.
 
 **Candidates**
 
@@ -312,6 +295,12 @@ Google's own summary: *CrossFit facility with group & personal training, Olympic
 
 `ymca-east-communities` · 4.6★ of 531 ratings · 5 reviews read
 
+> **Already has a line — compare before replacing:** The outdoor pool is the draw, and free childcare while you train seals it for parents.
+
+> **⚠ Profile collision** with **Life Time Austin South** — shared claims: a pool, cleanliness.
+> Differentiate these lines or blank one; two gyms described identically
+> have both been described badly.
+
 **Candidates**
 
 1. Reviewers consistently mention cleanliness and a pool.
@@ -339,20 +328,24 @@ Google's own summary: *CrossFit facility with group & personal training, Olympic
 
 1. Reviewers consistently mention attentive staff and sauna and recovery.
 2. Attentive staff comes up repeatedly in reviews, alongside sauna and recovery.
-3. Reviewers consistently mention attentive staff; the gym itself highlights a community feel.
+3. Reviewers consistently mention attentive staff; the gym itself highlights cleanliness.
 
 **The claims behind them**
 
 | Claim | Reviews | On their own site | Evidence |
 |---|---|---|---|
 | attentive staff | 2 | — | …te. Every staff person from the folks at the front desk, to the trainers, to the cleaning staff are incredibly friendly… |
-| sauna and recovery | 2 | — | …outdoor workout space, a protein/matcha bar, steam room, and Southside crowd. |
+| sauna and recovery | 2 | **yes** | …outdoor workout space, a protein/matcha bar, steam room, and Southside crowd. |
 | a pool _(below threshold)_ | 1 | — | …ove the yoga offerings. Just wish they had a pool. |
+| cleanliness _(below threshold)_ | 0 | **yes** |  |
+| showers and lockers _(below threshold)_ | 0 | **yes** |  |
 | a community feel _(below threshold)_ | 0 | **yes** |  |
 
 ### F45 Downtown
 
 `f45-downtown` · 4.9★ of 65 ratings · 5 reviews read
+
+> **⚠ Venue contamination** — 5 of 5 reviews describe a hotel or host venue rather than this business. Claims about pools, saunas and showers here may belong to the building, not to what a membership buys.
 
 **Candidates**
 
@@ -414,28 +407,9 @@ Google's own summary: *CrossFit facility with group & personal training, Olympic
 | attentive staff | 2 | — | Best Golds I've seen! Staff is helpful and welcoming. There is equipment I haven't seen or used before!… |
 | a serious-lifting crowd _(below threshold)_ | 1 | **yes** | …itment to serious training and its authentic bodybuilding roots. Unfortunately, this new direction feels far removed fr… |
 | parking _(below threshold)_ | 1 | — | …and well maintained. One big problem is the parking as you will read in all the reviews, but I have managed to make… |
-| sauna and recovery _(below threshold)_ | 1 | — | …r employees lie about the temperature of the sauna. It rests around 140-145 every day, far below an adequate temper… |
-| towel service _(below threshold)_ | 1 | — | …tion, clean equipment with lots of variety, towel service. The cons: The staff will lie to your face with a smile. They r… |
+| sauna and recovery _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 0 | — | …r employees lie about the temperature of the sauna. It rests around 140-145 every day, far below an adequate temper… |
 | a community feel _(below threshold)_ | 0 | **yes** |  |
-
-### Gold's Gym Austin South Central
-
-`golds-gym-south-central` · 3.7★ of 448 ratings · 5 reviews read
-
-**Candidates**
-
-1. Reviewers consistently mention sauna and recovery.
-2. Reviewers consistently mention sauna and recovery; the gym itself highlights a serious-lifting crowd.
-
-**The claims behind them**
-
-| Claim | Reviews | On their own site | Evidence |
-|---|---|---|---|
-| sauna and recovery | 3 | — | …been broken for over 6 months now?? And the sauna’s been out of order for nearly 2 months plus other machines bust… |
-| attentive staff _(below threshold)_ | 1 | — | …s or more?? I asked of the employees at the front desk when the machines will be fixed. He said there are only 2 repair… |
-| showers and lockers _(below threshold)_ | 1 | — | …t so you can’t even wipe down machines. The locker room has had locks on some lockers for close to a year now even thoug… |
-| a community feel _(below threshold)_ | 1 | **yes** | …y reason I’ve continued to go here is bc the community that I see and feel responsible to help especially for the senio… |
-| a serious-lifting crowd _(below threshold)_ | 0 | **yes** |  |
+| towel service _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 0 | — | …tion, clean equipment with lots of variety, towel service. The cons: The staff will lie to your face with a smile. They r… |
 
 ### Gold's Gym Downtown
 
@@ -542,6 +516,8 @@ Google's own summary: *CrossFit facility with group & personal training, Olympic
 
 `kollective` · 4.7★ of 74 ratings · 5 reviews read
 
+> **Already has a line — compare before replacing:** Regulars talk about the energy — music, community, and the sauna-and-cold-plunge setup.
+
 > **⚠ Profile collision** with **Atomic Athlete** — shared claims: a community feel, sauna and recovery.
 > Differentiate these lines or blank one; two gyms described identically
 > have both been described badly.
@@ -564,6 +540,8 @@ Google's own summary: *CrossFit facility with group & personal training, Olympic
 `korrect-fitness` · 4.9★ of 346 ratings · 5 reviews read
 
 Google's own summary: *Roomy gym with sports performance training, martial arts, personal training & a cafe/smoothie bar.*
+
+> **Already has a line — compare before replacing:** The former Onnit gym — sports-performance training, martial arts, and a sauna-and-cold-plunge routine regulars swear by.
 
 **Candidates**
 
@@ -597,7 +575,7 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 |---|---|---|---|
 | showers and lockers | 2 | — | …loose, damaged, or improperly secured.— The locker rooms frequently have a foul odor coming from the drains, ants are co… |
 | cleanliness _(below threshold)_ | 1 | — | …plaints.Members pay good money and deserve a clean, safe, and well-maintained facility. |
-| sauna and recovery _(below threshold)_ | 1 | — | …y and looks greenish, rusted handles. The sauna was just upgraded and no rubber mat was put back in. I ran in af… |
+| sauna and recovery _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 0 | — | …y and looks greenish, rusted handles. The sauna was just upgraded and no rubber mat was put back in. I ran in af… |
 | a pool _(below threshold)_ | 0 | **yes** |  |
 
 ### LA Fitness S. Lamar
@@ -621,16 +599,16 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 | cleanliness | 3 | — | …eautiful. The lockers are excellent and very clean. Traveled from Miami on business and couldn't wait to have down… |
 | a wide equipment range | 2 | — | …lp out when needed. The facility has a great variety of equipment, a good atmosphere, and everything I need for a solid workout. B… |
 | attentive staff _(below threshold)_ | 1 | — | …taff is always kind and attentive — from the front desk to the cleaning crew. The facilities are spotless, and the best… |
-| parking _(below threshold)_ | 1 | — | …ently late. In fact, I'm writing this on the parking lot waiting for the gym to open - should have opened 10 minutes… |
 | sauna and recovery _(below threshold)_ | 1 | — | …ll courts, a swimming pool, a hot tub, and a sauna. Now they’re even renovating and adding more, like a Pilates lab… |
 | showers and lockers _(below threshold)_ | 1 | — | …tub, swim a little, and finally take a warm shower in a clean bathroom. To me, that’s like giving your body a spa d… |
 | a pool _(below threshold)_ | 1 | **yes** | …art? Every location has basketball courts, a swimming pool, a hot tub, and a sauna. Now they’re even renovating and ad… |
+| parking _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 0 | — | …ently late. In fact, I'm writing this on the parking lot waiting for the gym to open - should have opened 10 minutes… |
 
 ### Life Time Austin Downtown
 
 `life-time-downtown` · 3.9★ of 197 ratings · 5 reviews read · 1 price-talk fragment(s) discarded
 
-> **⚠ Profile collision** with **24 Hour Fitness Austin Sport (Research Blvd), Gold's Gym Austin (Burnet), Planet Fitness E. Riverside** — shared claims: attentive staff, cleanliness.
+> **⚠ Profile collision** with **24 Hour Fitness Austin Sport (Research Blvd), Gold's Gym Austin (Burnet), Life Time Austin South** — shared claims: attentive staff, cleanliness.
 > Differentiate these lines or blank one; two gyms described identically
 > have both been described badly.
 
@@ -673,6 +651,12 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 
 `life-time-south` · 3.6★ of 904 ratings · 5 reviews read
 
+> **Already has a line — compare before replacing:** Reviewers consistently praise the upkeep — indoor and outdoor pools, sauna, steam, cold plunge.
+
+> **⚠ Profile collision** with **24 Hour Fitness Austin Sport (Research Blvd), East Communities YMCA, Life Time Austin Downtown, Townlake YMCA** — shared claims: a pool, attentive staff, cleanliness.
+> Differentiate these lines or blank one; two gyms described identically
+> have both been described badly.
+
 **Candidates**
 
 1. Reviewers consistently mention cleanliness and attentive staff.
@@ -683,15 +667,17 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 
 | Claim | Reviews | On their own site | Evidence |
 |---|---|---|---|
-| cleanliness | 4 | — | …first star goes to the fact it is extremely clean. Towels are always stocked, and machines are never broken for lo… |
+| cleanliness _(⚠ 1 COMPLAINT mention(s) excluded)_ | 3 | — | …selection of operational equipment, always clean. And they even provide clean towels. I love to hit the sauna pos… |
 | attentive staff | 3 | — | Great amenities and friendly staff. Excellent selection of operational equipment, always clean. An… |
 | a pool | 3 | **yes** | …cold dip is spectacular. Indoor and outdoor pool is good year round and always clean. If you get hungry they have… |
-| sauna and recovery | 2 | **yes** | …ines are never broken for longer than a day. Sauna, cold plunge, and steam room are well maintained. Raegan, my ini… |
+| sauna and recovery _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 1 | **yes** | …even provide clean towels. I love to hit the sauna post workout and the cold dip is spectacular. Indoor and outdoo… |
 | a community feel _(below threshold)_ | 0 | **yes** |  |
 
 ### Lift ATX
 
 `lift-atx` · 4.3★ of 384 ratings · 5 reviews read
+
+> **Already has a line — compare before replacing:** Regulars call it more community than gym — powerlifting to calisthenics under one roof.
 
 **Candidates**
 
@@ -735,25 +721,19 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 
 `planet-fitness-e-riverside` · 4.2★ of 1331 ratings · 5 reviews read · 1 price-talk fragment(s) discarded
 
-> **⚠ Profile collision** with **24 Hour Fitness Austin Sport (Research Blvd), Life Time Austin Downtown** — shared claims: attentive staff, cleanliness.
-> Differentiate these lines or blank one; two gyms described identically
-> have both been described badly.
-
 **Candidates**
 
-1. Reviewers consistently mention cleanliness and attentive staff.
-2. Regulars point to cleanliness, attentive staff and showers and lockers.
-3. Cleanliness comes up repeatedly in reviews, alongside attentive staff.
+1. Reviewers consistently mention attentive staff.
 
 **The claims behind them**
 
 | Claim | Reviews | On their own site | Evidence |
 |---|---|---|---|
-| cleanliness | 2 | — | The workout area is super chill and clean. The workers are very friendly and helpful. Locker room is lacki… |
 | attentive staff | 2 | — | …the gym). Customer service is outstanding. Front desk support is always ready to help and great at conversing. |
-| showers and lockers | 2 | — | …. The workers are very friendly and helpful. Locker room is lacking. The showers smell really bad and the walls if you a… |
 | a wide equipment range _(below threshold)_ | 1 | — | …enrolled. Clean environment not crowded and variety of machines. |
 | rarely feeling crowded _(below threshold)_ | 1 | — | …t job getting me enrolled. Clean environment not crowded and variety of machines. |
+| cleanliness _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 1 | — | …p. Luis did a great job getting me enrolled. Clean environment not crowded and variety of machines. |
+| showers and lockers _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 1 | — | …here is a homeless dude sleeping in the mens locker room on one of the benches. Very classy Planet Fitness! |
 
 ### Pressure Gym
 
@@ -788,7 +768,7 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 
 | Claim | Reviews | On their own site | Evidence |
 |---|---|---|---|
-| a pool | 4 | **yes** | …s hot day to cool off grandkids but many had pool issues being closed. The Southwest Family YMCA staff was very f… |
+| a pool _(⚠ 1 COMPLAINT mention(s) excluded)_ | 3 | **yes** | I enjoyed the abilty to use the indoor pool to help with my abilty to excercise. I walk 25 times from one en… |
 | cleanliness _(below threshold)_ | 1 | — | …eople are so nice, the facility is extremely clean and the are a lot of activities for people that attend the South… |
 | sauna and recovery _(below threshold)_ | 1 | — | …The facility has everything, exercise room, sauna and whirlpool, a lounge and snack area. It also has an upstairs… |
 | childcare _(below threshold)_ | 0 | **yes** |  |
@@ -838,6 +818,12 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 
 `ymca-townlake` · 4.7★ of 1207 ratings · 5 reviews read
 
+> **Already has a line — compare before replacing:** The downtown Y — pool, daycare, and front-desk staff reviewers name personally.
+
+> **⚠ Profile collision** with **Life Time Austin South** — shared claims: a pool, attentive staff.
+> Differentiate these lines or blank one; two gyms described identically
+> have both been described badly.
+
 **Candidates**
 
 1. Reviewers consistently mention attentive staff and a pool.
@@ -851,11 +837,11 @@ Google's own summary: *Roomy gym with sports performance training, martial arts,
 | attentive staff | 3 | — | …le being myself and trying out anything. The front desk staff is always welcoming and kind, especially Ruvi! I love the… |
 | a pool | 2 | **yes** | …h their kids here, there are activities like swimming, basketball, and kung fu classes. It feels like a place where pe… |
 | a serious-lifting crowd _(below threshold)_ | 1 | — | …Strength, Life Fitness, or similarly priced competitors. Lastly, the hours kind of suck. Closing at 9 PM on Friday and… |
-| cleanliness _(below threshold)_ | 1 | — | …uilding is stunning with the main area being clean enough but the second you get to the locker rooms..rust and wear… |
-| sauna and recovery _(below threshold)_ | 1 | — | …y enough to match the amount of members. The sauna was definitely a nice addition but it’s coed and reeked of feet… |
-| showers and lockers _(below threshold)_ | 1 | — | …g clean enough but the second you get to the locker rooms..rust and wear everywhere, i’ve seen cleaner locker rooms at pl… |
 | childcare _(below threshold)_ | 1 | **yes** | …e, Whole Foods, and other central spots. The daycare is a huge plus and makes the gym much more accessible for famili… |
 | a community feel _(below threshold)_ | 1 | **yes** | …reciate how ingrained this gym is within the community. It’s truly a lifestyle gym with a genuine community space rathe… |
+| cleanliness _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 0 | — | …uilding is stunning with the main area being clean enough but the second you get to the locker rooms..rust and wear… |
+| sauna and recovery _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 0 | — | …y enough to match the amount of members. The sauna was definitely a nice addition but it’s coed and reeked of feet… |
+| showers and lockers _(below threshold)_ _(⚠ 1 COMPLAINT mention(s) excluded)_ | 0 | — | …g clean enough but the second you get to the locker rooms..rust and wear everywhere, i’ve seen cleaner locker rooms at pl… |
 
 ### Travis County Strength
 
@@ -899,12 +885,14 @@ No filler was invented for these. Where a gym's reviews say nothing concrete and
 repeated, the honest output is silence — the same rule as an unpriced gym.
 
 - **24 Hour Fitness Hancock Center** — 5 reviews, no claim reached 2
+- **Anytime Fitness FM 2222** — 5 reviews, no claim reached 2
 - **Barry's Austin** — 5 reviews, no claim reached 2
 - **Black Swan Yoga (Downtown)** — 5 reviews, no claim reached 2
 - **Castle Hill Fitness** — 5 reviews, no claim reached 2
 - **Club Pilates William Cannon** — 5 reviews, no claim reached 2
 - **CorePower Yoga Mueller** — 5 reviews, no claim reached 2
 - **Flow Pilates ATX** — 5 reviews, no claim reached 2
+- **Gold's Gym Austin South Central** — 5 reviews, no claim reached 2
 - **JETSET Pilates Downtown** — 5 reviews, no claim reached 2
 - **Nocturna** — 5 reviews, no claim reached 2
 - **North Austin YMCA** — 5 reviews, no claim reached 2
@@ -916,7 +904,7 @@ repeated, the honest output is silence — the same rule as an unpriced gym.
 
 ---
 
-_API calls: 5 text search, 10 place details (Enterprise + Atmosphere SKU — the tier that carries `reviews`)._
+_API calls: 0 text search, 0 place details (Enterprise + Atmosphere SKU — the tier that carries `reviews`)._
 _Review text is cached in `scrapers/.cache/` which is gitignored. Google's Places_
 _terms limit caching of Places content, so the short fragments quoted above are_
 _working evidence for your edit pass, not a store — this doc is disposable once_

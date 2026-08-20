@@ -93,6 +93,30 @@ CLAIMS = [
 # Anything a review says about money is discarded outright. Prices on this site
 # come from the gym's own page carrying a date; a stranger's sentence must never
 # get near one. Tracked so the report can say how often it fired.
+# A claim matched inside a COMPLAINT is not support for that claim. Gold's South
+# Central's "sauna and recovery" convergence was three reviewers saying the sauna
+# had been broken for months; Southwest Family YMCA's pool convergence was partly
+# closure complaints. The matcher counts mentions, and a mention is not a verdict
+# — without this the pipeline confidently proposes the opposite of the truth.
+NEGATION = re.compile(
+    r"\b(broken|out of order|not working|doesn'?t work|never works|closed|shut|"
+    r"unavailable|no longer|used to be|lie[sd]?|lying|dirty|filthy|gross|reek|"
+    r"stink|rust|mold|mould|disgusting|far below|too (?:cold|hot|small|few)|"
+    r"needs? (?:repair|fixing|cleaning)|hasn'?t been|wasn'?t |isn'?t |not enough|"
+    r"lack(?:s|ing)?|missing|waiting (?:for|on)|complain)",
+    re.I,
+)
+
+# Reviews that describe the VENUE rather than the business. F45 Downtown sits
+# inside the Hilton, and five of its five reviews are hotel guests praising the
+# hotel's pool, sauna and showers — none of which an F45 membership buys. The
+# place match was correct; the claims belonged to the building.
+VENUE_TALK = re.compile(
+    r"\b(hotel|hilton|marriott|resort|conference|guest of the|staying (?:at|here)|"
+    r"while travel(?:l)?ing|business trip)\b",
+    re.I,
+)
+
 PRICE_TALK = re.compile(
     r"\$\s?\d|\bpric(e|es|ing)\b|\bcheap\b|\bexpensive\b|affordab|worth the money|"
     r"\bcontract\b|sign[- ]?up fee|initiation|\bcancel|\bmembership fee|good value|"
@@ -206,9 +230,13 @@ def match_claims(reviews, site_text):
     """
     claims = {}
     suppressed = 0
+    venue_reviews = sum(
+        1 for rv in reviews if VENUE_TALK.search(((rv.get("text") or {}).get("text") or ""))
+    )
     for label, pattern in CLAIMS:
         rx = re.compile(pattern, re.I)
         hits = []
+        negated = []
         for rv in reviews:
             body = ((rv.get("text") or {}).get("text") or "")
             if not body:
@@ -231,11 +259,20 @@ def match_claims(reviews, site_text):
                 # than trimmed — a half-quoted price sentence is worse than none.
                 suppressed += 1
                 continue
+            if NEGATION.search(frag):
+                # Matched inside a complaint. Counted separately so the report
+                # can SAY the amenity is being complained about, which is real
+                # information — just not the information the claim asserts.
+                negated.append(frag)
+                continue
             hits.append(frag)
         on_site = bool(rx.search(site_text)) if site_text else False
-        if hits or on_site:
-            claims[label] = {"n": len(hits), "quotes": hits[:3], "site": on_site}
-    return claims, suppressed
+        if hits or on_site or negated:
+            claims[label] = {
+                "n": len(hits), "quotes": hits[:3], "site": on_site,
+                "negated": len(negated), "negated_quotes": negated[:2],
+            }
+    return claims, suppressed, venue_reviews
 
 
 def candidates(claims):
@@ -328,10 +365,11 @@ def main():
             json.dump(cache, open(CACHE, "w"))
 
         site = site_copy(gym) if entry.get("reviews") else ""
-        claims, suppressed = match_claims(entry.get("reviews", []), site)
+        claims, suppressed, venue_reviews = match_claims(entry.get("reviews", []), site)
         rows.append({
             "gym": gym, "entry": entry, "claims": claims,
             "suppressed": suppressed, "candidates": candidates(claims),
+            "venue_reviews": venue_reviews, "review_count": len(entry.get("reviews", [])),
             # Converged claim labels, used for the collision pass below.
             "profile": frozenset(l for l, d in claims.items() if d["n"] >= MIN_REVIEWS),
         })
@@ -414,6 +452,10 @@ def write_report(rows, out, search_calls, details_calls):
         # rather than adopted as if the field were empty.
         if g.get("known_for"):
             A(f"\n> **Already has a line — compare before replacing:** {g['known_for']}")
+        if r.get("venue_reviews", 0) >= max(2, r.get("review_count", 5) * 0.6):
+            A(f"\n> **⚠ Venue contamination** — {r['venue_reviews']} of {r['review_count']} reviews "
+              f"describe a hotel or host venue rather than this business. Claims about pools, "
+              f"saunas and showers here may belong to the building, not to what a membership buys.")
         if r.get("collisions"):
             names = ", ".join(sorted({c[0] for c in r["collisions"]}))
             shared = ", ".join(sorted({s for c in r["collisions"] for s in c[1]}))
@@ -431,6 +473,10 @@ def write_report(rows, out, search_calls, details_calls):
             ev = d["quotes"][0] if d["quotes"] else ""
             ev = ev.replace("|", "\\|")
             flag = "" if d["n"] >= MIN_REVIEWS else " _(below threshold)_"
+            if d.get("negated"):
+                flag += f" _(⚠ {d['negated']} COMPLAINT mention(s) excluded)_"
+                if not ev and d.get("negated_quotes"):
+                    ev = d["negated_quotes"][0].replace("|", "\\|")
             A(f"| {lbl}{flag} | {d['n']} | {mark} | {ev} |")
         A("")
     if none:

@@ -160,6 +160,73 @@ check(
   'a folded gym always has a visible sibling standing for it — collapse never swallows a row',
 );
 
+// ── Viewport stability ───────────────────────────────────────────────────
+// The class of assertion this suite was missing entirely. It proved selection
+// HAPPENED — the card highlights, the map hears about it — and never that the
+// page you were reading stayed where it was. A selection that works perfectly
+// and throws you to the top of the list is still a broken selection.
+//
+// jsdom has no layout, so scroll position itself cannot be measured. What CAN
+// be measured is the cause: DOM churn in the card container. The browser
+// maintains scroll anchoring across content it recognises; it cannot maintain
+// it across nodes that were removed and re-inserted. Zero churn is the
+// invariant, and it is the one that actually failed in production.
+console.log('\nViewport stability on selection (the regression class)');
+clickTab('membership');
+{
+  const container = window.document.getElementById('cards');
+  const visibleOrder = () =>
+    [...container.children].filter((c) => !c.hidden).map((c) => c.dataset.slug).join(',');
+
+  let added = 0;
+  let removed = 0;
+  const obs = new window.MutationObserver((muts) => {
+    for (const m of muts) {
+      added += m.addedNodes.length;
+      removed += m.removedNodes.length;
+    }
+  });
+  obs.observe(container, { childList: true });
+
+  const before = visibleOrder();
+  // Pick a card deep in the list — the failure was invisible above the fold.
+  const deep = [...container.children].filter((c) => !c.hidden)[8];
+  const deepDetails = deep.querySelector('details');
+  deepDetails.open = true;
+  deepDetails.dispatchEvent(new window.Event('toggle', { bubbles: false }));
+  obs.takeRecords().forEach((m) => {
+    added += m.addedNodes.length;
+    removed += m.removedNodes.length;
+  });
+
+  check(
+    deep.classList.contains('hl'),
+    'selecting a card deep in the list still selects it',
+    deep.dataset.slug,
+  );
+  check(
+    removed === 0 && added === 0,
+    'and moves ZERO nodes — selection must never tear down the list',
+    `${removed} removed, ${added} added`,
+  );
+  check(
+    visibleOrder() === before,
+    'and leaves the visible order untouched — selection is not a reorder',
+  );
+
+  // A real reorder is still allowed to move nodes; the rule is about selection.
+  const sortEl = window.document.getElementById('sort');
+  sortEl.value = 'priciest';
+  sortEl.dispatchEvent(new window.Event('change', { bubbles: true }));
+  check(
+    visibleOrder() !== before,
+    'a SORT change does reorder — the fix did not freeze the list',
+  );
+  sortEl.value = 'cheapest';
+  sortEl.dispatchEvent(new window.Event('change', { bubbles: true }));
+  obs.disconnect();
+}
+
 // ── Chain collapse ───────────────────────────────────────────────────────
 console.log('\nChain collapse (the list folds; the map does not)');
 clickTab('membership');

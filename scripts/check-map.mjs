@@ -570,6 +570,26 @@ check(
 );
 
 // Selecting from the list.
+// The camera half of the viewport-stability class (see check-tabs.mjs). §9 lets
+// a selection PAN to bring an off-frame pin into view, and lets a merged stack
+// zoom in to split itself. Neither licenses throwing away a zoom level the
+// reader chose. A pin already comfortably in frame must move the camera not at
+// all — otherwise every click quietly undoes the user's own navigation.
+const inFrame = pins.find((p) => p.allIn !== null && api.map.getBounds().pad(-0.3).contains([p.lat, p.lng]));
+if (inFrame) {
+  const z0 = api.map.getZoom();
+  const c0 = api.map.getCenter();
+  mapState.selected = inFrame.slug;
+  win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+  check(api.map.getZoom() === z0, 'selecting a pin already in frame does not change zoom', `${z0} -> ${api.map.getZoom()}`);
+  check(
+    Math.abs(api.map.getCenter().lat - c0.lat) < 1e-6 && Math.abs(api.map.getCenter().lng - c0.lng) < 1e-6,
+    'and does not move the camera at all',
+  );
+  mapState.selected = null;
+  win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));
+}
+
 const target = pins.find((p) => p.allIn !== null);
 mapState.selected = target.slug;
 win.document.dispatchEvent(new win.CustomEvent('filters:changed', { detail: {} }));

@@ -1089,6 +1089,18 @@ habits.
   to guess where it stands. This includes reports that touch no data at all: a
   documentation or infrastructure round-trip still ends with the number, because the
   point is that it is always in view, not that it always changed.
+- **Chat pastes are testimony; the repo doc is the source of truth.** Anything quoted into
+  conversation is a claim ABOUT a file, not the file. **Any write that ships to the site is
+  generated from the file on disk, never from what was pasted in chat** — including a paste
+  the owner has already approved, and including one this assistant wrote itself. The rule
+  exists because it was broken: a `known_for` review sheet was partly fabricated in a
+  reply — a gym that was not in the cut, with invented claim counts and invented review
+  quotes — and the owner gave editorial verdicts on evidence that did not exist. Nothing
+  reached `/data`, but only because the writes had not happened yet.
+  The operational consequence: before writing an approved line, **re-read the claim it
+  rests on in the file**. If the file does not support it, the line is held and the owner
+  is told which claim is missing — an approval cannot make an unsourced claim sourced.
+
 - **Product questions go to the owner and are never decided unilaterally.** Scope, tone,
   what counts as a gym, what a rule should be: those are the owner's. Implementation
   detail is not.

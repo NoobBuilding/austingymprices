@@ -703,9 +703,15 @@ const description =
           if (note) note.hidden = true;
           continue;
         }
-        // The selection always wins: a folded chain containing the selected gym
-        // opens, so the card the map just pointed at is actually on screen.
-        const holdsSelection = members.some((c) => c.dataset.slug === state.selected);
+        // The selection wins only when it is FOLDED AWAY. A pin tapped for a
+        // hidden sibling must bring its card back (a tap is never swallowed),
+        // but selecting the chain HEAD — which is already on screen — should
+        // not silently unfold the chain underneath it. That inserted rows above
+        // whatever the reader was looking at, shifting the page for no reason
+        // they asked for.
+        const holdsSelection = members
+          .slice(1)
+          .some((c) => c.dataset.slug === state.selected);
         const open = state.openChains.has(chain) || holdsSelection;
         if (!open) {
           for (const c of members.slice(1)) {
@@ -733,7 +739,27 @@ const description =
       const listed = visible.filter((c) => !c.hidden);
       shown -= collapsed.length;
 
-      for (const card of listed) container.appendChild(card);
+      // Reorder ONLY when the order actually changed.
+      //
+      // This used to appendChild() every visible card on every apply(), which
+      // moves each node — remove plus re-insert — even when the resulting order
+      // is identical. Selecting a card calls apply(), so a single click tore out
+      // and re-added all 19 visible rows. The browser cannot maintain scroll
+      // anchoring through that, so the page jumped to the top; it only LOOKED
+      // like a boundary bug because cards above the fold need no scrolling for
+      // the jump to be invisible.
+      //
+      // A genuine reorder (sort, filter, tab) still moves nodes, and a scroll
+      // shift there is expected — the user asked for a different list. Selection
+      // is not a reorder and must not behave like one.
+      const desired = listed.map((c) => c.dataset.slug).join(',');
+      const current = [...container.children]
+        .filter((c) => !c.hidden)
+        .map((c) => c.dataset.slug)
+        .join(',');
+      if (desired !== current) {
+        for (const card of listed) container.appendChild(card);
+      }
 
       if (countEl) countEl.textContent = String(shown);
       if (emptyEl) emptyEl.hidden = shown !== 0;
