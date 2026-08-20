@@ -891,6 +891,11 @@ habits.
   class of defect no headless run reproduces.
 - **Measure before fixing.** Reproduce a reported bug and confirm the mechanism before
   changing code; report honestly when it does not reproduce, and say what was checked.
+- **Nothing pushes red.** `npm run verify` green is a gate, not a suggestion. If a check
+  fails and the check is wrong, **the fix lands in the same commit or before it — never
+  after the push.** Writing a bad assertion and pushing past a failing one are two
+  different mistakes, and the second is the one that puts a broken `main` in front of a
+  deploy.
 - **An assertion must pin the rule, not the day's data.** Several checks in this repo were
   written against a fact that later changed legitimately — "nothing merges at any zoom",
   "all cards visible after Clear filters" — and each had to be rewritten to assert the

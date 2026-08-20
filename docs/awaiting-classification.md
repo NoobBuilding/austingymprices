@@ -25,8 +25,8 @@ Every listed gym without a confirmed price, and what it will actually take to ge
 | **CrossFit Austin** | south-soco | **needs-owner-contact** | Multi-step form, no published rate. Outreach pending. |
 | **10th Planet Jiu Jitsu Austin** | east-austin | **needs-owner-contact** | Nothing published. Outreach form already submitted by the owner. |
 | **Kollective** | south-soco | **needs-owner-contact** | The seed URL is wrong and the correct site has not been found. Consult-gated in any case. Needs the real site before anything else. |
-| **Rumble Boxing South Austin** | south-soco | **dead-end — propose exclusion** | The only figure published is an intro offer, "3 classes for $59". More decisively, the studio the discovery probe found is **Southpark Meadows**, which is **outside all six region circles**. If the listed row refers to a South Austin studio we cannot locate, it should not be carrying a region. |
-| **FeV Iron Vault Gym** | downtown | **dead-end — propose exclusion** | Website entirely down. Possibly closed. Needs a does-it-still-exist check; if closed, exclude with the reason recorded. |
+| ~~Rumble Boxing South Austin~~ | south-soco | **EXCLUDED 2026-08-19** | The only figure published is an intro offer, "3 classes for $59". More decisively, the studio the discovery probe found is **Southpark Meadows**, which is **outside all six region circles**. If the listed row refers to a South Austin studio we cannot locate, it should not be carrying a region. |
+| ~~FeV Iron Vault Gym~~ | downtown | **EXCLUDED 2026-08-19** | Website entirely down. Possibly closed. Needs a does-it-still-exist check; if closed, exclude with the reason recorded. |
 
 ## Merges with discovery finds
 

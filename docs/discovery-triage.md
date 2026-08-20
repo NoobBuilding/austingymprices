@@ -8,7 +8,29 @@ and the candidate list drift apart as gyms get listed, and an index pairing sile
 attaches the wrong result to the wrong gym.
 
 Counts below are of **distinct business names**, so a chain that surfaced once per
-location appears once. That is why they total less than the 294 raw candidates.
+location appears once, and a business probed under several URL variants of its own site
+appears once. That is why they total less than the 294 raw candidates.
+
+**Sourceable and not yet listed: 114 distinct businesses site-wide.** By the region
+bucket this pipeline assigns:
+
+| bucket | distinct |
+|---|---|
+| downtown | 38 |
+| hyde-park | 22 |
+| south-soco | 17 |
+| east-austin | 14 |
+| the-domain | 15 |
+| mueller | 8 |
+
+**Read the region column with care.** These buckets are the discovery pipeline's
+*nearest-search-circle* assignment, not the region a gym ends up in once geocoded. The
+downtown circle has a 4.4 km radius and its centre is the centroid of our
+downtown-assigned pins, which sits east of the actual downtown — so East 7th Street and
+Springdale Road addresses land in the "downtown" bucket. Of the four gyms written from
+this bucket in the last batch, **two geocoded into east-austin** (Pressure Gym, Kawi
+CrossFit). The bucket is a search grouping; the row's real region is settled at
+geocoding time.
 
 | | count |
 |---|---|
