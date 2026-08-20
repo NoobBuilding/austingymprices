@@ -1,4 +1,11 @@
-# Mueller circle — proposal, and the recommendation is DON'T
+# Mueller circle — CLOSED, no redraw
+
+> **VERDICT (owner, 2026-08-20): accepted. No redraw.** The geometric stop settles it —
+> a Mueller large enough to change the numbers is a Mueller containing Hyde Park Gym.
+> Mueller is thin, and the site shows the truth. This doc is closed; reopen only if the
+> development itself changes shape.
+
+## Original proposal, and the recommendation was DON'T
 
 Asked: propose a re-drawn Mueller circle from geography, not from candidate density, and
 say what would change. **Nothing has been moved. This is for your approval.**
