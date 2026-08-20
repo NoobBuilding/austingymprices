@@ -778,10 +778,12 @@ const classIncluded =
     gap: 6px;
     margin-top: 16px;
     padding: 9px 15px;
-    border: 1px solid var(--ink-soft);
+    /* Border kept at the same 1px so the filled variant occupies exactly the
+       geometry the outline did — this is a weight change, not a size change. */
+    border: 1px solid var(--ink);
     border-radius: var(--r-pill);
-    background: transparent;
-    color: var(--ink);
+    background: var(--ink);
+    color: var(--bg);
     font-size: 0.82rem;
     font-weight: 700;
     line-height: 1;
@@ -793,8 +795,8 @@ const classIncluded =
 
   .detail-cta:hover,
   .detail-cta:focus-visible {
-    border-color: var(--ink);
-    background: #fff;
+    border-color: var(--ink-soft);
+    background: var(--ink-soft);
   }
 
   .dfoot {

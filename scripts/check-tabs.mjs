@@ -263,7 +263,20 @@ console.log('\nDetail CTA (every tab, correct count, no orange)');
   check(cssRule.length > 0, 'the CTA has styling in the built CSS');
   check(
     /border:[^;]*1px/.test(cssRule) || /border-width/.test(cssRule),
-    'it is a BORDERED pill, not a bare link',
+    'it is a pill with a 1px border — the filled variant keeps the outline geometry',
+  );
+  // Filled, and filled with the DARKEST TEXT TOKEN rather than a literal black
+  // or any new colour. The palette is fixed (§5); a button is not a licence to
+  // introduce a shade.
+  check(
+    /background:\s*var\(--ink\)/.test(cssRule),
+    'and is FILLED with var(--ink), not transparent and not a literal #000',
+    (cssRule.match(/background:[^;}]*/) || [])[0] ?? 'none',
+  );
+  check(
+    /color:\s*var\(--bg\)/.test(cssRule),
+    'with var(--bg) text on it — white from the palette, not a hard-coded white',
+    (cssRule.match(/color:[^;}]*/) || [])[0] ?? 'none',
   );
   check(
     !/--orange|#bf5700|#9e4800|#fbf1e9/i.test(cssRule),
