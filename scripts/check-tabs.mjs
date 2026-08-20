@@ -171,6 +171,60 @@ check(
   'a folded gym always has a visible sibling standing for it — collapse never swallows a row',
 );
 
+// ── Detail CTA ───────────────────────────────────────────────────────────
+// The link out must exist on EVERY expanded card, on every tab, carry a count
+// that matches the row, and never borrow a colour that means something else.
+console.log('\nDetail CTA (every tab, correct count, no orange)');
+{
+  const cssRule = (css.match(/\.detail-cta(?![-\w])[^{]*\{[^}]*\}/g) || []).join(' ');
+  check(cssRule.length > 0, 'the CTA has styling in the built CSS');
+  check(
+    /border:[^;]*1px/.test(cssRule) || /border-width/.test(cssRule),
+    'it is a BORDERED pill, not a bare link',
+  );
+  check(
+    !/--orange|#bf5700|#9e4800|#fbf1e9/i.test(cssRule),
+    'and uses NO orange — that colour means "selected" on the map and nothing else',
+    cssRule.slice(0, 120),
+  );
+
+  // All four tabs, Recovery included — it renders the membership body, and a
+  // tab that shows a card body must show the way out of it too.
+  for (const mode of ['membership', 'classes', 'daypass', 'recovery']) {
+    clickTab(mode);
+    const shown = $('.card').filter((c) => !c.hidden);
+    const withCta = shown.filter((c) => {
+      const open = [...c.querySelectorAll('.detail')].filter((d) => !d.hidden);
+      return open.length === 1 && open[0].querySelector('.detail-cta');
+    });
+    check(
+      shown.length > 0 && withCta.length === shown.length,
+      `every expanded card on the ${mode} tab carries the CTA`,
+      `${withCta.length} of ${shown.length}`,
+    );
+    check(
+      shown.every((c) => {
+        const open = [...c.querySelectorAll('.detail')].filter((d) => !d.hidden)[0];
+        const a = open?.querySelector('.detail-cta');
+        return a && a.getAttribute('href') === `/gyms/${c.dataset.slug}`;
+      }),
+      `and it navigates to that gym's own page`,
+    );
+    // The count is the promise. If it disagrees with the page it lands on, the
+    // link is lying in the one way a label like this can.
+    const bad = shown.filter((c) => {
+      const open = [...c.querySelectorAll('.detail')].filter((d) => !d.hidden)[0];
+      const txt = open?.querySelector('.detail-cta')?.textContent ?? '';
+      const m = txt.match(/See all (\d+) plans/);
+      if (!m) return false;
+      return Number(m[1]) !== Number(c.dataset.plancount);
+    });
+    check(bad.length === 0, `and any count it states matches the row's plan count`,
+      bad.map((c) => c.dataset.slug).slice(0, 3).join(', '));
+  }
+  clickTab('membership');
+}
+
 // ── Pool chip ────────────────────────────────────────────────────────────
 console.log('\nPool filter (gated, confirmed-only)');
 {

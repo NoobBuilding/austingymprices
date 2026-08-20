@@ -55,6 +55,27 @@ const reportHref = `mailto:reports@austingymprices.com?subject=${encodeURICompon
   `Price correction: ${gym.name}`,
 )}`;
 
+// ── The detail link's promise ──────────────────────────────────────────────
+// "Full details →" told the reader nothing they did not already have. A good
+// expansion SATISFIES — it answers the question — so the link out has to offer
+// something the card did not, and say what it is. The count is the offer: three
+// plans on the page is a reason to go, and the reader can see it before tapping.
+//
+// It must not overpromise either. A call-for-pricing row has no plans to show,
+// so it promises what it actually has: what we know and where it came from.
+const planCount = gym.plans.length;
+const packCount = (gym.class_packs ?? []).length;
+const detailLabel =
+  planCount > 1
+    ? `See all ${planCount} plans + fees →`
+    : planCount === 1
+      ? 'See full breakdown →'
+      : packCount > 1
+        ? `See all ${packCount} passes + fees →`
+        : packCount === 1
+          ? 'See full breakdown →'
+          : 'See what we know →';
+
 // ── Classes tab: the three elements of the expanded state ──────────────────
 // (a) the receipt — the winning candidate behind "from $X/class", read from
 //     the same function that computed the headline so the two cannot disagree.
@@ -91,6 +112,7 @@ const classIncluded =
   data-nocontract={gym.is_no_contract === true ? 'true' : 'false'}
   data-classpass={gym.accepts_classpass === true ? 'true' : 'false'}
   data-pool={gym.pool === true ? 'true' : 'false'}
+  data-plancount={gym.plans.length}
   data-access={gym.access_model}
   data-chain={gym.chain ?? ''}
   data-perclass={gym.from_per_class ?? ''}
@@ -258,6 +280,14 @@ const classIncluded =
         </ul>
       )}
 
+      {/* Bottom of the expansion, below the substance and above the fine
+          print. A bordered pill, not a filled one: it must read as a
+          destination without competing with the price, which stays the loudest
+          thing on the card by an order of magnitude (1.8rem display against
+          0.82rem here). No orange — that means "selected" on the map and
+          nothing else — and no orange-tint, which the receipt owns. */}
+      <a class="detail-cta" href={gym.url}>{detailLabel}</a>
+
       <div class="dfoot">
         {/* A gym whose scrape has been failing for >14 days says so in the
             warning style rather than presenting a stale number as current
@@ -270,7 +300,6 @@ const classIncluded =
             : 'Price not yet confirmed'}
         </span>
         <span class="dfoot-links">
-          <a href={gym.url}>Full details →</a>
           <a href={reportHref}>Report a wrong price</a>
         </span>
       </div>
@@ -301,6 +330,14 @@ const classIncluded =
 
       {classIncluded && <p class="secondary included">{classIncluded}</p>}
 
+      {/* Bottom of the expansion, below the substance and above the fine
+          print. A bordered pill, not a filled one: it must read as a
+          destination without competing with the price, which stays the loudest
+          thing on the card by an order of magnitude (1.8rem display against
+          0.82rem here). No orange — that means "selected" on the map and
+          nothing else — and no orange-tint, which the receipt owns. */}
+      <a class="detail-cta" href={gym.url}>{detailLabel}</a>
+
       <div class="dfoot">
         <span class={gym.stale ? 'stale' : ''}>
           {verified
@@ -310,7 +347,6 @@ const classIncluded =
             : 'Price not yet confirmed'}
         </span>
         <span class="dfoot-links">
-          <a href={gym.url}>Full details →</a>
           <a href={reportHref}>Report a wrong price</a>
         </span>
       </div>
@@ -343,13 +379,19 @@ const classIncluded =
             {gym.has_price
               ? `Membership from ${money(gym.all_in_monthly)}/mo all-in`
               : 'Membership pricing not published'}
-            {' — '}
-            <a href={gym.url}>Full details →</a>
           </p>
         </>
       ) : (
         <p class="note">No day pass price published for this gym.</p>
       )}
+
+      {/* Bottom of the expansion, below the substance and above the fine
+          print. A bordered pill, not a filled one: it must read as a
+          destination without competing with the price, which stays the loudest
+          thing on the card by an order of magnitude (1.8rem display against
+          0.82rem here). No orange — that means "selected" on the map and
+          nothing else — and no orange-tint, which the receipt owns. */}
+      <a class="detail-cta" href={gym.url}>{detailLabel}</a>
 
       <div class="dfoot">
         <span>
@@ -678,6 +720,37 @@ const classIncluded =
 
   .amen li::before {
     content: '✓ ';
+  }
+
+  /* Secondary button: OUTLINE, never fill. The price owns loudness on this
+     card and must keep owning it, so this earns weight from a border and a
+     pill shape rather than from colour or size. Deliberately uses neither
+     orange (map-selected) nor orange-tint (the receipt's) — the two meanings
+     already spoken for. Hover lifts to white against the sunk panel, which is
+     a surface change, not a fill. */
+  .detail-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 9px 15px;
+    border: 1px solid var(--ink-soft);
+    border-radius: var(--r-pill);
+    background: transparent;
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+      border-color 0.12s,
+      background 0.12s;
+  }
+
+  .detail-cta:hover,
+  .detail-cta:focus-visible {
+    border-color: var(--ink);
+    background: #fff;
   }
 
   .dfoot {
