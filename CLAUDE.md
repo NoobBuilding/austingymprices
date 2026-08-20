@@ -678,8 +678,13 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   Arboretum, whose page says billing begins 30 days after its Grand Opening. Founders and
   Pre-Opening rates are launch promotions; treating them as standing prices would ship a
   discount as a price for a gym that does not exist yet.
-- **Pure personal-training and recovery studios are out of scope** (§1), even when they
-  publish figures. Forge Strength's $999 is an 8-session PT pack, not a membership.
+- **Pure personal-training studios are out of scope** (§1), even when they publish
+  figures. Forge Strength's $999 is an 8-session PT pack, not a membership.
+  ~~Superseded: "and recovery studios."~~ Recovery is a live CATEGORY now; only the
+  pure-PT half of this precedent survives. Two later exclusions confirm the surviving
+  half: **Barbells & BJJ** sells online coaching at $349/mo and $150 private 1:1 sessions,
+  and **Austin Fight Team** sells only one-to-one park and in-home sessions ($85, $750 for
+  ten, $120, $1,100 for ten). Neither publishes a group class or a membership.
 - **A soft 404 is a 404.** 24 Hour Fitness's `/salez24/membership` returns HTTP 200 with
   the page title `404 | 24 Hour Fitness`. Check what came back, not just the status.
 - **Bot walls are respected, never fought.** A Cloudflare managed challenge means STOP on
@@ -726,12 +731,18 @@ thread inherits them rather than re-litigating each studio one at a time:
   line runs between **dance INSTRUCTION** — ballet, ballroom, tango, competition and
   performance training — and **movement sold and priced as exercise**. Medium is not the
   test; what is being sold is.
-- **A dollar sign is not a price.** Probe hits must be read in the sentence around them.
+- **A dollar sign is not a price.** Probe hits must be read in the sentence around them,
+  and this precedent has now stopped **six fake prices across two waves** — pet fees,
+  seminar fees, meet entries, late-cancellation fees, ankle weights and a ceramic mug.
   Wave 1 found "$300" and "$25-$30" at Solomon — a **pet fee** and a **pet management fee**
   at an apartment complex — and "$549" and "$65" at Texas Barbell Club, which are a **USAW
   seminar fee** and a **meet entry**. AMLI Branch Park's "$1/$2/$3" were rental-page noise.
-  Every one would have passed a numbers-only reading; two of the businesses were not gyms
-  at all. The probe proposes figures, it does not identify them.
+  Wave 2 added more of the same shape: **Evolution Pilates**' $10 and $15 are LATE
+  CANCELLATION FEES; **Homebody Studios**' $75/$85/$55 are ankle weights, a zip top and a
+  ceramic mug from their shop page; **Sauna House**'s "$25 / $10" is a REFERRAL CREDIT; and
+  **Öli Saunas** and **Subzero** sell the equipment itself ($6,940 barrel sauna, $10,999
+  plunge). Every one would have passed a numbers-only reading; four of the businesses were
+  not gyms at all. **The probe proposes figures, it does not identify them.**
 - **Martial arts: in scope as Classes, where an adult can actually buy.** A martial-arts
   school lists **where adult class or drop-in pricing exists** — the Old Guard precedent,
   which sells a $165/mo two-day plan and a $25 drop-in. A school publishing only
@@ -757,6 +768,46 @@ thread inherits them rather than re-litigating each studio one at a time:
   a walk-in adult can buy is not a gym this site can price. Where an adult price exists,
   a youth price is simply another plan — OPTML's youth rate stays, because its **adult
   price anchors the row**. The rule excludes youth-*only* businesses, never youth pricing.
+
+- **A chain is N gyms wearing one logo. Verify per location, always.** Gold's prices
+  Downtown at $49.99, Burnet at $69.99 and South Central at $34.99 — **three clubs, three
+  rate cards, one brand**. The inverse also holds and must be sourced just as explicitly:
+  the **YMCA publishes ONE association-wide card** and a membership admits you to every
+  branch, so all five branches legitimately carry the same figures with the provenance
+  stated on each plan. Neither uniformity nor variation may be assumed; both are findings.
+  **One club's promo never propagates** — Planet Fitness' E. Riverside read cannot be
+  reused across its six other clubs, because startup and Black Card pricing vary and that
+  read is itself a promo state.
+- **A brand's own locator can be WORSE than Places.** The intuition that the locator is
+  the census and the API is not was tested and failed: F45's finder exposes **3** Austin
+  slugs against Places' **18**; Anytime's sitemap yields 5 club URLs whose pages are
+  JS-rendered with **no address in the HTML**; Planet Fitness returns **403 behind a
+  Cloudflare challenge** on both locator and club pages, so it is a bot wall and we stop.
+  The earlier undercount that prompted the doubt was not the API failing — it was **one
+  query against a 20-result cap**. The fix is one text search PER REGION CIRCLE, which
+  took Anytime from 3 to 9 and enumerated 115 recovery businesses. Disperse the queries
+  before blaming the source.
+- **A per-session figure in a note must RECONCILE with the plan math beside it, or be
+  attributed.** EvolvE's card reads "$129, 6X | Month, $22 | Session" — and 6 × $22 is
+  $132. Their whole card rounds up: 129/6 = $21.50 shown as $22, 199/16 = $12.44 as $13,
+  279/30 = $9.30 as $10. Our note repeated their rounding as if it were our arithmetic.
+  **The validator now enforces it**: where a class count exists the figure is checkable and
+  one quoted figure must equal `monthly ÷ count`; the gym's rounded gloss may sit beside it
+  only if the real one is there too. Where no count is published the figure cannot be
+  checked at all, so it must be ATTRIBUTED — "the studio states", "the studio rounds" —
+  never asserted. This is the per-class receipt's discipline imposed on free prose: **a
+  derivation that must display cannot quietly disagree with itself.**
+- **Reviews can describe the VENUE rather than the business.** F45 Downtown sits inside the
+  Hilton, and **five of its five reviews are hotel guests praising the hotel's pool, sauna
+  and showers** — none of which an F45 membership buys. The place match was correct; the
+  claims belonged to the building. The `known_for` pipeline now flags a review set as
+  venue-contaminated and the row takes no line.
+- **A mention is not a verdict: complaints are not features.** Gold's South Central's
+  "sauna" convergence was three reviewers saying it had been **broken for months**;
+  Southwest Family YMCA's pool convergence was partly closure complaints. A matcher that
+  counts mentions will confidently propose the opposite of the truth. The pipeline now
+  excludes claims matched inside a negation or complaint and reports them separately —
+  Gold's South Central left the draft set entirely once it did.
 
 **Walled site → human transcription.** Where we will not or cannot read a page, the owner
 reads it and transcribes. `docs/price-transcription.md` is the paste-friendly sheet, and
@@ -924,13 +975,36 @@ what was built.
 
 ### Ledger
 
-**51 gyms listed, 35 with confirmed prices** (as of 2026-08-20). This number goes stale;
+**95 gyms listed, 57 with confirmed prices** (as of 2026-08-20).
+**91 map pins · 94 addresses · 9 `known_for` lines · 10 sourced pools.**
+
+~~Superseded: "51 gyms listed, 35 with confirmed prices."~~ The jump is mostly structural
+rather than harvested: chain BRANCH rows (YMCA ×5, Anytime ×3, F45 ×10, Planet Fitness ×6)
+replaced brand-level placeholder rows that could carry neither a pin nor an honest price.
+**Listed count and coverage now pull in opposite directions** — the friends-and-family
+phase is judged on rows, the launch gate on coverage — and that tension is real, not an
+artifact. Coverage fell from 72% to 60% while the site got strictly more honest.
+
+**Surfaces live:** four tabs — Memberships, Classes & studios, Day passes, and
+**Recovery** (14 listings, gated at 6+). **Pool filter chip** (10 sourced, gated at 5+).
+**Chain handling**: the list folds a chain to its cheapest location with an expander,
+every location keeps its own map pin, and detail pages carry an "Also in Austin" line.
+**Three unpriced states** with distinct rendering — `per-visit`, `not-published`,
+`awaiting` (§3).
+
+**Phase: friends-and-family soft launch imminent.** The domain flip follows the top-3
+fixes from friend feedback, not the other way round — see the launch sequence below.
+
+This number goes stale;
 **the live one comes from asking Claude Code to run `node scripts/launch-check.mjs` and
 report the output** — the owner does not clone the repo or run local commands (§9b).
 That report also gives per-region coverage and the outstanding queues.
 
-Downtown is the weakest region in absolute terms and the most visible, so it leads the
-cherry-picking order.
+~~Superseded: "Downtown is the weakest region, so it leads the cherry-picking order."~~
+Downtown now sits at 13/17. **Mueller (1/3) and The Domain (6/15) are the thin ones**, and
+neither can be filled from the 92-keep queue — Mueller has 2 candidates left and The Domain
+1. Growth there comes from chain siblings or a fresh sweep, not from re-ordering the queue
+(`docs/wave2-queue.md`, `docs/mueller-circle-proposal.md`).
 
 ### Done
 
@@ -939,7 +1013,11 @@ validator; index list with filters, pagination and accordion cards; Leaflet map 
 gym detail pages, region pages, JSON-LD, sitemap; 11 scraper targets with the PR flow and
 Sentry; FAQ and for-gym-owners; OG images; accessibility pass; favicon;
 **Classes & studios tab**; **compare view**; **discovery pipeline**;
-**event counting on D1**; **Founder Campaign codified**.
+**event counting on D1**; **Founder Campaign codified**;
+**Recovery tab** (gated); **pool field and filter chip** (gated); **chain field with
+list-fold, sibling cross-links and per-location pins**; **three unpriced states**;
+**tab-aware compare**; **`known_for` draft pipeline**; **discovery widened to recovery
+types**; **branch enumeration for YMCA, Anytime, F45 and Planet Fitness**.
 
 ### The map and interaction contract (normative)
 
@@ -1092,6 +1170,15 @@ share a mechanism.
   ~20 distinct brands**, comfortably past the gate of six. **Not yet probed for published
   prices** — enumeration says how many exist, the probe says how many we can source, and
   only the second number ships rows.
+- **Waves 1 and 2 are harvested and reported** — `docs/harvest-findings-wave1.md` and
+  `docs/harvest-findings-wave2.md`. Nine rows written between them. The residue is
+  human-read work: **14 of Wave 2's 24 candidates need a booking widget opened**, and the
+  scrapeable seam through the 92 keeps is close to exhausted.
+- **The recovery category is filled**: 14 listings from a funded second Places pass, 10
+  priced, gate cleared. `docs/recovery-scan.md`.
+- **Chain branches enumerated** for YMCA, Anytime, F45 and Planet Fitness —
+  `docs/chain-branch-enumeration.md`. 16 placeholder rows added; Anytime produced none,
+  its three in-circle clubs already existing.
 - **The 18 awaiting gyms are classified** in `docs/awaiting-classification.md` as
   sourceable-scrapeable / sourceable-human / needs-owner-contact / dead-end. Five are
   confirmable without owner contact — Studio Three, CorePower, both Gold's clubs and
@@ -1104,21 +1191,54 @@ share a mechanism.
   offer; OPTML publishes no class counts; FeV Iron Vault's site is down and may be closed;
   Kollective's seed URL is wrong.
 
+### Open threads, with owners
+
+Live at the time of writing. **Each line names who holds it**, because an open thread with
+no owner is a thread nobody is working. Claude Code items are unblocked and only waiting on
+a batch; Kerushan items cannot be moved by Claude Code at all.
+
+| Thread | Owner | State |
+|---|---|---|
+| **Friend feedback → top-3 fixes** | Kerushan collects, Claude Code lands | The gate on the domain flip. Nothing else in the launch sequence moves first. |
+| **14 pending human reads** | Kerushan | Booking-widget studios from Waves 1–2. Optional before the flip — they raise coverage, they do not block. |
+| **Planet Fitness + Gold's Downtown annual fees** | Kerushan (outreach) | Both rows are HELD, not written, because the headline would understate without the standing annual figure. One number each unblocks them. |
+| **Athletic Outcomes recheck** | Kerushan | **Dated: after 31 August 2026**, when the 30-spot founding promo expires. They are opening in MUELLER, the thinnest region, so this is a genuine gap-fill. Do not let it lapse. |
+| **Waves 3–4** | Claude Code | Queued post-launch. Hyde Park and the Downtown pile, re-sorted by actual region (`docs/wave2-queue.md`). Mostly human-read work now — the scrapeable seam is close to worked out. |
+| **F45 and Planet Fitness branch pricing** | Kerushan | 16 rows carry `awaiting` placeholders. F45 needs a read per club (widget); PF is a 403 bot wall to automation, so all six are browser work. |
+| **`known_for` 2-review remainder** | Kerushan | Optional. Nine lines shipped from the 3+ convergence cut; the 2-review tier in `docs/known-for-drafts.md` is raw material, not a backlog. |
+| **DMARC records** | Kerushan | Written out in `docs/email-auth.md`, awaiting a paste into the Cloudflare dashboard. Claude Code has no DNS credentials. SPF and DKIM are already correct — **do not add a second SPF record.** |
+| **Overlapping-circles fix** | Deliberately deferred | The RULE is codified (§3, stored field wins) and medians are safe, so there is nothing user-facing to fix. `docs/circle-overlap-findings.md` is closed. Reopen only if regions gain a second consumer. |
+
 ### Launch sequence (order matters)
 
+**A friends-and-family SOFT LAUNCH now sits before the domain flip.** The site goes in
+front of a small group on the `.pages.dev` URL, the owner collects feedback, and the
+**top three fixes land before the domain moves**. The order matters and is deliberate:
+the flip is the irreversible, publicly-indexed step, and the cheapest time to learn the
+site confuses someone is while nobody is watching. Steps 2–6 below are unchanged and all
+follow the soft-launch phase.
+
+0. **Soft launch (current phase).** Share the `.pages.dev` URL with friends and family.
+   Owner collects feedback and picks the top three fixes; Claude Code lands them; only
+   then does step 4 happen. Nothing about analytics, the D1 baseline or the domain moves
+   during this phase — a soft launch that flips the domain is just a launch.
 1. Claude Code runs `npm run verify` to green and reports it; owner clicks through every
    gym page once on the deployed site.
 2. **Enable Cloudflare Web Analytics** (dashboard toggle — the CSP already allows it).
 3. **Confirm the D1 binding on the serving deployment** (`GET /api/event` →
    `{"bound":true}`), then **`DELETE FROM events;`** to clear test writes and start the
-   real baseline.
+   real baseline. **This stays at the FLIP, not at the soft launch** — friends-and-family
+   traffic is real traffic and would otherwise be cleared out of the baseline it belongs
+   in, or worse, left in it and mistaken for strangers.
 4. **Flip the domain**: austingymprices.com live, atxgymprices.com 301, hello@ and
    reports@ routing verified end to end.
 5. **Remove the `main` ruleset bypass** — protection is active but carries a
    `RepositoryRole` bypass with mode `always`, which is why direct pushes land. Removing
    it is what makes §8's "branch protection from day 1" fully true.
 6. **Reddit post and the Founder Campaign together**, after the domain flip and after the
-   gym pages are live on the real domain. §10 and Gate 4b.
+   gym pages are live on the real domain. §10 and Gate 4b. **Both drafts are pending in
+   the planning chat** — neither is written in this repo, and per §9b the repo is the
+   source of truth, so they do not exist until they land here.
 
 **Definition of done for launch: there is no confirmed-price threshold.** We launch on
 what we can definitively source. `scripts/launch-check.mjs` reports coverage and exits
@@ -1172,6 +1292,32 @@ habits.
   browser against the deployed site and should, but that does not replace the owner
   looking at it: the iOS Safari toolbar covering a bottom-fixed button is exactly the
   class of defect no headless run reproduces.
+- **A wave that has slipped runs clean and alone.** Wave 2 was deferred twice while
+  batches around it grew, and the fix was to give it a whole turn with nothing in front of
+  it. A harvest is not a task that fits in the gaps between other tasks: it needs the
+  probe, the geocode, the scope judgements and a findings doc, and half-running it produces
+  a report nobody can cherry-pick from. **When something has slipped twice, it stops
+  sharing a batch.**
+- **Interrupts are legitimate, and they jump the queue.** A deployed regression or a data
+  discrepancy spotted mid-batch should be raised immediately rather than saved for the next
+  round-trip — the scroll-to-top bug and the EvolvE $22/$129 mismatch were both caught this
+  way, and both were live on the site while the batch that would have found them was still
+  running. This is the one exception to "one consolidated message per round-trip": **a
+  wrong number in front of a reader outranks batching.**
+- **When a correct change turns an assertion red, suspect the ASSERTION first.** This has
+  now happened roughly ten times, always the same shape: a check pinned the day's data
+  rather than the rule. `tabs.length === 3` (a fourth tab was correct), "merges NOTHING at
+  the default zoom" (the rule is 80%), "no +N labels" (which outlawed the format the spec
+  requires), `expect('anderson', [one slug])` (three matches were correct), "every card
+  visible after Clear filters" (chains collapse), `class="card"` matched as a whole
+  attribute (cards gained a state modifier), the Gold's two-slug list (a third club
+  opened). **Ask "is this asserting the invariant or the inventory?" before touching the
+  code the check is complaining about.** An assertion must pin the rule.
+- **A deployed check must poll past the deploy lag.** Cloudflare Pages trails CI by up to a
+  minute or two, and a smoke run fired immediately after a green CI reads the PREVIOUS
+  build. That is how a stale page once reported as a successful verification. Poll until
+  the change is actually visible on the served page — a cache-busting query and a loop —
+  and never report a deployed check that read the old build.
 - **Measure before fixing.** Reproduce a reported bug and confirm the mechanism before
   changing code; report honestly when it does not reproduce, and say what was checked.
 - **Nothing pushes red.** `npm run verify` green is a gate, not a suggestion. If a check
