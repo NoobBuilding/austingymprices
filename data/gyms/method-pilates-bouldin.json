@@ -1,0 +1,61 @@
+{
+  "slug": "method-pilates-bouldin",
+  "name": "Method Pilates Bouldin Creek",
+  "chain": null,
+  "region": "south-soco",
+  "sub_locality": "Bouldin Creek",
+  "category": "pilates",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "https://methodpilates.com/",
+  "pricing_url": "https://methodpilates.com",
+  "address": "1600 S 1st St #130, Austin, TX 78704, USA",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "pool": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Unlimited Monthly",
+      "monthly": 255,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited classes. The studio publishes no class count for this plan, so no per-class figure is derived from it.",
+      "is_default": true,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "3-class intro",
+      "price": 55,
+      "classes": 3,
+      "expires_days": null,
+      "promo": true,
+      "note": "$55 for three classes, introductory offer."
+    }
+  ],
+  "day_pass": null,
+  "day_pass_qualifier": null,
+  "day_pass_terms": [],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": null,
+  "stale": false,
+  "price_history": []
+}

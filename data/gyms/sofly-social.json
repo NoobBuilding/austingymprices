@@ -1,0 +1,73 @@
+{
+  "slug": "sofly-social",
+  "name": "soFly Social",
+  "chain": null,
+  "region": "east-austin",
+  "sub_locality": "Springdale",
+  "category": "gym-classes",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "http://sofly.social/",
+  "pricing_url": "http://sofly.social/pricing",
+  "address": "979 Springdale Rd Ste 112, Austin, TX 78702, USA",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "pool": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [],
+  "class_packs": [
+    {
+      "name": "single class",
+      "price": 35,
+      "classes": 1,
+      "expires_days": null,
+      "promo": false,
+      "note": null
+    },
+    {
+      "name": "5 class passes",
+      "price": 158,
+      "classes": 5,
+      "expires_days": null,
+      "promo": false,
+      "note": null
+    },
+    {
+      "name": "10 class passes",
+      "price": 265,
+      "classes": 10,
+      "expires_days": null,
+      "promo": false,
+      "note": null
+    },
+    {
+      "name": "20 class passes",
+      "price": 420,
+      "classes": 20,
+      "expires_days": null,
+      "promo": false,
+      "note": "Twenty class passes — the cheapest per-class rate the studio publishes."
+    }
+  ],
+  "day_pass": 35,
+  "day_pass_qualifier": "single class",
+  "day_pass_terms": [
+    "One group class"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "Sold in class passes rather than memberships: $35 for one, $158 for five, $265 for ten and $420 for twenty.",
+  "stale": false,
+  "price_history": []
+}

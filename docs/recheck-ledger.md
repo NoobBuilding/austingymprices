@@ -34,3 +34,14 @@ revisited. Recorded rather than deleted so nobody rediscovers them as finds.
 |---|---|---|
 | **Los Campeones Gym South**<br><sub>9811 Vikki Terrace</sub> | **Rumble precedent.** The only resolvable location geocodes to 30.2325, -97.9265 — out toward Dripping Springs, **outside all six region circles**. Confirmed independently by the owner's own Maps read. The row was carrying `south-soco`, a region it had not earned. | If Los Campeones opens or is found to operate a location inside a region circle. The North club (6406 N I-35) stays listed and is now pinned. |
 | **Equinox Domain**<br><sub>the-domain</sub> | **The location does not exist.** A Places brand sweep returns exactly ONE Equinox in Austin — 1007 S Congress Ave — and the owner's independent check agrees. The row's own `pricing_note` said "Confirm this location is open before listing," and nobody ever did. It was a phantom: a brand name with a region attached and no club behind it. Earlier pin resolution "failed" on this row by returning the SoCo club, which was the correct answer to a question with no other answer. | If Equinox announces an Austin second location. `equinox-austin-soco` remains listed, consult-gated. |
+
+## Wave 2 outcomes (2026-08-20)
+
+| Business | Status | Recheck when |
+|---|---|---|
+| **Austin Fight Team**<br><sub>700 E Live Oak St</sub> | **EXCLUDED — pure personal training, rule 3.** Every product is one-to-one with a coach: Park Session $85, ten for $750, in-home $120, ten for $1,100. No group class, no membership. The Barbells & BJJ shape exactly. | If they publish a group class or membership rate. |
+| **Athletic Outcomes**<br><sub>2301-A E Riverside Dr</sub> | **Promo-only.** The only figures published are a $49 two-week start and a $99 first month on a "Mueller founding" offer capped at 30 spots. No standing rate. | **After 31 August 2026**, when the founding promo expires. They are opening in MUELLER, which makes them a genuine gap-fill for the thinnest region the moment a standing rate appears. Dated condition — do not let this one lapse. |
+| **Evolution Pilates & Flow**<br><sub>3823 Airport Blvd · Mueller</sub> | No membership price published. The $10 and $15 the probe found are **late cancellation fees**, not rates. | If a rate page appears. A Mueller gap-fill if so. |
+| **Renzo Gracie Austin**<br><sub>4631 Airport Blvd · Mueller</sub> | Prices behind a booking widget. | Human read. A Mueller gap-fill if it lands. |
+| **Inner Diva Studios**<br><sub>10401 Anderson Mill Rd · The Domain</sub> | Prices behind a booking widget. | Human read. A Domain gap-fill if it lands. |
+| **The Colosseum** | **MERGED, not excluded.** Same address and same page as Squatch Frontier Fitness — both domains serve one site titled "Squatch Frontier Fitness". It is that gym's $115 indoor-gym tier, now a plan on the Squatch row. | n/a — resolved. |

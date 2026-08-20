@@ -1,0 +1,49 @@
+{
+  "slug": "crossfit-2024",
+  "name": "CrossFit 2024",
+  "chain": null,
+  "region": "east-austin",
+  "sub_locality": "East Riverside",
+  "category": "crossfit-hiit",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "http://www.crossfit2024.com/",
+  "pricing_url": "http://www.crossfit2024.com",
+  "address": "2015 E Riverside Dr #7BB, Austin, TX 78741, USA",
+  "lat": null,
+  "lng": null,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "pool": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-20",
+  "billing_period": "monthly",
+  "plans": [],
+  "class_packs": [
+    {
+      "name": "drop-in class",
+      "price": 25,
+      "classes": 1,
+      "expires_days": null,
+      "promo": false,
+      "note": "Published drop-in rate."
+    }
+  ],
+  "day_pass": 25,
+  "day_pass_qualifier": "drop-in class",
+  "day_pass_terms": [
+    "Single class"
+  ],
+  "day_pass_alternative": "A week of unlimited classes is $60 — under three drop-ins.",
+  "day_pass_detail": [],
+  "pricing_note": "Publishes drop-in rates only — $25 a class or $60 a week. No membership rate appears anywhere on the site, so no membership row is carried.",
+  "stale": false,
+  "price_history": []
+}
