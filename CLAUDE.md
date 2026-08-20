@@ -293,6 +293,25 @@ The UI then shows "Prices last confirmed {date}" in the warning style. A gym mar
 stale with no `verified_date` fails validation — there is nothing for it to be stale
 relative to.
 
+**Region is the STORED FIELD. Circles are enumeration machinery and nothing else.**
+A gym's `region` is the value in its JSON, full stop. The search circles in `regions.json`
+exist to enumerate candidates and to aim the map camera; they **never** determine a listed
+gym's region, and no user-facing number is computed from them. **Region medians compute
+from the stored field exclusively.**
+
+This is settled rather than assumed. 73% of pins sit inside more than one circle and five
+sit inside four, so "which circle contains it" has no single answer; where geometry and the
+stored value disagree — 12 of 75 pins — **the stored value is right and the geometry is
+wrong.** The nearest containing circle to `hyde-park-gym` is Downtown, and to
+`24-hour-fitness-hancock` is Mueller. A rule that moves the gym Hyde Park is named after
+out of Hyde Park refutes itself. Recomputing medians geometrically would also move Hyde
+Park's by $22, changing a sentence on every one of its detail pages.
+
+The nearest-circle heuristic survives for **candidate binning during triage only**, and the
+harvest docs record its known distortion: East Austin's 10,500 m circle reaches deep into
+South Austin, so roughly two fifths of a nominally East Austin harvest is really SoCo.
+See `docs/circle-overlap-findings.md`.
+
 **`sub_locality` rules:** display-only neighbourhood, shown after the region
 ("South / SoCo · South Lamar"). It is editorial, not geographic: it never affects
 filtering, the map, or which region a gym belongs to.
@@ -366,6 +385,37 @@ constitutional, not cosmetic: a chip that filters badly is annoying, but an **em
 a broken promise** — it invites a click and answers with nothing. Computed at build time
 like the ClassPass chip, so the tab appears on its own the day the sixth listing lands,
 with no code change.
+
+**Unpriced rows are THREE states, not one, and each says something different.**
+A row without a monthly membership is not automatically a row without an answer:
+
+- **`per-visit`** — no membership, but a published day-pass or per-class figure. The site
+  is showing its price right now, so it renders normally and is **never muted**. Cold
+  Plunge Austin at $39 a session is priced; calling it "Price coming" would be false.
+- **`not-published`** — we read the page and the gym does not publish. Renders
+  **"Not published"**. "They don't publish it" is itself the answer a price-transparency
+  site owes (§9), and it is a confirmed finding, not a gap.
+- **`awaiting`** — not read yet. The only state where **"Price coming"** is true.
+
+The split is stored as `unpriced_reason` (`null` | `not_published`) and derived into
+`price_state`. Conflating the two would either promise a price that is never coming, or
+imply we gave up on one nobody has tried.
+
+Both unpriced states render **muted, with no price block at all** — never `$—`, which
+reads as an error rather than an absence — and **cannot be added to compare**, with a
+disabled control carrying a title that says why. A missing checkbox looks like a bug; a
+disabled one explains itself.
+
+On the map, `not-published` draws the dashed "Call" bubble and **`awaiting` draws a
+label-free hollow marker**: "Call" is an instruction, and it is only honest where calling
+would actually get you a price. Both stay fully opaque and clickable in both display
+modes — **every drawn pin is clickable** has no exceptions (§9).
+
+Unpriced rows carry **no `all_in`, no tier, and no per-tab figure**, so they are excluded
+from region medians, price bands and any "from $X" copy by construction rather than by a
+filter someone has to remember. Sorting is **tab-relative**: a gym with a membership but no
+published class count has a figure on Memberships and none on Classes, and sinks to the
+bottom of the Classes tab accordingly.
 
 **`chain` rules:** a kebab-case brand key shared by every location of the same chain,
 `null` for an independent. It does three things and deliberately no more:

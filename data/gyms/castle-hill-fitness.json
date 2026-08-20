@@ -55,6 +55,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Confirmed by email from staff on 2026-08-19, superseding an older seed figure. One-day, seven-day and 31-day passes are available with no agreement; those rates are on the studio's memberships à-la-carte page and are not yet recorded here.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

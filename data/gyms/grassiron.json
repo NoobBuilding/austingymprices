@@ -119,6 +119,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Grassiron publishes class and personal-training rates only — there is no open-gym membership, so the headline figure is its cheapest class membership. 60-minute personal training starts at $299/mo; single sessions are $65 (30-min) and $80 (60-min).",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

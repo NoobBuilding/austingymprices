@@ -33,6 +33,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Branch row, price not sourced. F45 studios quote through a booking widget rather than publishing a rate, and rates are set per studio — the Hilton Downtown club gives no figure either. Needs a human read per club.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

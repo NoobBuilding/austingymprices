@@ -68,6 +68,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Sold in class passes rather than memberships: $35 for one, $158 for five, $265 for ten and $420 for twenty.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

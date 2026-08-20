@@ -56,6 +56,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Drop-in classes are donation-based, with $15 suggested.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

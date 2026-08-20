@@ -74,7 +74,9 @@ const detailLabel =
         ? `See all ${packCount} passes + fees →`
         : packCount === 1
           ? 'See full breakdown →'
-          : 'See what we know →';
+          : gym.price_state === 'awaiting'
+            ? 'See location & status →'
+            : 'See what we know →';
 
 // ── Classes tab: the three elements of the expanded state ──────────────────
 // (a) the receipt — the winning candidate behind "from $X/class", read from
@@ -102,7 +104,7 @@ const classIncluded =
 ---
 
 <article
-  class="card"
+  class={`card ${gym.price_state === "awaiting" || gym.price_state === "not-published" ? "card-unpriced" : ""}`}
   data-slug={gym.slug}
   data-region={gym.region}
   data-category={gym.category}
@@ -113,6 +115,7 @@ const classIncluded =
   data-classpass={gym.accepts_classpass === true ? 'true' : 'false'}
   data-pool={gym.pool === true ? 'true' : 'false'}
   data-plancount={gym.plans.length}
+  data-pricestate={gym.price_state}
   data-access={gym.access_model}
   data-chain={gym.chain ?? ''}
   data-perclass={gym.from_per_class ?? ''}
@@ -170,8 +173,10 @@ const classIncluded =
               <span class="n">{money(gym.all_in_monthly)}{gym.all_in_is_floor ? '+' : ''}</span>
               <span class="u">/mo all-in</span>
             </>
+          ) : gym.price_state === 'awaiting' ? (
+            <span class="pending">Price coming</span>
           ) : (
-            <span class="callfor">Call for pricing</span>
+            <span class="callfor">Not published</span>
           )}
         </div>
         {/* Classes tab: the comparable unit is the price of ONE CLASS. Where
@@ -420,10 +425,22 @@ const classIncluded =
   {compare && (
     <div class="cmp-row" hidden>
       <label class="cmp-pick">
+        {/* An unpriced row has nothing to compare. The control is disabled
+            rather than hidden so the reason is discoverable — a missing
+            checkbox looks like a bug, a disabled one with a title explains
+            itself. */}
         <input
           type="checkbox"
           class="cmp-box"
           data-slug={gym.slug}
+          disabled={gym.price_state === 'awaiting' || gym.price_state === 'not-published'}
+          title={
+            gym.price_state === 'awaiting'
+              ? 'No price listed yet — nothing to compare'
+              : gym.price_state === 'not-published'
+                ? 'This gym does not publish its prices — nothing to compare'
+                : undefined
+          }
           aria-label={`Compare ${gym.name}`}
         />
         {/* The word is the whole point: a bare checkbox is mystery UI.
@@ -506,6 +523,11 @@ const classIncluded =
   }
 
   /* At the cap, the remaining boxes read as unavailable rather than broken. */
+  .cmp-pick:has(.cmp-box:disabled) {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
   .cmp-pick.capped {
     opacity: 0.18;
     cursor: not-allowed;
@@ -629,6 +651,28 @@ const classIncluded =
     font-size: 0.72rem;
     color: var(--ink-soft);
     font-weight: 500;
+  }
+
+  /* Unpriced rows read as a DIFFERENT KIND of row, not as a broken priced one.
+     Muted surface and softened text, and crucially no price block at all — no
+     "$—", which reads as an error rather than as an absence. */
+  .card-unpriced {
+    background: var(--surface-sunk);
+    border-color: var(--line);
+  }
+
+  .card-unpriced .card-name {
+    color: var(--ink-soft);
+  }
+
+  .pending {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--ink-faint);
+    display: block;
+    max-width: 7.5em;
+    line-height: 1.25;
   }
 
   .callfor {

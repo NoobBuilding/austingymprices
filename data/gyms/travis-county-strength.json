@@ -48,6 +48,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "First class is $20.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

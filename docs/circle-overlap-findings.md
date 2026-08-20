@@ -1,4 +1,15 @@
-# Circle overlap — findings only
+# Circle overlap — CLOSED
+
+> **VERDICT (owner, 2026-08-20): the stored field wins.** A gym's region is its stored
+> value; circles are enumeration machinery only and never determine a listed gym's region
+> or any user-facing number. Region medians compute from the stored field exclusively. The
+> 12 disagreement pins keep their stored regions — geometry that would move
+> `hyde-park-gym` out of Hyde Park refutes itself. The nearest-circle rule remains for
+> candidate binning during triage, with its distortion recorded in the harvest docs.
+> Codified in CLAUDE.md §3. **No code changes were needed — the shipped behaviour already
+> matched the rule; it was simply undocumented.**
+
+# Circle overlap — findings
 
 Characterization of the issue parked after Wave 2. **No fixes here, nothing changed.**
 The question was: how many pins sit inside more than one circle, what rule breaks the

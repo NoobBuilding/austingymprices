@@ -288,15 +288,22 @@ export function initMap(container, pins, getState, regionBounds = []) {
     }
 
     for (const p of quiet) {
+      // "Call" is an instruction, and it is only true where we have CONFIRMED
+      // the gym does not publish. A row we simply have not read yet gets a
+      // hollow marker and no label — promising a phone call would answer a
+      // question with a chore.
+      const awaiting = p.pin.state === 'awaiting';
       const cls = [
         'pin',
         'callfor',
+        awaiting ? 'pending' : '',
         selected === p.pin.slug ? 'active' : '',
       ]
         .filter(Boolean)
         .join(' ');
       placed.push({
-        label: 'Call',
+        label: awaiting ? '' : 'Call',
+        title: awaiting ? `${p.pin.name} — price not yet listed` : undefined,
         cls,
         latlng: [p.pin.lat, p.pin.lng],
         point: p.point,

@@ -44,6 +44,7 @@
   "day_pass_alternative": "A week of unlimited classes is $60 — under three drop-ins.",
   "day_pass_detail": [],
   "pricing_note": "Publishes drop-in rates only — $25 a class or $60 a week. No membership rate appears anywhere on the site, so no membership row is carried.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

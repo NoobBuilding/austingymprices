@@ -94,6 +94,26 @@ function decorateGym(gym) {
     all_in_monthly: allIn,
     first_year_total: defaultPlan?.first_year_total ?? null,
     price_tier: priceTier(allIn),
+    // Three unpriced states, not one. A row with no monthly membership is not
+    // automatically a row with no answer:
+    //   'per-visit'     — no membership, but a real published day-pass or
+    //                     per-class figure. The site is showing its price right
+    //                     now; calling it "Price coming" would be false.
+    //   'not-published' — we looked and the gym does not publish. "They don't
+    //                     publish it" IS the answer a price-transparency site
+    //                     owes (§9), and promising a price that is never coming
+    //                     would be worse than the silence.
+    //   'awaiting'      — not read yet. This is the only state where "Price
+    //                     coming" is true.
+    price_state: hasPrice
+      ? 'priced'
+      : gym.day_pass !== null && gym.day_pass !== undefined
+        ? 'per-visit'
+        : fromPerClass(gym) !== null
+          ? 'per-visit'
+          : gym.unpriced_reason === 'not_published'
+            ? 'not-published'
+            : 'awaiting',
     all_in_is_floor: allInIsFloor,
     unstated_fees: unstatedFees,
     // Classes-tab economics. Null for facility gyms and for any studio whose

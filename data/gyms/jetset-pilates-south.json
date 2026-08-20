@@ -119,6 +119,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Intro offers ($17 single class, $35 two-class BOGO, $49 unlimited week) are first-timer promotions, not standing rates. Rates match the Downtown studio exactly.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

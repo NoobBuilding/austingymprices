@@ -557,17 +557,60 @@ api.render();
 // paragraphs earlier, and passed only while nothing happened to merge.
 check(
   bubbles()
-    .filter((b) => b.label !== 'Call')
+    // Unpriced markers are excluded by definition: 'Call' where the gym is
+    // confirmed not to publish, and an EMPTY label where we have not read it
+    // yet. The rule under test is about bubbles that show a price.
+    .filter((b) => b.label !== 'Call' && b.label !== '')
     .every((b) => /^\$[\d.]+$/.test(b.label) || /^\$[\d.]+ \+\d+$/.test(b.label)),
   'every priced bubble is a plain price or a "cheapest +N" — never a range',
   bubbles().find(
-    (b) => b.label !== 'Call' && !/^\$[\d.]+$/.test(b.label) && !/^\$[\d.]+ \+\d+$/.test(b.label),
+    (b) =>
+      b.label !== 'Call' &&
+      b.label !== '' &&
+      !/^\$[\d.]+$/.test(b.label) &&
+      !/^\$[\d.]+ \+\d+$/.test(b.label),
   )?.label ?? 'all conform',
 );
 check(
   !bubbles().some((b) => /[–-]\s*\$?\d/.test(b.label.replace(/^\$[\d.]+/, ''))),
   'and no bubble label contains a range separator',
 );
+
+// ── Unpriced pins ────────────────────────────────────────────────────────
+// Distinct, label-free where we have not read the gym, and clickable in BOTH
+// display modes — "every drawn pin is clickable" has no exceptions.
+console.log('\nUnpriced pins (both display modes)');
+{
+  for (const mode of ['prices', 'dots']) {
+    api.setDisplay(mode);
+    api.render();
+    const drawn = bubbles();
+    const pending = drawn.filter((b) => b.cls.includes('pending'));
+    const call = drawn.filter((b) => b.label === 'Call');
+    check(
+      pending.length > 0,
+      `${mode}: not-yet-read gyms draw a distinct pending marker`,
+      `${pending.length} pending, ${call.length} "Call"`,
+    );
+    check(
+      pending.every((b) => b.label === '' || b.label === undefined),
+      `${mode}: and carry NO price label — "Call" would be advice we cannot stand behind`,
+      pending.map((b) => b.label).filter(Boolean).slice(0, 2).join(', '),
+    );
+    check(
+      pending.every((b) => b.cls.includes('callfor')),
+      `${mode}: they keep the unpriced styling hook, so they read as secondary`,
+    );
+  }
+  api.setDisplay('prices');
+  api.render();
+  // The invariant that outranks all of this.
+  const els = [...win.document.querySelectorAll(PIN_SEL)];
+  check(
+    els.length > 0 && els.every((el) => Number(win.getComputedStyle(el).opacity || 1) >= 0.9),
+    'every drawn pin — priced or not — is fully opaque and clickable',
+  );
+}
 
 // Selecting from the list.
 // The camera half of the viewport-stability class (see check-tabs.mjs). §9 lets

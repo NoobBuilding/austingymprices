@@ -68,6 +68,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "The Initiate tier ($79/mo, three-month commitment, up to three classes) is an introductory rate for new members only and renews at the Enchanter tier.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

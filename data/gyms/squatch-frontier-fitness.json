@@ -73,6 +73,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": null,
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

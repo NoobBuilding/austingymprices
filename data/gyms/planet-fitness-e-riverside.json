@@ -90,6 +90,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Prices not published — every tier was in promotional state when checked. Awaiting a post-promo recheck before any number is shown as the standing rate.",
+  "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []
 }

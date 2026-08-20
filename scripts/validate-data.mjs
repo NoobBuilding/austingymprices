@@ -32,6 +32,13 @@ const RECOVERY_AMENITIES = ['sauna', 'steam_room', 'cold_plunge', 'pool'];
 // plan it sells — that is not a "limited access" plan, it is a limited
 // membership base, and overloading `restricted` would have made the plan table
 // claim something false about the product.
+// Why a row has no price. `not_published` is a CONFIRMED negative — we looked
+// and the gym does not publish, which is itself the answer a price-transparency
+// site owes ("they don't publish it"). Absent/null means we simply have not
+// read it yet, which renders as "Price coming". Conflating the two would either
+// promise a price that is never coming, or imply we gave up on one we have not
+// tried.
+const UNPRICED_REASON = new Set(['not_published']);
 const ELIGIBILITY = new Set(['women_only', 'men_only', 'students', 'seniors', 'members_only']);
 const BILLING_PERIODS = new Set(['monthly', '4-week', 'weekly']);
 const RESTRICTED = new Set([
@@ -98,6 +105,15 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
   if (!('chain' in gym)) fail('chain is missing (use null for an independent gym)');
   else if (gym.chain !== null && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(gym.chain)) {
     fail(`chain "${gym.chain}" must be a kebab-case key or null`);
+  }
+
+  if (gym.unpriced_reason !== null && gym.unpriced_reason !== undefined && !UNPRICED_REASON.has(gym.unpriced_reason)) {
+    fail(`unpriced_reason "${gym.unpriced_reason}" is not in the enum`);
+  }
+  // A gym that HAS a price cannot also claim it is unpublished.
+  if (gym.unpriced_reason === 'not_published' && (gym.plans ?? []).some(
+    (p) => p.monthly !== null && p.monthly !== undefined && p.restricted === null)) {
+    fail('unpriced_reason is "not_published" but the gym carries a buyable priced plan');
   }
 
   if (!('eligibility' in gym)) fail('eligibility is missing (use null when open to any adult)');

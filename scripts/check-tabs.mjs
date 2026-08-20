@@ -171,6 +171,89 @@ check(
   'a folded gym always has a visible sibling standing for it — collapse never swallows a row',
 );
 
+// ── Unpriced rows are a distinct, honest state ───────────────────────────
+// The friends-and-family gate: a tap must produce an answer, and where there is
+// no answer the row must say which KIND of no-answer it is.
+console.log('\nUnpriced rows (distinct state, all four tabs)');
+{
+  const all = $('.card');
+  const byState = (st) => all.filter((c) => c.dataset.pricestate === st);
+  check(byState('priced').length > 0, 'priced rows exist', `${byState('priced').length}`);
+  check(
+    byState('awaiting').length > 0 && byState('not-published').length > 0,
+    'the two unpriced states are BOTH populated — they are not collapsed into one',
+    `awaiting ${byState('awaiting').length}, not-published ${byState('not-published').length}`,
+  );
+  // A per-visit row publishes a real figure. Marking it "Price coming" would be
+  // false, so it must never wear the unpriced treatment.
+  check(
+    byState('per-visit').every((c) => !c.classList.contains('card-unpriced')),
+    'a per-visit row is NOT muted — it has a price and the site is showing it',
+    `${byState('per-visit').length} per-visit`,
+  );
+  check(
+    byState('awaiting').every((c) => c.classList.contains('card-unpriced')) &&
+      byState('not-published').every((c) => c.classList.contains('card-unpriced')),
+    'both unpriced states carry the muted treatment',
+  );
+  check(
+    byState('awaiting').every((c) => c.querySelector('.pending')) &&
+      byState('awaiting').every((c) => !c.querySelector('.price-membership .n')),
+    'an awaiting row shows "Price coming" and NO price number — never a "$—"',
+  );
+  check(
+    byState('not-published').every((c) => c.querySelector('.callfor')),
+    'a confirmed-unpublished row says so instead of promising a price',
+  );
+
+  // Compare is meaningless without a figure.
+  check(
+    byState('awaiting').concat(byState('not-published'))
+      .every((c) => c.querySelector('.cmp-box')?.disabled === true),
+    'unpriced rows cannot be added to compare',
+  );
+  check(
+    byState('priced').every((c) => c.querySelector('.cmp-box')?.disabled === false),
+    'and priced rows still can',
+  );
+
+  // Price bands must never match a row with no price.
+  clickTab('membership');
+  for (const tier of ['1', '2', '3']) {
+    const btn = $('.tier').find((b) => b.dataset.tier === tier);
+    btn.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    const shown = $('.card').filter((c) => !c.hidden);
+    check(
+      shown.every((c) => c.dataset.pricestate === 'priced'),
+      `price band ${tier} matches ONLY priced rows`,
+      shown.filter((c) => c.dataset.pricestate !== 'priced').map((c) => c.dataset.slug).slice(0, 3).join(', '),
+    );
+  }
+  $('.tier').find((b) => b.dataset.tier === 'all')
+    .dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+
+  // Unpriced sorts last — and "unpriced" is TAB-RELATIVE. A gym with a monthly
+  // membership but no published class count has no figure on the Classes tab,
+  // so it belongs at the bottom there while sitting near the top on
+  // Memberships. Asserting the membership notion of priced on every tab was
+  // comparing the wrong thing.
+  const KEY = { membership: 'allin', recovery: 'allin', classes: 'perclass', daypass: 'daypass' };
+  for (const mode of ['membership', 'classes', 'daypass', 'recovery']) {
+    clickTab(mode);
+    const has = $('.card')
+      .filter((c) => !c.hidden)
+      .map((c) => c.dataset[KEY[mode]] !== '' && c.dataset[KEY[mode]] !== undefined);
+    const lastWith = has.lastIndexOf(true);
+    const firstWithout = has.indexOf(false);
+    check(
+      firstWithout === -1 || lastWith === -1 || firstWithout > lastWith,
+      `on the ${mode} tab, rows with no figure FOR THAT TAB sort below rows that have one`,
+      `last with a figure at ${lastWith}, first without at ${firstWithout}`,
+    );
+  }
+  clickTab('membership');
+}
+
 // ── Detail CTA ───────────────────────────────────────────────────────────
 // The link out must exist on EVERY expanded card, on every tab, carry a count
 // that matches the row, and never borrow a colour that means something else.

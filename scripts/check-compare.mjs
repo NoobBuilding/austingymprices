@@ -389,6 +389,49 @@ check(
 );
 
 
+
+// ── Unpriced rows never touch a derived number ───────────────────────────
+// The median-contamination class the circle findings flagged: a row with no
+// price must not appear in a median, a range, or a "from $X" claim.
+console.log('\nUnpriced rows are excluded from derived figures');
+{
+  const cards = [...indexDoc.querySelectorAll('.card')];
+  const unpriced = cards.filter(
+    (c) => c.dataset.pricestate === 'awaiting' || c.dataset.pricestate === 'not-published',
+  );
+  check(unpriced.length > 0, 'there are unpriced rows to exclude', `${unpriced.length}`);
+  check(
+    unpriced.every((c) => (c.dataset.allin ?? '') === ''),
+    'no unpriced row carries an all-in figure — nothing for a median to pick up',
+    unpriced.filter((c) => c.dataset.allin).map((c) => c.dataset.slug).slice(0, 3).join(', '),
+  );
+  check(
+    unpriced.every((c) => (c.dataset.tier ?? '') === ''),
+    'and none carries a price tier, so no band can match it',
+  );
+  // The region pages state a median in prose. It must be computed from priced
+  // rows only, which is checkable against the rendered figure.
+  const regionHtml = readFileSync('dist/regions/hyde-park/index.html', 'utf8');
+  const stated = regionHtml.match(/median[^$]{0,40}\$(\d+)/i);
+  check(!!stated, 'the region page states a median', stated?.[1] ?? 'none found');
+  if (stated) {
+    const priced = cards
+      .filter((c) => c.dataset.region === 'hyde-park' && c.dataset.allin)
+      .map((c) => Number(c.dataset.allin))
+      .sort((a, b) => a - b);
+    const mid = Math.floor(priced.length / 2);
+    const expected =
+      priced.length % 2 === 0
+        ? Math.round((priced[mid - 1] + priced[mid]) / 2)
+        : priced[mid];
+    check(
+      Number(stated[1]) === expected,
+      'and it matches a median computed from PRICED rows only',
+      `stated $${stated[1]}, priced-only $${expected} across ${priced.length} gyms`,
+    );
+  }
+}
+
 console.log(
   failures.length === 0 ? '\nOK — compare view behaves.' : `\n${failures.length} check(s) FAILED.`,
 );

@@ -35,6 +35,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Veteran-owned. The only rate published is $180/mo, stated as a \"limited time special\" following a $1 week trial — a promotional price with no standing rate behind it, so no figure is carried. First class $10.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

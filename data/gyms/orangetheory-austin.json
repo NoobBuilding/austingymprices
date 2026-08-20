@@ -33,6 +33,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Pricing not published — call the gym. Basic / Elite / Premier tiers vary by studio.",
+  "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []
 }

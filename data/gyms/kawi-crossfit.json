@@ -64,6 +64,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Plans are sold by weekly cadence rather than a monthly class count, so no per-class rate is derived.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

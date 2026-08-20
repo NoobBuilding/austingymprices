@@ -181,6 +181,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "All prices plus tax. Class packs: single class $39 (expires 40 days), 5-pack $175 (45 days), 10-pack $330 (90 days), coach-in-training class $20, Power30 single $23. Read from solidcore.co/membership-perks on 2026-08-19; all three Austin studios price identically.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

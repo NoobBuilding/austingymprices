@@ -18,6 +18,7 @@ const pins = getAllGyms()
     lat: g.lat,
     lng: g.lng,
     allIn: g.all_in_monthly,
+    state: g.price_state,
     dayPass: g.day_pass,
     perClass: g.from_per_class,
     tier: g.price_tier,
@@ -101,6 +102,22 @@ const pins = getAllGyms()
     background: var(--ink);
     border-color: var(--ink);
     color: #fff;
+  }
+
+  /* Not yet read: a hollow marker with NO label at all. "Call" would be an
+     instruction we cannot stand behind — calling does not help when the reason
+     there is no price is that nobody has looked yet. Smaller than a price
+     bubble, and still clickable like every drawn pin. */
+  :global(.pin.pending) {
+    background: transparent;
+    border: 1.5px dashed var(--dash);
+    box-shadow: none;
+    min-width: 0;
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0;
   }
 
   /* Unpriced: visible but secondary. */

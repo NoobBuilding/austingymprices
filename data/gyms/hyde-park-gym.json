@@ -78,6 +78,7 @@
     "All rates exclude sales tax"
   ],
   "pricing_note": "Also offers a 10-visit punchcard for $90 (valid 6 months) and a 1-week pass for $39. All prices exclude sales tax.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

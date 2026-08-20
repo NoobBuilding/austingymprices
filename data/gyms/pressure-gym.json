@@ -62,6 +62,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "First class is free and four classes for $65 is a limited-time introductory offer, not a standing rate.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

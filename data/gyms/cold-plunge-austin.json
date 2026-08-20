@@ -39,6 +39,7 @@
     "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
   ],
   "pricing_note": "Single sessions are published — $39 for non-members, $25 for members — but membership rates are not: the page says packages and memberships are available and directs you to call.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

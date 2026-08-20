@@ -89,6 +89,7 @@
     "Rental gear is not included in any day pass"
   ],
   "pricing_note": "Day passes: $25 adult, $22 young adult, $18 youth. Rental gear is not included in a day pass.",
+  "unpriced_reason": null,
   "stale": false,
   "price_history": []
 }

@@ -1077,7 +1077,15 @@ const description =
       for (const box of boxes) {
         const card = box.closest('.card');
         const wrongModel = Boolean(model) && card?.dataset.access !== model;
-        box.disabled = (full && !box.checked) || (wrongModel && !box.checked);
+        // An unpriced row has nothing to compare, and that is true regardless of
+        // cap or model. This assignment OVERWRITES the server-rendered disabled
+        // attribute, so leaving the state out here silently re-enabled every
+        // unpriced checkbox the moment the script booted — the markup was right
+        // and the island undid it.
+        const noPrice =
+          card?.dataset.pricestate === 'awaiting' ||
+          card?.dataset.pricestate === 'not-published';
+        box.disabled = noPrice || (full && !box.checked) || (wrongModel && !box.checked);
         box.closest('.cmp-pick')?.classList.toggle('capped', box.disabled);
         const row = box.closest('.cmp-row');
         if (row) row.dataset.reason = wrongModel && !box.checked ? 'model' : '';
