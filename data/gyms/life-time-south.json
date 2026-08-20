@@ -22,6 +22,7 @@
   "sauna": null,
   "steam_room": null,
   "cold_plunge": null,
+  "pool": true,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",

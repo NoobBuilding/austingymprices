@@ -171,6 +171,37 @@ check(
   'a folded gym always has a visible sibling standing for it — collapse never swallows a row',
 );
 
+// ── Pool chip ────────────────────────────────────────────────────────────
+console.log('\nPool filter (gated, confirmed-only)');
+{
+  const POOL_CHIP_MIN = 5;
+  const sourced = $('.card').filter((c) => c.dataset.pool === 'true');
+  const chip = window.document.getElementById('pool');
+  check(
+    !!chip === sourced.length >= POOL_CHIP_MIN,
+    `the Pool chip renders iff >= ${POOL_CHIP_MIN} gyms have a SOURCED pool`,
+    `${sourced.length} sourced, chip ${chip ? 'present' : 'absent'}`,
+  );
+  if (chip) {
+    clickTab('membership');
+    chip.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    const shown = $('.card').filter((c) => !c.hidden);
+    check(shown.length > 0, 'the chip narrows to a non-empty list', `${shown.length} gyms`);
+    // The point of the tri-state: `null` is unsourced, and unsourced is not a
+    // negative — but it is not a positive either, so it must not match.
+    check(
+      shown.every((c) => c.dataset.pool === 'true'),
+      'and every gym shown has a CONFIRMED pool — unsourced never matches',
+      shown.filter((c) => c.dataset.pool !== 'true').map((c) => c.dataset.slug).join(', '),
+    );
+    chip.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    check(
+      $('.card').filter((c) => !c.hidden).length > shown.length,
+      'and switching it off widens the list again',
+    );
+  }
+}
+
 // ── Viewport stability ───────────────────────────────────────────────────
 // The class of assertion this suite was missing entirely. It proved selection
 // HAPPENED — the card highlights, the map hears about it — and never that the

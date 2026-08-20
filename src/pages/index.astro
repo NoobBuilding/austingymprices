@@ -28,6 +28,14 @@ const showClasspassChip = classpassCount >= CLASSPASS_CHIP_MIN;
 // a click and answers with nothing. Below the threshold the category
 // accumulates invisibly and the tab does not render at all; it appears on its
 // own the day the sixth listing lands, with no code change.
+// Same gate mechanism as the Recovery tab and the ClassPass chip: a filter that
+// cannot narrow the list is a broken control, not a useful one. Pool earns a
+// chip where other amenities do not because it is DECISIVE — a swimmer without
+// a pool has no reason to read the rest of the page.
+const POOL_CHIP_MIN = 5;
+const poolCount = gyms.filter((g) => g.pool === true).length;
+const showPoolChip = poolCount >= POOL_CHIP_MIN;
+
 const RECOVERY_TAB_MIN = 6;
 const recoveryCount = gyms.filter((g) => g.category === 'recovery').length;
 const showRecoveryTab = recoveryCount >= RECOVERY_TAB_MIN;
@@ -112,6 +120,7 @@ const description =
       {showClasspassChip && (
         <button class="pill" id="classpass" aria-pressed="false">ClassPass</button>
       )}
+      {showPoolChip && <button class="pill" id="pool" aria-pressed="false">Pool</button>}
       <label class="visually-hidden" for="activity">Activity</label>
       <select class="pill" id="activity">
         <option value="all">All activities</option>
@@ -506,10 +515,11 @@ const description =
     const showAllCount = document.getElementById('show-all-n');
     // Only present once enough gyms are confirmed; every use is null-guarded.
     const classpassBtn = document.getElementById('classpass');
+    const poolBtn = document.getElementById('pool');
 
     // ONE piece of selection state. Both the list and the map render from it;
     // neither keeps its own copy.
-    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', classpass: false, selected: null, openChains: new Set() };
+    const state = { region: 'all', tier: 'all', noContract: false, q: '', activity: 'all', sort: 'cheapest', mode: 'membership', classpass: false, pool: false, selected: null, openChains: new Set() };
 
     // Slugs the map should draw. Recomputed by apply(); held here so
     // currentState() can hand it to a map that boots later.
@@ -578,6 +588,7 @@ const description =
     const isUnfiltered = () =>
       state.region === 'all' &&
       state.tier === 'all' &&
+      !state.pool &&
       state.activity === 'all' &&
       !state.noContract &&
       !state.classpass &&
@@ -643,6 +654,11 @@ const description =
           (state.tier === 'all' || card.dataset[tierAttr] === state.tier) &&
           (!state.noContract || card.dataset.nocontract === 'true') &&
           (!state.classpass || card.dataset.classpass === 'true') &&
+          // Confirmed pools only. `null` (unsourced) never matches — the same
+          // rule as the ClassPass chip: absence of data is not a negative, but
+          // it is not a positive either, so an unsourced gym simply does not
+          // answer this question.
+          (!state.pool || card.dataset.pool === 'true') &&
           (state.activity === 'all' || card.dataset.category === state.activity) &&
           matchesQuery(card.dataset.search || '', card.dataset.searchCompact || '', state.q) &&
           (state.mode !== 'daypass' || price !== null);
@@ -831,6 +847,7 @@ const description =
       state.q = '';
       state.activity = 'all';
       state.classpass = false;
+      state.pool = false;
       document.querySelectorAll('#regions .chip').forEach((c) => {
         c.classList.toggle('active', c.dataset.region === 'all');
       });
@@ -841,6 +858,8 @@ const description =
       noContractBtn?.setAttribute('aria-pressed', 'false');
       classpassBtn?.classList.remove('active');
       classpassBtn?.setAttribute('aria-pressed', 'false');
+      poolBtn?.classList.remove('active');
+      poolBtn?.setAttribute('aria-pressed', 'false');
       if (search) search.value = '';
       if (activity) activity.value = 'all';
       apply();
@@ -860,6 +879,13 @@ const description =
       state.classpass = !state.classpass;
       classpassBtn.classList.toggle('active', state.classpass);
       classpassBtn.setAttribute('aria-pressed', String(state.classpass));
+      apply();
+    });
+
+    poolBtn?.addEventListener('click', () => {
+      state.pool = !state.pool;
+      poolBtn.classList.toggle('active', state.pool);
+      poolBtn.setAttribute('aria-pressed', String(state.pool));
       apply();
     });
 

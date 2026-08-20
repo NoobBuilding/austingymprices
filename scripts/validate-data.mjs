@@ -22,7 +22,11 @@ const CATEGORIES = new Set([
 // accepts_classpass is: `true` is confirmed from the gym's own materials,
 // `false` is a confirmed no, `null` is unconfirmed. Silence is not a no, and
 // neither a photo nor a review is a source.
-const RECOVERY_AMENITIES = ['sauna', 'steam_room', 'cold_plunge'];
+// `pool` joins the same tri-state family. It is the amenity that most often
+// decides a membership outright — a swimmer with no pool has no reason to read
+// the rest of the page — which is why it earns a field and a filter chip while
+// "has a squat rack" does not.
+const RECOVERY_AMENITIES = ['sauna', 'steam_room', 'cold_plunge', 'pool'];
 // WHO may join, which is a different question from `restricted` (what a plan
 // buys you). Austin Women's Boxing Club is open to any adult woman on every
 // plan it sells — that is not a "limited access" plan, it is a limited
@@ -258,6 +262,49 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
             `"No contract" badge) but the gym has no verified_date to back it`,
         );
       }
+      // A per-session figure quoted in a note must RECONCILE with the plan
+      // math sitting beside it. EvolvE's card said "six sessions a month, $22 a
+      // session" against a $129 plan — 6 x 22 = 132, and the real figure is
+      // $21.50. Their page rounds up; ours repeated the rounding as if it were
+      // the arithmetic.
+      //
+      // This is the OTL unit bug's sibling. The per-class receipt works because
+      // it is FORCED to show its division: a derivation that must display
+      // cannot quietly disagree with itself. A note is free prose, so the same
+      // discipline has to be imposed from outside.
+      //
+      // Where classes_per_period exists the figure is checkable, and one of the
+      // quoted figures must equal monthly / classes_per_period. A second figure
+      // may sit beside it — the gym's own rounded gloss is worth reporting —
+      // but only if the real one is there too. Where no count is published the
+      // figure cannot be checked at all, so it must be ATTRIBUTED rather than
+      // asserted: said, states, quotes, advertises, claims, rounds.
+      const PER_SESSION = /\$\s?(\d+(?:\.\d{1,2})?)\s*(?:\||\/|\s)?\s*(?:a|per)?\s*\|?\s*(?:session|class)\b/gi;
+      const ATTRIBUTED = /\b(states?|stated|quotes?|advertis\w*|claims?|says?|round\w*|assumes?)\b/i;
+      for (const plan of plans) {
+        const note = plan.note ?? '';
+        const quoted = [...note.matchAll(PER_SESSION)].map((m) => Number(m[1]));
+        if (quoted.length === 0) continue;
+        const cpp = plan.classes_per_period;
+        if (typeof cpp === 'number' && cpp > 0 && typeof plan.monthly === 'number') {
+          const derived = plan.monthly / cpp;
+          const ok = quoted.some((q) => Math.abs(q - derived) < 0.005);
+          if (!ok) {
+            fail(
+              `plan "${plan.name}" note quotes ${quoted.map((q) => `$${q}`).join(', ')} per session ` +
+                `but $${plan.monthly} / ${cpp} = $${derived.toFixed(2)} — the note must show the ` +
+                `figure the plan math actually produces`,
+            );
+          }
+        } else if (!ATTRIBUTED.test(note)) {
+          fail(
+            `plan "${plan.name}" note quotes a per-session figure with no classes_per_period to ` +
+              `check it against, and does not attribute it to the gym — record the session count ` +
+              `or say whose figure it is`,
+          );
+        }
+      }
+
       // Fees carry the §3 distinction, and it is a real one: `0` means the page
       // says the fee is zero, `null` means the page does not say. A SOURCED
       // ZERO is always legal.
