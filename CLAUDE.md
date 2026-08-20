@@ -21,8 +21,9 @@ plus a side-by-side compare view.**
 starter spec, not a census. A Google Places sweep of the region bounds found **381
 fitness businesses, 294 of them unlisted**, of which **140 publish a price we can
 source**. There are **6** regions (the seventh was the `all` filter chip being
-miscounted). The site now stands at **49 gyms, 31 with confirmed prices**, and the
-ambition is ~100 listed.
+miscounted). The site now stands at **51 gyms, 35 with confirmed prices**, and the
+ambition is ~100 listed. **114 more sourceable businesses are already identified** and
+awaiting owner triage (`docs/discovery-triage.md`).
 
 ~~Superseded: "class-pack pricing for boutique studios is out of v1."~~ The incoming
 inventory is heavily class businesses, and listing "$130/mo for 4 classes" beside
@@ -49,6 +50,11 @@ silently dropped):
   at $999/$1498, no membership) and Generator Athlete Lab (a $65 assessment and
   recovery passes). Listing them would put a $124.88/session rate beside F45 at
   $23/class.
+- **Gone dark, or never locatable.** FeV Iron Vault (site entirely down, no confirmed
+  address, possibly closed — keeps a recheck condition, so a live site puts it back in
+  the pipeline) and Rumble Boxing South Austin (only an intro offer published, and the
+  studio the probe found is Southpark Meadows, outside all six region circles, so the
+  row was carrying a region it had not earned).
 
 ---
 
@@ -520,6 +526,17 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   match once mislabelled 139 ordinary sites with contact-form reCAPTCHA as bot walls,
   which would have written off half the city.
 
+- **Pair probe results to candidates by URL, never by index.** The probe cache is written
+  in the order of the candidate list as it stood at the time; every gym subsequently
+  listed shortens that list, and a later `zip()` silently attaches the wrong result to the
+  wrong gym. It produced "Generator Athlete Lab → crossfituncommon.com" and a count that
+  was wrong by a third. A misattributed price is a wrong price by another route.
+- **Region buckets from discovery are not regions.** `discover.py` assigns a candidate to
+  the nearest *search circle*, and those circles are wide and overlapping — the downtown
+  circle is 4.4km centred on the centroid of our downtown-assigned pins, which sits east
+  of the actual downtown, so East 7th Street and Springdale Road addresses fall into it.
+  The bucket is a search grouping; **a row's real region is settled at geocoding time.**
+
 **Walled site → human transcription.** Where we will not or cannot read a page, the owner
 reads it and transcribes. `docs/price-transcription.md` is the paste-friendly sheet, and
 **a transcribed price carries exactly the same provenance burden as a scraped one**: one
@@ -546,6 +563,8 @@ so it must be the day the page was actually read.
   discovery-report.md       # Places sweep, region-grouped, Downtown first. PROPOSES only
   harvest-queue.md          # probe-confirmed pricing URLs awaiting owner approval
   harvest-findings*.md      # per-gym findings tables awaiting owner review
+  discovery-triage.md       # the sweep split three ways: keeps / needs-judgement / excludes
+  awaiting-classification.md# every unpriced listed gym and what it would take to price it
   recheck-ledger.md         # excluded businesses + the condition to revisit each
   price-transcription.md    # paste-friendly sheet for owner-read (walled) prices
   launch-checklist.md       # the gates, including the launch-day sequence
@@ -682,7 +701,7 @@ what was built.
 
 ### Ledger
 
-**49 gyms listed, 31 with confirmed prices** (as of 2026-08-19). This number goes stale;
+**51 gyms listed, 35 with confirmed prices** (as of 2026-08-20). This number goes stale;
 **the live one comes from asking Claude Code to run `node scripts/launch-check.mjs` and
 report the output** — the owner does not clone the repo or run local commands (§9b).
 That report also gives per-region coverage and the outstanding queues.
@@ -778,8 +797,13 @@ share a mechanism.
      are comparing two gyms at one address); clicking the map background puts it
      away. Zooming in splits the group on its own. A merged bubble containing the
      selection wears the full selected treatment, exactly as a lone pin does.
-     With the current data this merges **nothing at any zoom**, which is the
-     intended outcome and is asserted as such.
+     Merging is asserted as a **proportion, not a count**: at least 80% of drawn
+     pins must show their own price at every zoom. Currently 94% at zoom 11 —
+     two genuinely co-located pairs, Lift ATX with Austin Bouldering Project and
+     Kawi CrossFit with East Austin Athletic Club — and 100% at every other zoom.
+     An earlier version capped merges at one, which was a fact about the day it
+     was written rather than the rule, and it failed the moment the city got
+     denser.
    - **A legend, bottom-right, above the attribution.** The map encodes three
      separate meanings in colour — price tier, "no published price", and
      "selected" — and an unlabelled colour code is a puzzle rather than
@@ -824,9 +848,17 @@ share a mechanism.
      do not get to set the frame.
 ### In flight
 
-- **Discovery cherry-pick.** `docs/discovery-report.md` holds 294 candidates; 140 publish
-  a sourceable price. `docs/harvest-queue.md` holds probe-confirmed pricing URLs awaiting
-  approval. Four of the first seven Downtown finds are still unharvested.
+- **Discovery cherry-pick.** `docs/discovery-report.md` holds the raw 294 candidates.
+  `docs/discovery-triage.md` splits them for review: **92 obvious keeps, 21 needing an
+  owner judgement, 144 obvious excludes** — of which **118 are simply "site reads fine,
+  publishes no price"**, which is the real shape of the long tail. Only 3 are bot walls.
+  **114 distinct sourceable businesses remain unlisted.**
+- **The 18 awaiting gyms are classified** in `docs/awaiting-classification.md` as
+  sourceable-scrapeable / sourceable-human / needs-owner-contact / dead-end. Five are
+  confirmable without owner contact — Studio Three, CorePower, both Gold's clubs and
+  Planet Fitness — all by a **human read** rather than a scraper. That puts the realistic
+  ceiling at **about 40 of 51 with no replies at all**; growth past that comes from the
+  triage, not the awaiting list.
 - **Outreach and transcription.** `docs/price-transcription.md` for walled sites;
   Anytime Fitness, CrossFit Austin and 10th Planet have forms submitted.
 - **Gaps recorded in `docs/recheck-ledger.md`**: Flow Pilates publishes only an intro
