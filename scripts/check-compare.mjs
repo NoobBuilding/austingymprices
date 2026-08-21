@@ -372,6 +372,16 @@ console.log('\nAn unrecognised gyms= says so');
     'arriving with NO selection keeps the neutral message — that is not a mistake',
     empty.text.slice(0, 60));
 
+  // A newline before an inline element is collapsed by the compiler, which
+  // ran two words together on the live page. Cheap to reintroduce, so pinned.
+  for (const [label, r] of [['neutral', empty], ['unrecognised', bogus]]) {
+    check(
+      !/[a-z](?:main list|Pick)/.test(r.text) && / main list /.test(` ${r.text} `),
+      `the ${label} message has a space before "main list"`,
+      r.text.slice(0, 70),
+    );
+  }
+
   const good = boot(`${url0}?gyms=big-tex-gym,crunch-south-austin`);
   check(!good.fallbackShown, 'and a valid comparison shows no fallback at all');
   check(good.cols === 2, 'rendering exactly the gyms it names', `${good.cols} columns`);
