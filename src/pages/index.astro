@@ -72,8 +72,8 @@ const description =
   <section class="hero">
     <h1>Every Austin gym. <em>The real price.</em></h1>
     <p class="sub">
-      Membership prices and fees for gyms across Austin, from each gym's own website.
-      Every gym shows the date its price was last checked.
+      Real all-in prices for every Austin gym — hidden fees included, from each gym's
+      own site, with the date we last checked.
     </p>
 
     <div class="tabs" role="tablist" aria-label="Price type">
@@ -83,10 +83,10 @@ const description =
       {/* Third tab, not a filter: a studio and a facility are not comparable
           per month, so they get separate surfaces with different units. */}
       <button class="tab" data-mode="classes" role="tab" aria-selected="false">
-        Classes &amp; studios
+        <span class="t-long">Classes &amp; studios</span><span class="t-short">Classes</span>
       </button>
       <button class="tab" data-mode="daypass" role="tab" aria-selected="false">
-        Day passes
+        <span class="t-long">Day passes</span><span class="t-short">Passes</span>
       </button>
       {/* Fourth tab, gated. Recovery businesses are facility-model — the same
           all-in math and the same day-pass economics — but a sauna house is
@@ -114,7 +114,11 @@ const description =
       {regions.map((r) => <button class="chip" data-region={r.id}>{r.name}</button>)}
     </div>
 
-    <div class="filters">
+    <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filters" hidden>
+      Filters<span class="fcount" id="filters-count" hidden></span>
+    </button>
+
+    <div class="filters" id="filters">
       {/* Two label sets, one control. The bands differ by tab because the unit
           does: $40-100 a month and $22-32 a class are both "the middle", and
           showing monthly bands over per-class prices would misfilter silently.
@@ -223,6 +227,24 @@ const description =
     gap: 28px;
     margin: 38px 0 16px;
     border-bottom: 1px solid var(--line);
+    /* One line, always. The row scrolls sideways rather than wrapping: a
+       three-line "Classes & studios" reads as a broken layout, and these are
+       the page's primary navigation. Desktop has room for all four and is
+       unaffected — the overflow simply never engages. */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Short labels are phone-only; the long ones are the real names. */
+  .t-short {
+    display: none;
   }
 
   .tab {
@@ -233,6 +255,9 @@ const description =
     color: var(--ink-soft);
     padding: 0 2px 12px;
     border-bottom: 3px solid transparent;
+    /* Never shrink and never break: the row scrolls instead (see .tabs). */
+    flex: none;
+    white-space: nowrap;
   }
 
   .tab.active {
@@ -305,6 +330,45 @@ const description =
     gap: 8px;
     align-items: center;
     margin-top: 20px;
+  }
+
+  /* Phone-only, and revealed by the island rather than the server: with no
+     JavaScript the filter row simply stays open, exactly as it always was, and
+     this button never appears. A control that collapsed something nothing
+     could re-open would be worse than no control at all. */
+  .filters-toggle {
+    display: none;
+    align-items: center;
+    gap: 7px;
+    margin-top: 12px;
+    padding: 9px 15px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: var(--bg);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .filters-toggle[aria-expanded='true'] {
+    border-color: var(--ink-soft);
+  }
+
+  /* The badge states how many filters are ON, so a collapsed row can never
+     hide the fact that the list is being narrowed. */
+  .fcount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--orange);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
   }
 
   .pill {
@@ -534,6 +598,84 @@ const description =
     .count {
       margin-bottom: 8px;
     }
+
+    /* Steps down a size at phone widths. At 390px the display face was setting
+       the H1 to four lines and spending 169px before a single word of content;
+       three lines of a slightly smaller cut says the same thing and leaves the
+       room for a price. Display face, weight, case and colour are untouched. */
+    h1 {
+      font-size: clamp(2rem, 8.2vw, 2.6rem);
+    }
+
+    .t-long {
+      display: none;
+    }
+
+    .t-short {
+      display: inline;
+    }
+
+    .tabs {
+      gap: 20px;
+    }
+
+    /* One scrolling row, not three wrapped ones. The region chips are the
+       primary way into this list on a phone, and a chip that pushed the first
+       price two screens down was costing more than it gave. */
+    .chip-row {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      /* The strip bleeds to both edges so a half-visible chip reads as "more
+         this way" rather than as a clipped mistake. */
+      margin-left: -18px;
+      margin-right: -18px;
+      padding: 2px 18px;
+      scroll-padding-inline: 18px;
+    }
+
+    .chip-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      flex: none;
+    }
+
+    .filters-toggle {
+      display: inline-flex;
+    }
+
+    /* Collapsed by the island on phones. Class-driven rather than a `hidden`
+       attribute so the no-JS state cannot accidentally inherit it. */
+    .filters.collapsed {
+      display: none;
+    }
+
+    /* When it IS open, it opens as ONE scrolling line rather than a three-row
+       block. The toggle keeps the first screen tight; this keeps the disclosed
+       state from undoing that the moment someone taps it. */
+    .filters {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      margin-left: -18px;
+      margin-right: -18px;
+      padding: 2px 18px;
+      scroll-padding-inline: 18px;
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filters .pill {
+      flex: none;
+    }
   }
 </style>
 
@@ -567,6 +709,9 @@ const description =
     const classpassBtn = document.getElementById('classpass');
     const poolBtn = document.getElementById('pool');
     const showersBtn = document.getElementById('showers');
+    const filtersEl = document.getElementById('filters');
+    const filtersToggle = document.getElementById('filters-toggle');
+    const filtersCount = document.getElementById('filters-count');
 
     // ONE piece of selection state. Both the list and the map render from it;
     // neither keeps its own copy.
@@ -645,6 +790,51 @@ const description =
       !state.noContract &&
       !state.classpass &&
       state.q.trim() === '';
+
+    // How many of the COLLAPSIBLE filters are on. Region is excluded on
+    // purpose: it has its own always-visible strip, so counting it here would
+    // badge the toggle for something the collapsed row does not hold.
+    const activeFilterCount = () =>
+      (state.tier === 'all' ? 0 : 1) +
+      (state.activity === 'all' ? 0 : 1) +
+      (state.noContract ? 1 : 0) +
+      (state.classpass ? 1 : 0) +
+      (state.pool ? 1 : 0) +
+      (state.showers ? 1 : 0);
+
+    function syncFilterBadge() {
+      if (!filtersCount) return;
+      const n = activeFilterCount();
+      filtersCount.textContent = String(n);
+      filtersCount.hidden = n === 0;
+    }
+
+    // Keep a selected control inside its own scrolling strip. A chip or tab
+    // that is active but off-screen reads as no selection at all.
+    // Feature-detected, not assumed. A bare window.matchMedia() call threw in
+    // an environment that does not provide it and took the ENTIRE filter island
+    // down with it — every tab, filter and search dead, on a page whose whole
+    // §8 promise is that a JS failure degrades to the static list rather than
+    // breaking it. A missing matchMedia now means "not a phone, no reduced
+    // motion", which is the safe reading in both cases.
+    const mq = (query) =>
+      typeof window.matchMedia === 'function'
+        ? window.matchMedia(query)
+        : { matches: false };
+    const reduceMotion = mq('(prefers-reduced-motion: reduce)');
+    function keepInView(el) {
+      if (!el || typeof el.scrollIntoView !== 'function') return;
+      try {
+        el.scrollIntoView({
+          inline: 'nearest',
+          block: 'nearest',
+          behavior: reduceMotion.matches ? 'auto' : 'smooth',
+        });
+      } catch {
+        // Older engines take no options object; the default is fine.
+        el.scrollIntoView();
+      }
+    }
 
     function applyPagination(visible) {
       // `beyond-fold` is a class, never the `hidden` attribute — the map reads
@@ -841,6 +1031,7 @@ const description =
         for (const card of listed) container.appendChild(card);
       }
 
+      syncFilterBadge();
       if (countEl) {
         countEl.textContent =
           listingCount === shown
@@ -870,6 +1061,7 @@ const description =
       if (!chip) return;
       document.querySelectorAll('#regions .chip').forEach((c) => c.classList.remove('active'));
       chip.classList.add('active');
+      keepInView(chip);
       state.region = chip.dataset.region;
       track('filter_region', state.region);
       apply();
@@ -992,6 +1184,7 @@ const description =
         });
         tab.classList.add('active');
         tab.setAttribute('aria-selected', 'true');
+        keepInView(tab);
         // Set state only; apply() derives all tab-dependent visibility.
         state.mode = tab.dataset.mode;
         track('tab', state.mode);
@@ -1002,6 +1195,38 @@ const description =
         syncPicks();
       });
     });
+
+    // ── Filters collapse (phones only) ───────────────────────────────────
+    // Four tier pills, three amenity chips and two selects wrapped to three
+    // rows at 390px and cost ~130px of the first screen. Behind one button
+    // with a live count they cost ~40px, and the count is what makes the
+    // collapse honest: a narrowed list can never look like a full one.
+    if (filtersEl && filtersToggle) {
+      const phone = mq('(max-width: 560px)');
+      const setCollapsed = (collapsed) => {
+        filtersEl.classList.toggle('collapsed', collapsed);
+        filtersToggle.setAttribute('aria-expanded', String(!collapsed));
+      };
+      const syncToggle = () => {
+        if (phone.matches) {
+          filtersToggle.hidden = false;
+          // Only auto-collapse while nothing is filtering; a reader who has
+          // already narrowed the list should keep seeing what narrowed it.
+          setCollapsed(activeFilterCount() === 0);
+        } else {
+          filtersToggle.hidden = true;
+          setCollapsed(false);
+        }
+      };
+      filtersToggle.addEventListener('click', () => {
+        setCollapsed(!filtersEl.classList.contains('collapsed'));
+      });
+      if (typeof phone.addEventListener === 'function') {
+        phone.addEventListener('change', syncToggle);
+      }
+      syncToggle();
+      syncFilterBadge();
+    }
 
     // Marks the filters live. Purely a signal for humans and for the
     // post-deploy smoke check — nothing renders conditionally on it, so the

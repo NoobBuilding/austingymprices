@@ -105,6 +105,29 @@ const MEASURE = `(() => {
     searchBottom: r('.search') ? Math.round(r('.search').bottom + window.scrollY) : null,
     chipsBottom: r('.chip-row') ? Math.round(r('.chip-row').bottom + window.scrollY) : null,
     filtersBottom: r('.filters') ? Math.round(r('.filters').bottom + window.scrollY) : null,
+    // Rows a control group actually occupies. One distinct top offset = one
+    // line; more than one means it wrapped.
+    tabRows: new Set([...document.querySelectorAll('.tabs .tab')]
+      .map((el) => Math.round(el.getBoundingClientRect().top))).size,
+    chipRows: new Set([...document.querySelectorAll('#regions .chip')]
+      .map((el) => Math.round(el.getBoundingClientRect().top))).size,
+    filterRows: new Set([...document.querySelectorAll('#filters .pill')]
+      .filter((el) => el.getBoundingClientRect().height > 0)
+      .map((el) => Math.round(el.getBoundingClientRect().top))).size,
+    filtersCollapsed: !!document.querySelector('#filters.collapsed'),
+    filtersToggleVisible: (() => {
+      const t = document.getElementById('filters-toggle');
+      return !!t && !t.hidden && t.getBoundingClientRect().height > 0;
+    })(),
+    // The PRICE, not merely the card: a tile whose price is below the fold has
+    // not shown the reader anything they came for.
+    firstPriceTop: (() => {
+      const card = document.querySelector('.card');
+      if (!card) return null;
+      const el = [...card.querySelectorAll('.price')].find((p) => !p.hidden);
+      if (!el) return null;
+      return Math.round(el.getBoundingClientRect().top + window.scrollY);
+    })(),
     subheadLines: (() => {
       const el = document.querySelector('.sub');
       if (!el) return null;
@@ -142,6 +165,7 @@ try {
     await sleep(2500);
     const { result } = await c.send('Runtime.evaluate', { expression: MEASURE, returnByValue: true });
     const m = result.value;
+    if (process.env.FOLD_DEBUG) console.log(JSON.stringify(m, null, 2));
 
     if (process.env.FOLD_SHOT) {
       const shot = await c.send('Page.captureScreenshot', { format: 'png' });
@@ -155,10 +179,63 @@ try {
     console.log(`   H1 ends ${m.h1Bottom} · subhead ends ${m.subBottom} (${m.subheadLines} lines)`);
     console.log(`   tabs ${m.tabsBottom} · search ${m.searchBottom} · chips ${m.chipsBottom} · filters ${m.filtersBottom}`);
     console.log(`   count line ${m.countTop}–${m.countBottom} · first tile starts ${m.firstCardTop}`);
-    const visible = m.firstCardTop < h;
-    const px = h - m.firstCardTop;
-    check(visible, 'the first gym tile is at least partially visible without scrolling',
-      visible ? `${px}px of it is on screen` : `it starts ${-px}px BELOW the fold`);
+    // A missing measurement is a FAILURE, never a pass. `null < 844` is true in
+    // JavaScript, so the earlier form reported success when the selector had
+    // not matched anything at all — an assertion that goes green on absent data
+    // is exactly the shape CLAUDE.md §9b warns about.
+    if (typeof m.firstCardTop !== 'number') {
+      check(false, 'the first gym tile could be measured at all', 'no .card matched — measurement failed');
+    } else {
+      const visible = m.firstCardTop < h;
+      const px = h - m.firstCardTop;
+      check(visible, 'the first gym tile is at least partially visible without scrolling',
+        visible ? `${px}px of it is on screen` : `it starts ${-px}px BELOW the fold`);
+    }
+
+    if (typeof m.firstPriceTop !== 'number') {
+      check(false, "the first card's price could be measured", 'no visible .price matched');
+    } else {
+      const pv = m.firstPriceTop < h;
+      check(pv, "the first card's PRICE is at least partially visible without scrolling",
+        pv ? `price starts at ${m.firstPriceTop}, ${h - m.firstPriceTop}px above the fold`
+           : `price starts at ${m.firstPriceTop}, ${m.firstPriceTop - h}px below`);
+    }
+
+    check(m.tabRows === 1, 'the tab row renders on ONE line', `${m.tabRows} row(s)`);
+    check(m.chipRows === 1, 'the region chips do not wrap', `${m.chipRows} row(s)`);
+    check(
+      m.filtersCollapsed || m.filterRows <= 1,
+      'the filter row does not wrap — collapsed behind its toggle, and one scrolling line when open',
+      m.filtersCollapsed ? 'collapsed' : `${m.filterRows} row(s) when open`,
+    );
+    // The invariant is REACHABILITY, not the presence of a button: filters must
+    // be either on screen or openable. Demanding the toggle unconditionally
+    // asserted the phone's inventory and went red on desktop, where the row is
+    // simply always open — the "suspect the assertion first" shape exactly.
+    check(
+      !m.filtersCollapsed || m.filtersToggleVisible,
+      'the filters are reachable — on screen, or behind a visible toggle',
+      m.filtersCollapsed ? (m.filtersToggleVisible ? 'collapsed, toggle visible' : 'COLLAPSED WITH NO TOGGLE') : 'open',
+    );
+
+    // Open it for real and measure again. Claiming "one line when open"
+    // without opening it would be asserting the comment, not the behaviour.
+    if (m.filtersCollapsed) {
+      const OPEN = `(() => {
+        document.getElementById('filters-toggle').click();
+        const pills = [...document.querySelectorAll('#filters .pill')]
+          .filter((el) => el.getBoundingClientRect().height > 0);
+        return {
+          rows: new Set(pills.map((el) => Math.round(el.getBoundingClientRect().top))).size,
+          pills: pills.length,
+          collapsed: !!document.querySelector('#filters.collapsed'),
+        };
+      })()`;
+      const opened = (await c.send('Runtime.evaluate', { expression: OPEN, returnByValue: true })).result.value;
+      check(!opened.collapsed, 'tapping Filters opens the row', `${opened.pills} controls revealed`);
+      check(opened.rows === 1, 'and it opens as ONE scrolling line, not a wrapped block',
+        `${opened.rows} row(s)`);
+    }
     console.log('');
   }
   c.close();
