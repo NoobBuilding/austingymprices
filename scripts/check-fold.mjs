@@ -143,6 +143,14 @@ try {
     const { result } = await c.send('Runtime.evaluate', { expression: MEASURE, returnByValue: true });
     const m = result.value;
 
+    if (process.env.FOLD_SHOT) {
+      const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+      const { writeFileSync } = await import('node:fs');
+      const out = `${process.env.FOLD_SHOT}-${width}x${h}.png`;
+      writeFileSync(out, Buffer.from(shot.data, 'base64'));
+      console.log(`   screenshot ${out}`);
+    }
+
     console.log(`viewport ${width}x${h}`);
     console.log(`   H1 ends ${m.h1Bottom} · subhead ends ${m.subBottom} (${m.subheadLines} lines)`);
     console.log(`   tabs ${m.tabsBottom} · search ${m.searchBottom} · chips ${m.chipsBottom} · filters ${m.filtersBottom}`);
