@@ -62,3 +62,39 @@ Both were caught by the same signal and are now caught automatically: `npm run v
 fails the build where a source URL names a location the row's own address does not. Run
 against the pre-fix data the guard flags **2 rows across 4 fields** — exactly these two —
 with **no false positives** across the other 19 location-claiming URLs on the site.
+
+## Wave 3 outcomes — Downtown queue (2026-08-21)
+
+### Fake-price findings — recorded, not priced
+
+Each of these was sampled by the discovery probe and read as a candidate price. Each is
+something else entirely. **The probe proposes figures; it does not identify them.**
+
+| Business | Region (re-binned) | The figure | What it actually is | Recheck when |
+|---|---|---|---|---|
+| **Mōtiv Fitness**<br><sub>809 S Lamar Blvd Ste K</sub> | South / SoCo _(bucketed downtown)_ | $3 / $10 / $15 | A **cycling-shoe rental**, a **late-cancellation penalty** and a **no-show penalty**. All three of the figures triage sampled when it classed the row SCRAPEABLE. The $15 first class is an intro offer, not a standing rate | A standing membership or class rate appears |
+| **VITA Well Pilates Studio**<br><sub>78704</sub> | South / SoCo _(bucketed downtown)_ | $5 / $15 | A **cancellation fee** and a **no-show fee**. Both of its sampled figures | A rate page appears |
+| **BE Fit Modern Pilates**<br><sub>South Lamar</sub> | South / SoCo _(bucketed downtown)_ | $25 | A **late-cancellation/no-show fee** for unlimited members | A rate page appears |
+| **STRONG Pilates**<br><sub>717 W 6th St</sub> | Downtown | $39 | A **7-day intro offer**. The standing rate is not published on the club page | A standing rate is published |
+
+### AKT — the location-identity trap, third instance
+
+| Business | Finding | Recheck when |
+|---|---|---|
+| **AKT**<br><sub>78702 · East Austin</sub> | The **$59** the probe found is "2 Weeks Unlimited for $59" **for AKT Brier Creek, Raleigh, North Carolina** — another club's promotion served from a shared brand site reached via an Austin listing. It is both the wrong club and a promo. **The Austin row stays unpriced until a figure identified as Austin's exists.** | An Austin-identified rate is published or read by hand |
+
+This is the same shape as Gold's `/join/` rendering **Gold's Gym Venice, CA**, and as the
+two source-URL defects fixed the day before — Perspire North Lamar carrying **Hutto's**
+card and Restore South Lamar carrying **Round Rock's**. A page reached from a row's own
+listing is not thereby about that row.
+
+### F45 Bull Creek and Kings Village — excluded, likely closed
+
+| Business | Why excluded | Recheck when |
+|---|---|---|
+| **F45 Training Bull Creek Austin**<br><sub>hyde-park</sub> | **Absent from F45's own studio directory.** `f45training.com/bullcreek` is a hard 404; `bullcreekaustin` returns HTTP 200 with an empty shell and no club name — **a soft 404 is a 404**. Every other Austin F45 resolves to a named studio page | The studio reappears in F45's directory, or a club page renders a name and address |
+| **F45 Training Kings Village**<br><sub>the-domain</sub> | Same: no directory entry, and `f45training.com/kingsvillage` returns an empty-shell 200 | Same |
+
+Both were placeholder `awaiting` rows from the branch enumeration and never carried a
+price. Nine of the eleven enumerated Austin F45 studios verified cleanly against the
+directory; these two are the exceptions.

@@ -30,6 +30,20 @@ export const MIN_COMPARE = 2;
  * Anything not in a family is not dropped — it still shows in the gym's own
  * amenity list on its detail page. It simply does not earn a comparison row.
  */
+/**
+ * The five tri-state booleans from §3, as compare rows. Distinct from
+ * AMENITY_FAMILIES below: those match a gym's own free-text amenity list, these
+ * are facts we confirmed true or false or left null. `null` renders as words,
+ * never as a dash — absence of data must not read as a confirmed negative.
+ */
+export const SOURCED_FACTS = [
+  ['sauna', 'Sauna'],
+  ['steam_room', 'Steam room'],
+  ['cold_plunge', 'Cold plunge'],
+  ['pool', 'Pool'],
+  ['showers', 'Showers'],
+];
+
 export const AMENITY_FAMILIES = [
   ['24/7 access', ['24/7']],
   ['Sauna', ['sauna']],

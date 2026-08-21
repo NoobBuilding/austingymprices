@@ -1,0 +1,102 @@
+{
+  "slug": "sola-crossfit",
+  "name": "SoLa CrossFit",
+  "chain": null,
+  "region": "south-soco",
+  "sub_locality": "Zilker",
+  "category": "crossfit-hiit",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "http://solacrossfit.com",
+  "pricing_url": "http://solacrossfit.com/memberships",
+  "address": "2119 Goodrich Ave, Austin, TX 78704, USA",
+  "lat": 30.2485825,
+  "lng": -97.7728952,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "pool": null,
+  "showers": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-21",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "12x Month",
+      "monthly": 215,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": null,
+      "restricted": null,
+      "note": "Twelve classes a month, at all scheduled class times. Includes a goal-setting session at signup and every 90 days. The gym does not publish its commitment terms.",
+      "is_default": true,
+      "classes_per_period": 12,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Unlimited",
+      "monthly": 255,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": null,
+      "restricted": null,
+      "note": "All scheduled class times plus Open Gym, and a goal-setting session at signup and every 90 days.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "8-class punch card",
+      "price": 180,
+      "classes": 8,
+      "expires_days": 60,
+      "promo": false,
+      "note": "Access to all class times, expires 60 days from purchase."
+    },
+    {
+      "name": "4-class punch card",
+      "price": 100,
+      "classes": 4,
+      "expires_days": 30,
+      "promo": false,
+      "note": "Access to all class times, expires 30 days from purchase."
+    },
+    {
+      "name": "Drop-in",
+      "price": 30,
+      "classes": 1,
+      "expires_days": null,
+      "promo": false,
+      "note": "Single class or open gym session for visiting athletes."
+    }
+  ],
+  "day_pass": 30,
+  "day_pass_qualifier": "drop-in",
+  "day_pass_terms": [
+    "Single class or open gym session",
+    "For visiting athletes"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [
+    "8-class punch card $180 — $22.50 a class, against $240 for eight drop-ins, and it expires after 60 days",
+    "4-class punch card $100 — $25 a class, against $120 for four drop-ins, and it expires after 30 days"
+  ],
+  "pricing_note": null,
+  "sourcing_notes": [
+    "The rate card states a single price per tier and names no enrollment or annual fee anywhere on the page. Both are recorded as sourced zeros rather than as unknowns, on the CorePower precedent.",
+    "The gym publishes no commitment terms for either monthly plan, so `commit_months` is null and no contract badge renders. It links a membership hold and a cancellation form, which implies cancellation is possible but does not state a minimum term — and silence is not a \"no contract\" claim."
+  ],
+  "unpriced_reason": null,
+  "stale": false,
+  "price_history": []
+}

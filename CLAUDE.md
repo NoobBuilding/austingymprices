@@ -783,6 +783,17 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   costs to buy. Both rows fell back to the unpriced state rather than carrying a figure
   read from another city.
 
+- **A shared brand site is not a per-club source, and the URL is not the only door.**
+  **AKT**'s Austin listing led to a page advertising "2 Weeks Unlimited for $59" —
+  **for AKT Brier Creek, Raleigh, North Carolina**. The URL named no location, so the
+  structural guard above could not catch it; only reading the sentence around the figure
+  did. That makes **three instances of the same shape in one week** — Gold's `/join/`
+  rendering Venice, two source URLs pointing at Hutto and Round Rock, and now a brand
+  page serving another state's promotion. **A page reached from a row's own listing is
+  not thereby about that row**, and a figure only counts for a club when the source
+  identifies that club. The Austin row stays unpriced until an Austin-identified figure
+  exists.
+
 **Scope precedents — what counts as a gym.** Triage law, applied to every candidate
 before anything else is asked about it. These are the owner's rulings, recorded so a new
 thread inherits them rather than re-litigating each studio one at a time:
@@ -801,8 +812,9 @@ thread inherits them rather than re-litigating each studio one at a time:
   performance training — and **movement sold and priced as exercise**. Medium is not the
   test; what is being sold is.
 - **A dollar sign is not a price.** Probe hits must be read in the sentence around them,
-  and this precedent has now stopped **six fake prices across two waves** — pet fees,
-  seminar fees, meet entries, late-cancellation fees, ankle weights and a ceramic mug.
+  and this precedent has now stopped **fourteen fake prices across three waves** — pet
+  fees, seminar fees, meet entries, late-cancellation and no-show fees, shoe rental, a gi
+  rental, an intro offer, ankle weights and a ceramic mug.
   Wave 1 found "$300" and "$25-$30" at Solomon — a **pet fee** and a **pet management fee**
   at an apartment complex — and "$549" and "$65" at Texas Barbell Club, which are a **USAW
   seminar fee** and a **meet entry**. AMLI Branch Park's "$1/$2/$3" were rental-page noise.
@@ -811,7 +823,13 @@ thread inherits them rather than re-litigating each studio one at a time:
   ceramic mug from their shop page; **Sauna House**'s "$25 / $10" is a REFERRAL CREDIT; and
   **Öli Saunas** and **Subzero** sell the equipment itself ($6,940 barrel sauna, $10,999
   plunge). Every one would have passed a numbers-only reading; four of the businesses were
-  not gyms at all. **The probe proposes figures, it does not identify them.**
+  not gyms at all. Wave 3 added eight more from the Downtown queue: **Mōtiv Fitness**'
+  $3/$10/$15 are a cycling-shoe rental and two penalty fees — *all three of the figures
+  triage sampled when it classed the row SCRAPEABLE*; **VITA Well**'s $5/$15 are a
+  cancellation and a no-show fee, again both its samples; **BE Fit**'s $25 is a
+  late-cancellation fee; **STRONG Pilates**' $39 is a 7-day intro offer; and **Gracie
+  Humaitá**'s $10 is a gi rental beside a real $30 drop-in. **The probe proposes figures,
+  it does not identify them.**
 - **Martial arts: in scope as Classes, where an adult can actually buy.** A martial-arts
   school lists **where adult class or drop-in pricing exists** — the Old Guard precedent,
   which sells a $165/mo two-day plan and a $25 drop-in. A school publishing only
@@ -837,6 +855,14 @@ thread inherits them rather than re-litigating each studio one at a time:
   a walk-in adult can buy is not a gym this site can price. Where an adult price exists,
   a youth price is simply another plan — OPTML's youth rate stays, because its **adult
   price anchors the row**. The rule excludes youth-*only* businesses, never youth pricing.
+
+- **A chain key tracks BUSINESS identity, not lineage, style or name.** Gracie Barra is
+  a franchise system and earns a key; **Gracie Humaitá is a lineage shared by independent
+  academies** and does not — the two share a name and a martial-arts ancestry and nothing
+  a shopper would recognise as one business. They stay **separate keys and never
+  cross-fold**, and an independent academy under a shared lineage carries `chain: null`.
+  The test is whether the locations are one commercial entity, because that is what the
+  list-fold and the "Also in Austin" line actually claim.
 
 - **A chain is N gyms wearing one logo. Verify per location, always.** Gold's prices
   Downtown at $49.99, Burnet at $69.99 and South Central at $34.99 — **three clubs, three

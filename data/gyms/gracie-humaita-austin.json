@@ -1,0 +1,57 @@
+{
+  "slug": "gracie-humaita-austin",
+  "name": "Gracie Humaitá Austin",
+  "chain": null,
+  "region": "south-soco",
+  "sub_locality": "Ben White",
+  "category": "bjj-mma",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "http://ghaustin.com",
+  "pricing_url": "http://ghaustin.com",
+  "address": "321 W Ben White Blvd Ste 108, Austin, TX 78704, USA",
+  "lat": 30.2235953,
+  "lng": -97.7671641,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "pool": null,
+  "showers": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-21",
+  "billing_period": "monthly",
+  "plans": [],
+  "class_packs": [
+    {
+      "name": "Drop-in",
+      "price": 30,
+      "classes": 1,
+      "expires_days": null,
+      "promo": false,
+      "note": "Published drop-in fee. Beginners classes are free to the public."
+    }
+  ],
+  "day_pass": 30,
+  "day_pass_qualifier": "drop-in fee",
+  "day_pass_terms": [
+    "Single class",
+    "Beginners classes are free to the public"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [],
+  "pricing_note": "No membership rate is published. Training is sold per visit at $30 a drop-in, and beginners classes are free to the public.",
+  "sourcing_notes": [
+    "The academy publishes a drop-in fee and nothing else — no monthly or term rate appears anywhere on the site — so this row carries the per-visit price rather than a membership figure.",
+    "The $10 on the same page is a gi rental, not a price for training.",
+    "Chain is null. Gracie Humaitá is a lineage shared by independent academies rather than a franchise system, and a chain key tracks business identity, not lineage."
+  ],
+  "unpriced_reason": null,
+  "stale": false,
+  "price_history": []
+}

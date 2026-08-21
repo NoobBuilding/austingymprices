@@ -1,0 +1,141 @@
+{
+  "slug": "sharpbody-pilates",
+  "name": "sharpbody Pilates",
+  "chain": null,
+  "region": "east-austin",
+  "sub_locality": "MLK",
+  "category": "pilates",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "https://www.sharpbodypilates.com",
+  "pricing_url": "https://www.sharpbodypilates.com/pricing",
+  "address": "2823 E Martin Luther King Jr Blvd Ste 115, Austin, TX 78702, USA",
+  "lat": 30.2810761,
+  "lng": -97.7096082,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "pool": null,
+  "showers": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-21",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "1 Month Unlimited",
+      "monthly": 350,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Unlimited classes for one month, stated as no commitment.",
+      "is_default": true,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "8x / month",
+      "monthly": 228,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "Eight classes a month on a six-month term.",
+      "is_default": false,
+      "classes_per_period": 8,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "4x / month",
+      "monthly": 128,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "Four classes a month on a six-month term.",
+      "is_default": false,
+      "classes_per_period": 4,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Unlimited (6 months)",
+      "monthly": 278,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 6,
+      "restricted": null,
+      "note": "Unlimited classes on a six-month term.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Unlimited (12 months)",
+      "monthly": 250,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 12,
+      "restricted": null,
+      "note": "Unlimited classes on a twelve-month term. The studio also lists this as an annual at $3,000, which is the same rate paid up front.",
+      "is_default": false,
+      "classes_per_period": null,
+      "cancellation_fee": null,
+      "promo": null
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "Single class",
+      "price": 42,
+      "classes": 1,
+      "expires_days": null,
+      "promo": false,
+      "note": "Drop-in rate for one class."
+    },
+    {
+      "name": "5-class pack",
+      "price": 125,
+      "classes": 5,
+      "expires_days": null,
+      "promo": true,
+      "note": "5 classes for $125 — the studio’s summer and new-client special."
+    },
+    {
+      "name": "2 classes for new clients",
+      "price": 55,
+      "classes": 2,
+      "expires_days": null,
+      "promo": true,
+      "note": "2 classes for $55, new clients only."
+    }
+  ],
+  "day_pass": 42,
+  "day_pass_qualifier": "single class",
+  "day_pass_terms": [
+    "One class",
+    "12-hour cancellation and no-show policy applies"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [
+    "The six- and twelve-month terms are cheaper per month — $128 for 4x, $228 for 8x, $278 unlimited on six months, $250 unlimited on twelve — but they are terms, not month-to-month, so they do not set the headline"
+  ],
+  "pricing_note": null,
+  "sourcing_notes": [
+    "The rate card states a single price per tier and names no enrollment or annual fee anywhere on the page. Both are recorded as sourced zeros rather than as unknowns, on the CorePower precedent.",
+    "The $125 five-class pack and the $55 two-class offer are both listed under the studio’s \"Specials\" as summer or new-client rates, so both are flagged promotional and neither derives the per-class figure. A promo pack setting the standing per-class rate becomes a wrong number the day the offer ends.",
+    "The one-month unlimited at $350 takes the headline because it is the only option a walk-in can buy without a six- or twelve-month term. The cheaper monthly figures on this page all carry one."
+  ],
+  "unpriced_reason": null,
+  "stale": false,
+  "price_history": []
+}

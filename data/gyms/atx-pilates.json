@@ -1,0 +1,128 @@
+{
+  "slug": "atx-pilates",
+  "name": "ATX Pilates",
+  "chain": null,
+  "region": "south-soco",
+  "sub_locality": "South Lamar",
+  "category": "pilates",
+  "access_model": "classes",
+  "eligibility": null,
+  "website": "http://www.atxpilates.com",
+  "pricing_url": "http://www.atxpilates.com/memberships",
+  "address": "2300 S Lamar Blvd #105, Austin, TX 78704, USA",
+  "lat": 30.2478149,
+  "lng": -97.7746824,
+  "known_for": null,
+  "amenities": [],
+  "sauna": null,
+  "steam_room": null,
+  "cold_plunge": null,
+  "pool": null,
+  "showers": null,
+  "accepts_classpass": null,
+  "intro_offer_url": null,
+  "listing_tier": "standard",
+  "photo": null,
+  "data_source": "scrape",
+  "verified_date": "2026-08-21",
+  "billing_period": "monthly",
+  "plans": [
+    {
+      "name": "Foundation 4",
+      "monthly": 148,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Four reformer classes a month — $37.00 a class. Unused classes roll over for one additional month. Cancel anytime.",
+      "is_default": true,
+      "classes_per_period": 4,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Foundation 6",
+      "monthly": 210,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Six reformer classes a month — $35.00 a class. Unused classes roll over for one additional month. Cancel anytime.",
+      "is_default": false,
+      "classes_per_period": 6,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Method",
+      "monthly": 256,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Eight reformer classes a month — $32.00 a class, plus two guest passes a month for new clients. Cancel anytime.",
+      "is_default": false,
+      "classes_per_period": 8,
+      "cancellation_fee": null,
+      "promo": null
+    },
+    {
+      "name": "Core",
+      "monthly": 300,
+      "enroll_fee": 0,
+      "annual_fee": 0,
+      "commit_months": 0,
+      "restricted": null,
+      "note": "Twelve classes a month — $25.00 a class, valid at both ATX Pilates locations, with Recovery Suite access and priority booking. Cancel anytime.",
+      "is_default": false,
+      "classes_per_period": 12,
+      "cancellation_fee": null,
+      "promo": null
+    }
+  ],
+  "class_packs": [
+    {
+      "name": "10-class pack",
+      "price": 380,
+      "classes": 10,
+      "expires_days": null,
+      "promo": false,
+      "note": "Ten reformer classes — $38.00 a class."
+    },
+    {
+      "name": "Reformer Introduction",
+      "price": 99,
+      "classes": 4,
+      "expires_days": null,
+      "promo": true,
+      "note": "4 reformer classes for $99 — introductory offer."
+    },
+    {
+      "name": "Mat Introduction",
+      "price": 42,
+      "classes": 3,
+      "expires_days": null,
+      "promo": true,
+      "note": "3 mat classes for $42 — introductory offer."
+    }
+  ],
+  "day_pass": 40,
+  "day_pass_qualifier": "single drop-in",
+  "day_pass_terms": [
+    "One reformer class"
+  ],
+  "day_pass_alternative": null,
+  "day_pass_detail": [
+    "10-class pack $380 — $38 a class, against $400 for ten drop-ins",
+    "Heated mat drop-ins are $15 and Recovery Suite drop-ins $28 at The Village location, for members"
+  ],
+  "pricing_note": null,
+  "sourcing_notes": [
+    "The rate card states a single price per tier and names no enrollment or annual fee anywhere on the page. Both are recorded as sourced zeros rather than as unknowns, on the CorePower precedent.",
+    "Every per-class figure the studio prints reconciles exactly with its own plan maths — $148/4 = $37.00, $210/6 = $35.00, $256/8 = $32.00, $300/12 = $25.00 — so the figures are carried as stated rather than attributed or rounded.",
+    "The $99 four-class and $42 three-class offers are labelled introductory, so both are flagged promotional and neither derives the per-class figure."
+  ],
+  "unpriced_reason": null,
+  "stale": false,
+  "price_history": []
+}

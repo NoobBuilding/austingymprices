@@ -15,7 +15,7 @@
  */
 import Base from '../layouts/Base.astro';
 import { getAllGyms, getRegion } from '../lib/gyms.js';
-import { AMENITY_FAMILIES, MAX_COMPARE, amenityState, priceRows } from '../lib/compare.js';
+import { AMENITY_FAMILIES, MAX_COMPARE, SOURCED_FACTS, amenityState, priceRows } from '../lib/compare.js';
 
 const gyms = getAllGyms();
 const money = (n) => `$${Number.isInteger(n) ? n : Number(n).toFixed(2)}`;
@@ -94,6 +94,32 @@ const rows = priceRows(money);
             </tr>
           ))}
 
+          {/* The five sourced booleans (§3). A different animal from the
+              amenity-string rows below: those read a gym's own free-text list,
+              these are tri-states we confirmed one way or the other. `null`
+              means unconfirmed and must never render as a negative — the whole
+              reason the field is a tri-state. A row renders only where at
+              least one compared gym has a SOURCED value; a row of three
+              "not published" cells informs nobody. */}
+          {SOURCED_FACTS.map(([key, label]) => (
+            <tr data-row={`fact:${key}`} class="amenity fact">
+              <th scope="row" class="rowhead">{label}</th>
+              {gyms.map((g) => {
+                const v = g[key];
+                const state = v === true ? 'yes' : v === false ? 'no' : 'unknown';
+                return (
+                  <td data-slug={g.slug} data-state={state}>
+                    {state === 'yes' && <span class="yes" aria-label="Yes">✓</span>}
+                    {state === 'no' && <span class="no" aria-label="No">—</span>}
+                    {state === 'unknown' && (
+                      <span class="unk-txt" aria-label="Not published">Not published</span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+
           {AMENITY_FAMILIES.map(([label, keywords]) => (
             <tr data-row={`amenity:${label}`} class="amenity">
               <th scope="row" class="rowhead">{label}</th>
@@ -136,7 +162,21 @@ const rows = priceRows(money);
   .range { font-size: .95rem; font-weight: 600; color: var(--ink); margin-top: 4px; }
 
   /* Wide tables scroll inside their own box; the page never scrolls sideways. */
-  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); }
+  /* A horizontal-overflow wrapper is a scroll container on BOTH axes — CSS
+     computes overflow-y to auto the moment overflow-x is not visible — so
+     `position: sticky; top: 0` inside it sticks to the WRAPPER, not the
+     viewport. The header dutifully pinned itself to the top of a box that had
+     already scrolled off screen, which looks exactly like sticky not working.
+     Giving the wrapper a real height makes it the scroll container it already
+     was, and both sticky axes then work inside it. A table shorter than the
+     cap gets no scrollbar and behaves exactly as before. */
+  .tablewrap {
+    overflow: auto;
+    max-height: 80vh;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    overscroll-behavior-x: contain;
+  }
   .cmp { border-collapse: separate; border-spacing: 0; width: 100%; font-size: .88rem; }
   .cmp th, .cmp td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
 
@@ -175,6 +215,9 @@ const rows = priceRows(money);
   .callfor { color: var(--ink-soft); font-style: italic; font-size: .84rem; }
   .amenity td { text-align: center; }
   .amenity .rowhead { font-weight: 500; }
+  /* Quiet, and words rather than a dash: a dash here would read as a confirmed
+     "no", which is the one thing an unconfirmed tri-state must never say. */
+  .unk-txt { font-size: .72rem; color: var(--ink-faint); }
   .yes { color: var(--green); font-weight: 700; }
   .no { color: var(--ink-faint); }
   .foot { font-size: .78rem; color: var(--ink-soft); margin-top: 16px; max-width: 72ch; line-height: 1.6; }
@@ -257,7 +300,14 @@ const rows = priceRows(money);
           const states = wanted.map(
             (s) => row.querySelector(`td[data-slug="${CSS.escape(s)}"]`)?.dataset.state,
           );
-          row.hidden = !states.includes('yes');
+          // A sourced-fact row earns its place on a confirmed NO as well as a
+          // yes: "this one has a sauna, that one does not" is exactly the
+          // comparison, and it is a finding rather than a gap. The
+          // amenity-string rows keep the older rule — a list nobody in the
+          // comparison contributes to is noise.
+          row.hidden = row.classList.contains('fact')
+            ? !(states.includes('yes') || states.includes('no'))
+            : !states.includes('yes');
         }
 
         // The heading stays "Compare gyms". Gym names live in the column

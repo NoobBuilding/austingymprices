@@ -140,8 +140,12 @@ check(
   amenityState({ amenities: ['Infrared sauna'] }, ['sauna']) === 'yes',
   'family matching survives the owner\'s wording ("Infrared sauna" is a sauna)',
 );
+// Scoped to the amenity-STRING rows deliberately. The sourced-fact rows below
+// are a different question — a confirmed tri-state rather than "did this gym
+// write a list" — and they answer an unknown in words. The invariant both
+// share is the one that matters: an unknown must never claim absence.
 const unknownCell = doc.querySelector(
-  `tr.amenity td[data-slug="${noAmenities.slug}"][data-state="unknown"]`,
+  `tr.amenity:not(.fact) td[data-slug="${noAmenities.slug}"][data-state="unknown"]`,
 );
 check(Boolean(unknownCell), 'unknown amenity cells are marked in the DOM');
 check(
@@ -153,6 +157,30 @@ check(
   /means we have no amenity list/i.test(doc.body.textContent),
   'the page explains in words what a blank means',
 );
+
+// ── Sourced-fact rows (sauna / steam / plunge / pool / showers) ───────────
+console.log('\nSourced-fact rows are tri-state and never infer a negative');
+{
+  const factRows = [...doc.querySelectorAll('tr.fact')];
+  check(factRows.length === 5, 'all five sourced booleans get a row', `${factRows.length} rows`);
+  const cells = (state) => [...doc.querySelectorAll(`tr.fact td[data-state="${state}"]`)];
+  const yes = cells('yes'), no = cells('no'), unk = cells('unknown');
+  check(yes.length > 0, 'confirmed-true cells exist', `${yes.length}`);
+  check(unk.length > 0, 'unconfirmed cells exist — null is the honest majority', `${unk.length}`);
+  check(
+    yes.every((c) => c.textContent.includes('✓')),
+    'a confirmed yes renders a tick',
+  );
+  check(
+    no.every((c) => c.textContent.includes('—')),
+    'a confirmed no renders a dash — it is a finding, not a gap',
+  );
+  check(
+    unk.every((c) => !c.textContent.includes('—') && /not published/i.test(c.textContent)),
+    'and an UNCONFIRMED cell says so in words — never a dash, which would invent a negative',
+    JSON.stringify(unk[0]?.textContent),
+  );
+}
 
 console.log('\nHeading and column treatment');
 check(
