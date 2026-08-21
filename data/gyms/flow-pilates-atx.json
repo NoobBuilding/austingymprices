@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -41,6 +42,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Only the introductory offer is published — two classes for $34.99, no commitment, valid 30 days, plus $30 off a first month. Standing membership rates are not on the site.",
+  "sourcing_notes": [],
   "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []

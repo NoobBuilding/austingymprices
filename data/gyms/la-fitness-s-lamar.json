@@ -24,6 +24,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": true,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -80,6 +81,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "No initial term — all plans auto-renew with no commitment. Prices exclude tax. LA Fitness states prices may vary by location or change without notice.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -33,7 +34,7 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": null,
-      "note": "Eight sessions a month, month-to-month, access to all studio locations. Month-to-month with a single published rate and no enrollment or annual fee stated anywhere on the page — recorded as sourced zeros under the CorePower precedent.",
+      "note": "Eight sessions a month, month-to-month, access to all studio locations.",
       "is_default": true,
       "classes_per_period": null,
       "cancellation_fee": null,
@@ -46,7 +47,7 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": null,
-      "note": "Unlimited sessions a month, access to all studio locations. Month-to-month with a single published rate and no enrollment or annual fee stated anywhere on the page — recorded as sourced zeros under the CorePower precedent.",
+      "note": "Unlimited sessions a month, access to all studio locations.",
       "is_default": false,
       "classes_per_period": null,
       "cancellation_fee": null,
@@ -66,6 +67,9 @@
     "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
   ],
   "pricing_note": null,
+  "sourcing_notes": [
+    "Every plan here is month-to-month with a single published rate, and no enrollment or annual fee is stated anywhere on the page. Both fees are recorded as sourced zeros rather than as unknowns."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

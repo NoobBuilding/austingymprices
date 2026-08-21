@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": true,
+  "showers": true,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -33,7 +34,7 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": null,
-      "note": "Standard adult rate across the 8 community fitness centers. Rate published association-wide by the YMCA of Greater Austin, not per branch — membership admits you to every branch. Read from austinymca.org/join; no branch-specific variation is published, and none is assumed.",
+      "note": "Standard adult rate across the 8 community fitness centers. One membership admits you to every branch.",
       "is_default": true,
       "promo": {
         "enroll_fee": 0,
@@ -130,6 +131,9 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": null,
+  "sourcing_notes": [
+    "The rate is published association-wide by the YMCA of Greater Austin rather than per branch, and is read from austinymca.org/join. No branch-specific variation is published, and none is assumed."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

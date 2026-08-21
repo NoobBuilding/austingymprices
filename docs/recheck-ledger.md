@@ -45,3 +45,13 @@ revisited. Recorded rather than deleted so nobody rediscovers them as finds.
 | **Renzo Gracie Austin**<br><sub>4631 Airport Blvd · Mueller</sub> | Prices behind a booking widget. | Human read. A Mueller gap-fill if it lands. |
 | **Inner Diva Studios**<br><sub>10401 Anderson Mill Rd · The Domain</sub> | Prices behind a booking widget. | Human read. A Domain gap-fill if it lands. |
 | **The Colosseum** | **MERGED, not excluded.** Same address and same page as Squatch Frontier Fitness — both domains serve one site titled "Squatch Frontier Fitness". It is that gym's $115 indoor-gym tier, now a plan on the Squatch row. | n/a — resolved. |
+
+## Data defect found 2026-08-21 — HELD for the owner, live on the site
+
+| Row | Defect | What it needs |
+|---|---|---|
+| **Perspire Sauna Studio North Lamar**<br><sub>4601 N Lamar Blvd #501</sub> | **The row's price was read from the wrong studio.** Both `website` and `pricing_url` point at `perspiresaunastudio.com/locations/hutto` — **Hutto**, a town ~25 miles north-east and outside all six region circles. That page names itself "Hutto" three times and publishes **$159 and $199**, which are exactly the figures carried on this Austin row. The two candidate Austin North Lamar URLs (`/tx/austin-north-lamar`, `/locations/austin-north-lamar`) return HTTP 200 but contain no price and no location text — a soft 404, or JS-rendered. | An owner call. The rate may well be uniform across Perspire studios, but **uniformity is a finding, not an assumption** (the Gold's / YMCA precedent cuts both ways), and right now the row asserts a price sourced from another city's club. Either a read of the real North Lamar page confirms the figures, or the row falls back to the unpriced state. Not changed on an agent's judgement — §9b. |
+
+Found incidentally by the showers probe, which reported the source URL alongside each
+match. It is the **"a checkout shell carries another club's data"** precedent in a new
+form: the page looked like it was about the club whose URL fetched it, and it was not.

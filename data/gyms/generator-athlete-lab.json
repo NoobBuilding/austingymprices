@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": true,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -39,7 +40,10 @@
     "Military, police, fire and first responders: $45/mo + tax, in-person signup only",
     "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
   ],
-  "pricing_note": "Sold per session and in packs: a Recovery Lab day pass at $75 plus tax, five for $325 and ten for $550. Monthly memberships are offered but no rate is published. Massage and personal training are add-ons and are not priced here (rule 3). A $65 assessment is the entry to their coaching protocol, not to the recovery lab.",
+  "pricing_note": "Sold per session and in packs: a Recovery Lab day pass at $75 plus tax, five for $325 and ten for $550. Monthly memberships are offered but no rate is published. A $65 assessment is the entry to their coaching protocol, not to the recovery lab.",
+  "sourcing_notes": [
+    "Massage and personal training are add-ons rather than the product being priced, so their rates are not carried on this row."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

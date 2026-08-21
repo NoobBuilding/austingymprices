@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -33,6 +34,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Rates of $399–500/mo have been reported but are unconfirmed, and membership runs through an application process. Call to confirm the current rate and initiation fee.",
+  "sourcing_notes": [],
   "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []

@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -34,7 +35,10 @@
   ],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Veteran-owned. The only rate published is $180/mo, stated as a \"limited time special\" following a $1 week trial — a promotional price with no standing rate behind it, so no figure is carried. First class $10.",
+  "pricing_note": "Veteran-owned. The only rate published is $180/mo, stated as a “limited time special” following a $1 week trial — a promotional price with no standing rate behind it. First class $10.",
+  "sourcing_notes": [
+    "A promotional price with no standing rate behind it is never promoted to standing, so no membership figure is carried for this gym."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

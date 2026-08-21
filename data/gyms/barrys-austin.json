@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -32,7 +33,10 @@
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published — call the gym. Class-pack model; per §1 boutique studios get a day-pass row and a website link only in v1.",
+  "pricing_note": "Pricing not published — call the studio. Barry’s sells class packs rather than memberships.",
+  "sourcing_notes": [
+    "Barry’s is sold in class packs rather than memberships, so this row carries the studio’s day pass and a link to its own pricing rather than a membership rate."
+  ],
   "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []

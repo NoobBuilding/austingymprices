@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -119,6 +120,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Intro offers ($17 single class, $35 two-class BOGO, $49 unlimited week) are first-timer promotions, not standing rates.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

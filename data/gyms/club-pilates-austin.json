@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -33,7 +34,7 @@
       "annual_fee": 0,
       "commit_months": 3,
       "restricted": null,
-      "note": "All memberships carry an initial three-month commitment, then run month to month. The class count for this entry tier was not stated in the studio's reply and still needs confirming.",
+      "note": "All memberships carry an initial three-month commitment, then run month to month. The studio does not state how many classes this entry tier includes.",
       "is_default": true,
       "promo": {
         "enroll_fee": 49,
@@ -62,6 +63,9 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Confirmed by email from studio staff on 2026-08-19. Promotion this month: three classes for $79.",
+  "sourcing_notes": [
+    "The class count for the entry tier was not stated in the studio’s reply and is still to be confirmed."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

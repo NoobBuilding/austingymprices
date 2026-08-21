@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -78,6 +79,7 @@
     "All rates exclude sales tax"
   ],
   "pricing_note": "Also offers a 10-visit punchcard for $90 (valid 6 months) and a 1-week pass for $39. All prices exclude sales tax.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

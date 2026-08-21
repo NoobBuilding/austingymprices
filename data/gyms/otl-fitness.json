@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -76,6 +77,7 @@
   "day_pass_alternative": "Trial week $79 — 7 days unlimited, credited toward your first membership payment if you join within the trial.",
   "day_pass_detail": [],
   "pricing_note": null,
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

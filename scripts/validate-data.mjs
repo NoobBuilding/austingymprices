@@ -26,7 +26,31 @@ const CATEGORIES = new Set([
 // decides a membership outright — a swimmer with no pool has no reason to read
 // the rest of the page — which is why it earns a field and a filter chip while
 // "has a squat rack" does not.
-const RECOVERY_AMENITIES = ['sauna', 'steam_room', 'cold_plunge', 'pool'];
+// `showers` is the fifth, on the same terms and for the same reason: it is the
+// amenity that decides whether you can train on the way to work, and it was
+// asked for twice independently. Sourced from the gym's own materials only —
+// a photo of a locker room is not a published amenity, and neither is a review.
+const RECOVERY_AMENITIES = ['sauna', 'steam_room', 'cold_plunge', 'pool', 'showers'];
+
+// Card notes are written for SHOPPERS. The build-log register — section
+// references, precedent names, internal task language, methodology narration —
+// belongs in `sourcing_notes`, which renders only in the detail page's fine
+// print. This asserts the RULE, not today's inventory: any new note carrying
+// the internal voice onto a card fails the build rather than shipping.
+// Honesty is layered here, never deleted: the epistemics still publish, one
+// surface down, where someone asking "why this number?" goes looking.
+const CARD_REGISTER_BANNED = [
+  [/§/, 'a section reference'],
+  [/\bprecedent\b/i, 'a precedent name'],
+  [/CLAUDE\.md/i, 'a repo document'],
+  [/owner-contact/i, 'internal task language'],
+  [/sourced zero/i, 'internal schema vocabulary'],
+  [/flagged, not guessed/i, 'methodology narration'],
+  [/\bbranch row\b/i, 'internal row vocabulary'],
+  [/needs? (a human read|confirming)/i, 'internal task language'],
+  [/\brule \d/i, 'a numbered internal rule'],
+  [/\bPROMO-ONLY\b/, 'an internal data-state label'],
+];
 // WHO may join, which is a different question from `restricted` (what a plan
 // buys you). Austin Women's Boxing Club is open to any adult woman on every
 // plan it sells — that is not a "limited access" plan, it is a limited
@@ -177,6 +201,34 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
   if (!('listing_tier' in gym)) fail('listing_tier is missing (use "standard")');
   if (gym.listing_tier !== undefined && typeof gym.listing_tier !== 'string') {
     fail('listing_tier must be a string');
+  }
+
+  // The fine-print channel. Present on every gym so a new file cannot omit it;
+  // an empty array is the norm and renders nothing.
+  if (!Array.isArray(gym.sourcing_notes)) {
+    fail('sourcing_notes must be an array (empty is fine)');
+  } else if (gym.sourcing_notes.some((n) => typeof n !== 'string' || !n.trim())) {
+    fail('sourcing_notes must contain only non-empty strings');
+  }
+
+  // Register guard. Only the notes a CARD can render are checked — the detail
+  // page is allowed the full epistemics, which is the point of the split.
+  const defaultPlan = (gym.plans ?? []).find((p) => p.is_default);
+  const cardNotes = [
+    [(gym.plans ?? []).length === 0 ? gym.pricing_note : null, 'pricing_note'],
+    [defaultPlan?.note ?? null, `default plan "${defaultPlan?.name}" note`],
+    ...(gym.plans ?? []).map((p) => [p.promo?.note ?? null, `promo note on "${p.name}"`]),
+    ...(gym.class_packs ?? []).map((k) => [k.note ?? null, `class pack "${k.name}" note`]),
+    ...(gym.day_pass_terms ?? []).map((t) => [t, 'a day_pass_term']),
+    [gym.day_pass_alternative ?? null, 'day_pass_alternative'],
+  ];
+  for (const [text, where] of cardNotes) {
+    if (typeof text !== 'string') continue;
+    for (const [pattern, what] of CARD_REGISTER_BANNED) {
+      if (pattern.test(text)) {
+        fail(`${where} carries ${what} — card notes are consumer register; move it to sourcing_notes`);
+      }
+    }
   }
 
   if (!Array.isArray(gym.price_history)) fail('price_history must be an array');

@@ -23,6 +23,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -38,7 +39,7 @@
       "annual_fee": null,
       "commit_months": 0,
       "restricted": null,
-      "note": "PROMO-ONLY: the standing rate is not published. Every tier on the page carries an offer expiring August 30, 2026, so the promotional $10/mo, $59 startup and $0.00 annual fee cannot be promoted to standing. Recheck after the offer expires.",
+      "note": "Every tier on this club’s page carries an offer expiring August 30, 2026, so the $10/mo, $59 startup and $0 annual fee shown are promotional rather than standing prices. The standing rate is not published.",
       "is_default": true,
       "promo": {
         "price": 10,
@@ -90,6 +91,9 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Prices not published — every tier was in promotional state when checked. Awaiting a post-promo recheck before any number is shown as the standing rate.",
+  "sourcing_notes": [
+    "No standing rate is published for this club — every tier is in a promotional state — so the promotional figures are recorded as a promo and never promoted to standing. Due for a recheck once the offer expires."
+  ],
   "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []

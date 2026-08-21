@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": true,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -104,6 +105,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "A two-week trial is $99.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

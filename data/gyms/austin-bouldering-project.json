@@ -22,6 +22,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -89,6 +90,7 @@
     "Rental gear is not included in any day pass"
   ],
   "pricing_note": "Day passes: $25 adult, $22 young adult, $18 youth. Rental gear is not included in a day pass.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

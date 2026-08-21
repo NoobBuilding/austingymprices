@@ -22,6 +22,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -97,6 +98,7 @@
     "Membership freeze $5/mo, and no cancellation fee"
   ],
   "pricing_note": "Day pass is $26, plus $5 for gear rental (chalk bag, harness, shoes). $6 discount for students, teachers, under-18s, 65+, military and emergency personnel. Kids 5 and under $12. Class-only pass $18. Add-ons: gear rental $23/mo ($250/yr), long-term locker $10/mo.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

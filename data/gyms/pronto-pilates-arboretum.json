@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -33,7 +34,7 @@
       "annual_fee": 0,
       "commit_months": 0,
       "restricted": null,
-      "note": "$99/mo for 30 class credits. The studio states \"$5 per class\" and \"from $5\" on the same page, which 99 divided by 30 does not produce — so the credits-to-class ratio is evidently not one-to-one and is not published. No per-class figure is derived from it.",
+      "note": "$99/mo for 30 class credits. The studio states “$5 per class” and “from $5” on the same page, which $99 across 30 credits does not produce — so a class evidently costs more than one credit, and the ratio is not published.",
       "is_default": true,
       "classes_per_period": null,
       "cancellation_fee": null,
@@ -47,6 +48,9 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": null,
+  "sourcing_notes": [
+    "The credits-to-class ratio is not published, and 99 ÷ 30 does not reproduce the studio’s own “$5 per class”, so no per-class figure is derived from this plan."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

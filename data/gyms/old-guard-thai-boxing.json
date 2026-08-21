@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -57,6 +58,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Military, first responder and family discounts are offered; rates are not published.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

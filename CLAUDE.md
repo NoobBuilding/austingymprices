@@ -121,6 +121,8 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "sauna": null,                     // true | false | null — tri-state, like accepts_classpass.
   "steam_room": null,                //   Sourced from the gym's OWN materials only: never
   "cold_plunge": null,               //   inferred from a photo, a review or an amenity string.
+  "pool": null,                      //   Same family. Gated filter chip at 5+ sourced.
+  "showers": null,                   //   Same family, same gate. Asked for twice independently.
   "photo": "google-places",          // "google-places" | filename in /public/photos | null
   "data_source": "scrape",           // "scrape" | "manual"
   "verified_date": "2026-08-16",
@@ -168,7 +170,8 @@ One JSON file per gym: `/data/gyms/{slug}.json`. Slug = kebab-case name (`big-te
   "stale": false,                     // set by the scraper after >14 days of failure;
                                       // the UI then says "Prices last confirmed {date}"
   "intro_offer_url": null,            // §10 plumbing. https only. null renders NOTHING
-  "listing_tier": "standard"          // §10 plumbing. No rendering difference today
+  "listing_tier": "standard",         // §10 plumbing. No rendering difference today
+  "sourcing_notes": []                // build-log register: DETAIL PAGE ONLY, never a card
 }
 ```
 
@@ -196,6 +199,32 @@ read from the same function that computed the headline so the two cannot disagre
 included" line, only where the gym published one**. No schedules, no amenities — those
 answer a different question and belong on the detail page. Where a studio publishes no
 class count there is no receipt, and the card says so rather than inventing an arithmetic.
+
+**Card notes are written for SHOPPERS. The build-log register is detail-page-only.**
+A card carries **at most one short note per concern** — what someone deciding where to
+train needs to know, in the voice the rest of the card is written in. **No section
+references, no precedent names, no internal task language, no methodology narration.**
+The floor note is the model, and the whole of it:
+
+> "This gym does not publish its annual fee, so the all-in figure is a floor — the real
+> cost is this or higher."
+
+Everything behind that — how a figure was read, which precedent settled an ambiguity,
+what is still unresolved, what we asked and have not been answered — moves to
+**`sourcing_notes`**, a gym-level array rendered on the detail page under
+**"Why this number?"**, low on the page and quiet in treatment because it answers a
+question only some readers ask. **Honesty is layered, not deleted.** It is the same
+rule as everything else here: the card scans, the page explains.
+
+This is enforced, not merely stated. `npm run validate:data` scans **only the notes a
+card can render** — the default plan's note, a plan-less row's `pricing_note`, promo
+notes, class-pack notes, day-pass terms and the alternative — and **fails the build** on a
+section reference, a precedent name, internal task vocabulary ("branch row", "owner-contact
+list", "sourced zeros", "needs a human read"), or methodology narration ("flagged, not
+guessed"). The detail page is deliberately **not** checked: carrying the full epistemics
+is what that surface is for. The rule was earned — the Gold's South Central card shipped
+a paragraph citing the compare-at precedent, "§6", "flagged, not guessed" and
+"owner-contact list" to a consumer, and friend feedback caught it before the launch did.
 
 **Show the math on multi-day passes.** Where a week/month/punchcard pass sits next to a
 single-day price, state what it includes *and* how it compares — "Week pass $35 — 7 days
@@ -364,13 +393,27 @@ offer ends. Class price tiers are **1 (< $22), 2 ($22–32), 3 ($32+)**, fitted 
 what Austin studios actually charge rather than to round numbers that would drop
 nearly everything into tier 1.
 
-**`sauna` / `steam_room` / `cold_plunge` rules:** three tri-state booleans on **every**
-gym, obeying the same rule as `accepts_classpass`. `true` is confirmed from the gym's own
+**`sauna` / `steam_room` / `cold_plunge` / `pool` / `showers` rules:** five tri-state
+booleans on **every** gym, obeying the same rule as `accepts_classpass`. `true` is confirmed from the gym's own
 materials, `false` is a confirmed no, `null` is unconfirmed — and **absence renders
 absence**. They are never inferred from a photo, a review, or a Places attribute: a
 picture of a wooden room is not a published amenity. There is **no site-wide population
 pass**; they fill in opportunistically as rows are touched for other reasons, which is
 why `null` is the honest majority state rather than a backlog.
+
+**`showers` is the fifth, and it earns its field the way `pool` did — by being
+DECISIVE.** It settles whether you can train on the way to work, which is a different
+question from whether the gym is any good, and it was asked for twice independently
+before the field existed. It gets a **filter chip gated at 5+ sourced `true`**, the same
+mechanism as the Pool and ClassPass chips, computed at build time so the chip appears on
+its own the day the fifth answer lands. `scrapers/probe_showers.py` proposes candidates
+from the gym's own pages — robots-checked, honest User-Agent, and reporting **the
+sentence around the match**, because "a dollar sign is not a price" generalises exactly:
+a shower word in a class name or a blog post is not a published amenity. It PROPOSES;
+the owner cherry-picks. A **negative is only ever recorded where the page positively says
+so** — silence stays `null`, because silence is not a no. **This does not reopen the
+closed list**: the five exist because they are what a *gym* is asked about, and
+extending it per modality would turn the schema into an equipment inventory.
 
 **The `recovery` category and its gated fourth tab.** Recovery businesses — sauna houses,
 cold-plunge studios, contrast therapy — are `category: "recovery"` and
@@ -1017,7 +1060,9 @@ Sentry; FAQ and for-gym-owners; OG images; accessibility pass; favicon;
 **Recovery tab** (gated); **pool field and filter chip** (gated); **chain field with
 list-fold, sibling cross-links and per-location pins**; **three unpriced states**;
 **tab-aware compare**; **`known_for` draft pipeline**; **discovery widened to recovery
-types**; **branch enumeration for YMCA, Anytime, F45 and Planet Fitness**.
+types**; **branch enumeration for YMCA, Anytime, F45 and Planet Fitness**;
+**card-note register split with a validator guard and the detail-page "Why this number?"
+fine print**; **`showers` field, probe and gated chip**.
 
 ### The map and interaction contract (normative)
 
@@ -1201,7 +1246,7 @@ a batch; Kerushan items cannot be moved by Claude Code at all.
 |---|---|---|
 | **Friend feedback → top-3 fixes** | Kerushan collects, Claude Code lands | The gate on the domain flip. Nothing else in the launch sequence moves first. |
 | **14 pending human reads** | Kerushan | Booking-widget studios from Waves 1–2. Optional before the flip — they raise coverage, they do not block. |
-| **Planet Fitness + Gold's Downtown annual fees** | Kerushan (outreach) | Both rows are HELD, not written, because the headline would understate without the standing annual figure. One number each unblocks them. |
+| **Planet Fitness + Gold's annual fees** | Kerushan (outreach) | Planet Fitness and Gold's **Downtown, Burnet and South Central**. The PF row is HELD, not written, because the headline would understate without the standing annual figure; the two priced Gold's clubs ship as a FLOOR (`$35+`) until the figure arrives. One number each unblocks them. The "owner-contact list" marker that used to live in the card note was removed with the register fix — this row is now the only place it is tracked. |
 | **Athletic Outcomes recheck** | Kerushan | **Dated: after 31 August 2026**, when the 30-spot founding promo expires. They are opening in MUELLER, the thinnest region, so this is a genuine gap-fill. Do not let it lapse. |
 | **Waves 3–4** | Claude Code | Queued post-launch. Hyde Park and the Downtown pile, re-sorted by actual region (`docs/wave2-queue.md`). Mostly human-read work now — the scrapeable seam is close to worked out. |
 | **F45 and Planet Fitness branch pricing** | Kerushan | 16 rows carry `awaiting` placeholders. F45 needs a read per club (widget); PF is a 403 bot wall to automation, so all six are browser work. |

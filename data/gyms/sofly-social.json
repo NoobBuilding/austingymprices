@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -68,6 +69,7 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Sold in class passes rather than memberships: $35 for one, $158 for five, $265 for ten and $420 for twenty.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": true,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -40,6 +41,7 @@
     "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
   ],
   "pricing_note": "Priced per service rather than by membership: cryotherapy, infrared sauna, red light and PEMF at $40 each, hyperbaric oxygen $60, air compression $25.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

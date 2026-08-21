@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -33,7 +34,7 @@
       "annual_fee": 0,
       "commit_months": null,
       "restricted": null,
-      "note": "Published as “starting at”; six per class. Tier detail needs confirming.",
+      "note": "Published as “starting at”; six per class.",
       "is_default": true
     },
     {
@@ -54,6 +55,9 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": "Class counts per month are not published, so no per-class rate is shown.",
+  "sourcing_notes": [
+    "Tier detail is still to be confirmed with the gym."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

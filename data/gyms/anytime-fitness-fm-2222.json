@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -32,7 +33,8 @@
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Branch row, price not yet sourced. Anytime Fitness clubs are independently owned and quote through an enquiry form; no rate is published for this club.",
+  "pricing_note": "Anytime Fitness clubs are independently owned and quote through an enquiry form; no rate is published for this club.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

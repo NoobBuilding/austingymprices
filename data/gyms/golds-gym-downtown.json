@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -32,7 +33,10 @@
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Pricing not published online. The club site blocks automated checks (repeated timeouts, and the join flow returns a server error), so this listing is collected by hand.",
+  "pricing_note": "Pricing is not published online, and the club’s own join flow does not return a rate. Call the club for its current price.",
+  "sourcing_notes": [
+    "Automated checks time out repeatedly and the join flow returns a server error, so this listing has to be collected by hand."
+  ],
   "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []

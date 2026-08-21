@@ -268,6 +268,23 @@ const jsonLd = {
       </>
     )}
 
+    {/* Fine print. The card carries at most one short note per concern, in a
+        shopper's register; everything behind that number — how a figure was
+        read, which precedent settled an ambiguity, what is still unresolved —
+        lands here. Honesty layered, not deleted: the card scans, the page
+        explains. Deliberately low on the page and quiet in treatment, because
+        it answers a question only some readers ask, but it must be there for
+        the ones who do. */}
+    {gym.sourcing_notes.length > 0 && (
+      <>
+        <h2>Why this number?</h2>
+        <p class="h2sub">How the figures above were read, and anything still unresolved</p>
+        <ul class="fine">
+          {gym.sourcing_notes.map((n) => <li>{n}</li>)}
+        </ul>
+      </>
+    )}
+
     {gym.stale && verified && (
       <p class="note stale-note">
         Prices last confirmed {verified}. We have not been able to re-check since,
@@ -362,6 +379,12 @@ const jsonLd = {
   .foot-meta a { color: var(--ink-faint); }
   .foot-meta .stale { color: var(--orange-dark); font-weight: 600; }
   .stale-note { margin-top: 26px; }
+  /* Quiet by construction: ink-soft on the sunk surface, no orange. Orange is
+     the fee-warning voice and this is not a warning — it is provenance, and
+     dressing it as an alarm would misprice its own importance. */
+  .fine { list-style: none; background: var(--surface-sunk); border: 1px solid var(--line); border-radius: 8px; padding: 4px 0; }
+  .fine li { font-size: .82rem; line-height: 1.55; color: var(--ink-soft); padding: 10px 14px; }
+  .fine li + li { border-top: 1px dashed var(--line); }
   @media (max-width: 640px) { .plan-price .n { font-size: 1.35rem; } }
 </style>
 

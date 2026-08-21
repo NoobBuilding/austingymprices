@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -32,7 +33,10 @@
   "day_pass_terms": [],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "Branch row, price not sourced. F45 studios quote through a booking widget rather than publishing a rate, and rates are set per studio — the Hilton Downtown club gives no figure either. Needs a human read per club.",
+  "pricing_note": "F45 quotes through a booking widget rather than publishing a rate, and rates are set per studio. Contact the studio for its current price.",
+  "sourcing_notes": [
+    "Rates are set per studio and quoted through a booking widget, so a figure has to be read club by club. The Hilton Downtown club publishes no figure either."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

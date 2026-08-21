@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -44,7 +45,10 @@
   ],
   "day_pass_alternative": null,
   "day_pass_detail": [],
-  "pricing_note": "No adult membership is published: adult training is sold per class at $20, with adult open-gym at $10. Youth programmes are published as monthly rates — $75 and $140 for preschool once or twice a week, $95 and $170 for the graded levels — but a youth rate cannot anchor an adult listing.",
+  "pricing_note": "No adult membership is published: adult training is sold per class at $20, with adult open-gym at $10. Youth programmes are published as monthly rates — $75 and $140 for preschool once or twice a week, $95 and $170 for the graded levels.",
+  "sourcing_notes": [
+    "A youth rate cannot anchor an adult listing, so this row carries the per-class adult figures rather than the published youth monthlies."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

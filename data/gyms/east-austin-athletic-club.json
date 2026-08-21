@@ -24,6 +24,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -87,6 +88,7 @@
     "10-pack club pass $275 — $27.50 a visit against $45 single"
   ],
   "pricing_note": "All memberships are billed every 4 weeks, so a year is 13 payments. Also offers a $75 week pass, a $30 single drop-in and a $275 10-pack. The $45 day pass includes one contrast-therapy session.",
+  "sourcing_notes": [],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []

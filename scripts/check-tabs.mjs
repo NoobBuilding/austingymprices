@@ -352,6 +352,38 @@ console.log('\nPool filter (gated, confirmed-only)');
   }
 }
 
+// ── Showers chip ─────────────────────────────────────────────────────────
+// Same gate, same tri-state discipline as the pool chip. Asserted as the RULE
+// ("renders iff >= N sourced"), never as today's count — a chip that appears
+// the day the fifth sourced answer lands must not turn this red.
+console.log('\nShowers filter (gated, confirmed-only)');
+{
+  const SHOWERS_CHIP_MIN = 5;
+  const sourced = $('.card').filter((c) => c.dataset.showers === 'true');
+  const chip = window.document.getElementById('showers');
+  check(
+    !!chip === sourced.length >= SHOWERS_CHIP_MIN,
+    `the Showers chip renders iff >= ${SHOWERS_CHIP_MIN} gyms have SOURCED showers`,
+    `${sourced.length} sourced, chip ${chip ? 'present' : 'absent'}`,
+  );
+  if (chip) {
+    clickTab('membership');
+    chip.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    const shown = $('.card').filter((c) => !c.hidden);
+    check(shown.length > 0, 'the chip narrows to a non-empty list', `${shown.length} gyms`);
+    check(
+      shown.every((c) => c.dataset.showers === 'true'),
+      'and every gym shown has CONFIRMED showers — unsourced never matches',
+      shown.filter((c) => c.dataset.showers !== 'true').map((c) => c.dataset.slug).join(', '),
+    );
+    chip.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    check(
+      $('.card').filter((c) => !c.hidden).length > shown.length,
+      'and switching it off widens the list again',
+    );
+  }
+}
+
 // ── Viewport stability ───────────────────────────────────────────────────
 // The class of assertion this suite was missing entirely. It proved selection
 // HAPPENED — the card highlights, the map hears about it — and never that the

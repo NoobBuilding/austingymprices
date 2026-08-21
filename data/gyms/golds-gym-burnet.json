@@ -18,6 +18,7 @@
   "steam_room": null,
   "cold_plunge": null,
   "pool": null,
+  "showers": null,
   "accepts_classpass": null,
   "intro_offer_url": null,
   "listing_tier": "standard",
@@ -33,7 +34,7 @@
       "annual_fee": null,
       "commit_months": 0,
       "restricted": null,
-      "note": "No enrollment fee. Gold's Gym does not publish an annual or maintenance fee on its public club pages or terms; the amount is unconfirmed either way, so it is not folded into the all-in figure. Owner-contact list.",
+      "note": "No enrollment fee.",
       "is_default": true,
       "classes_per_period": null,
       "cancellation_fee": null,
@@ -46,7 +47,7 @@
       "annual_fee": null,
       "commit_months": 12,
       "restricted": null,
-      "note": "Cheaper monthly rate in exchange for a twelve-month term. Gold's Gym does not publish an annual or maintenance fee on its public club pages or terms; the amount is unconfirmed either way, so it is not folded into the all-in figure. Owner-contact list.",
+      "note": "Cheaper monthly rate in exchange for a twelve-month term.",
       "is_default": false,
       "classes_per_period": null,
       "cancellation_fee": null,
@@ -60,6 +61,9 @@
   "day_pass_alternative": null,
   "day_pass_detail": [],
   "pricing_note": null,
+  "sourcing_notes": [
+    "Gold's Gym does not publish an annual or maintenance fee on its public club pages or in its terms. The amount is unconfirmed either way, so it is not folded into the all-in figure — which is why the headline renders as a floor rather than as a flat number."
+  ],
   "unpriced_reason": null,
   "stale": false,
   "price_history": []
