@@ -39,11 +39,23 @@ const rows = priceRows(money);
       recommended.
     </p>
 
-    {/* Shown only when JS is off or the URL names nothing valid: the table
-        below is then the whole list rather than a comparison. */}
+    {/* Shown when JS is off, or when the URL names nothing we recognise. Two
+        messages, because they are two different situations and only one of
+        them is the reader's mistake: arriving with no selection is normal,
+        while arriving with gym names that do not match anything deserves to be
+        said out loud rather than silently answered with all 98 rows.
+        Both ship in the markup and the island toggles which is shown — a
+        no-JS visitor gets the neutral one, which is the correct reading of a
+        table that was never filtered. No innerHTML anywhere (§8). */}
     <p class="fallback" id="compare-fallback">
-      Showing every gym. Pick 2–{MAX_COMPARE} on the
-      <a href="/">main list</a> to compare them side by side.
+      <span id="fallback-none">
+        Showing every gym. Pick 2–{MAX_COMPARE} on the
+        <a href="/">main list</a> to compare them side by side.
+      </span>
+      <span id="fallback-unknown" hidden>
+        We could not find those gyms, so this is every gym we list. Pick
+        2–{MAX_COMPARE} on the <a href="/">main list</a> to compare them side by side.
+      </span>
     </p>
 
     <div class="tablewrap">
@@ -340,6 +352,16 @@ const rows = priceRows(money);
 
         const fallback = document.getElementById('compare-fallback');
         if (fallback) fallback.hidden = true;
+      } else if ((params.get('gyms') ?? '').trim() !== '') {
+        // A `gyms=` that matched nothing. Answering that with all 98 rows and
+        // no explanation reads as the filter being broken — which is exactly
+        // how it was reported. Say what happened instead.
+        const none = document.getElementById('fallback-none');
+        const unknown = document.getElementById('fallback-unknown');
+        if (none && unknown) {
+          none.hidden = true;
+          unknown.hidden = false;
+        }
       }
       document.documentElement.dataset.compareReady = String(MAX_COMPARE);
     }

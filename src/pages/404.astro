@@ -1,0 +1,123 @@
+---
+/**
+ * Real 404s.
+ *
+ * Without this file the build emits no 404.html, and Cloudflare Pages answers
+ * every unknown URL with index.html at HTTP **200**. That is this project's own
+ * "a soft 404 is a 404" precedent (§6) pointed inward: 24 Hour Fitness served us
+ * a 200 titled "404 | 24 Hour Fitness" and we wrote a rule about it, while our
+ * own site did the same thing to anyone who mistyped a slug.
+ *
+ * It matters beyond tidiness. A gym we deliberately EXCLUDED — F45 Bull Creek,
+ * F45 Kings Village — kept resolving to a page that looked like a live site,
+ * and a crawler could index an unbounded number of invented URLs as duplicates
+ * of the homepage.
+ *
+ * `noindex` on top of the 404 status, because the two answer different
+ * questions: the status tells a crawler this URL is not a page, the meta tag
+ * tells it not to keep the copy it already has.
+ */
+import Base from '../layouts/Base.astro';
+import { getAllGyms } from '../lib/gyms.js';
+
+// A dead end should still offer the thing the visitor came for. Cheapest-first,
+// because that is the question this site exists to answer.
+const priced = getAllGyms()
+  .filter((g) => g.has_price)
+  .sort((a, b) => a.all_in_monthly - b.all_in_monthly)
+  .slice(0, 3);
+
+const money = (n) => `$${Number.isInteger(n) ? n : Number(n).toFixed(2)}`;
+---
+
+<Base
+  title="Page not found — Austin Gym Prices"
+  description="That page does not exist. Browse every Austin gym and what a membership actually costs, fees included."
+  noindex
+>
+  <main class="wrap">
+    <p class="code">404</p>
+    <h1>That page does not exist</h1>
+    <p class="lede">
+      The link may be out of date, or a gym that used to be listed here is not any more.
+      Everything we do list is one tap away.
+    </p>
+
+    <p class="actions">
+      <a class="cta" href="/">Browse every Austin gym</a>
+    </p>
+
+    {priced.length > 0 && (
+      <div class="cheap">
+        <p class="cheap-label">Cheapest right now</p>
+        <ul>
+          {priced.map((g) => (
+            <li>
+              <a href={g.url}>{g.name}</a>
+              <span class="p">{money(g.all_in_monthly)}{g.all_in_is_floor ? '+' : ''}/mo all-in</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <p class="foot">
+      Looking for a gym we do not list? <a href="/faq">How we source prices</a> ·
+      <a href="mailto:hello@austingymprices.com?subject=Missing%20gym">Tell us about it</a>
+    </p>
+  </main>
+</Base>
+
+<style>
+  .wrap { max-width: var(--wrap-narrow); margin: 0 auto; padding: 60px 28px 90px; }
+  .code {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 3.2rem;
+    line-height: 1;
+    color: var(--orange);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    text-transform: uppercase;
+    line-height: 1;
+    margin-top: 6px;
+  }
+  .lede { margin-top: 14px; color: var(--ink-soft); font-size: 1.05rem; max-width: 54ch; }
+  .actions { margin-top: 26px; }
+  /* The one filled control on the page: there is exactly one thing to do here. */
+  .cta {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: var(--r-pill);
+    padding: 12px 22px;
+    font-weight: 700;
+    font-size: .92rem;
+    text-decoration: none;
+  }
+  .cta:hover { background: var(--ink-soft); }
+  .cheap { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  .cheap-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .cheap ul { list-style: none; margin-top: 10px; }
+  .cheap li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: .92rem;
+  }
+  .cheap a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  .cheap a:hover { color: var(--orange); }
+  .cheap .p { color: var(--ink-soft); white-space: nowrap; }
+  .foot { margin-top: 30px; font-size: .84rem; color: var(--ink-soft); }
+</style>

@@ -324,6 +324,59 @@ check(
 // Executed against the REAL bundle with a REAL query string, because the row
 // order lives inside the client script. Asserting the pure helper alone would
 // stay green while the shipped page still led with the wrong row (§9b).
+// ── The all-invalid fallback ─────────────────────────────────────────────
+// A `gyms=` that matches nothing falls back to the full table. That is correct
+// — the alternative is a blank page — but answering it SILENTLY is what got
+// reported as "compare renders everything". The two situations get two
+// messages, and this pins which one shows when.
+console.log('\nAn unrecognised gyms= says so');
+{
+  const url0 = 'https://austingymprices.com/compare';
+  const boot = (q) => {
+    const { window: w, errors } = bootBundle('dist/compare/index.html', { url: q });
+    check(errors.length === 0, 'the view runs clean — no swallowed exception', errors[0] ?? '');
+    const vis = (id) => {
+      const el = w.document.getElementById(id);
+      return el ? !el.hidden : false;
+    };
+    const wrap = w.document.getElementById('compare-fallback');
+    // Only the text of the span that is actually SHOWN. Reading the wrapper's
+    // textContent pulls in the hidden sibling too, and an assertion that reads
+    // hidden copy stays green while the visible message is wrong — which it
+    // did, until this was tightened.
+    const shownText = ['fallback-none', 'fallback-unknown']
+      .filter(vis)
+      .map((id) => w.document.getElementById(id).textContent)
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return {
+      fallbackShown: wrap ? !wrap.hidden : false,
+      none: vis('fallback-none'),
+      unknown: vis('fallback-unknown'),
+      cols: [...w.document.querySelectorAll('th.gymhead')].filter((t) => !t.hidden).length,
+      text: shownText,
+    };
+  };
+
+  const bogus = boot(`${url0}?gyms=Crunch South Austin,Big Tex Gym`);
+  check(bogus.unknown && !bogus.none,
+    'gym names that match nothing get the "could not find those" message',
+    bogus.text.slice(0, 78));
+  check(/could not find those gyms/i.test(bogus.text),
+    'and it says so in a shopper\'s words, not a code or an error');
+  check(bogus.cols > 4, 'while the full table still renders underneath it', `${bogus.cols} columns`);
+
+  const empty = boot(url0);
+  check(empty.none && !empty.unknown,
+    'arriving with NO selection keeps the neutral message — that is not a mistake',
+    empty.text.slice(0, 60));
+
+  const good = boot(`${url0}?gyms=big-tex-gym,crunch-south-austin`);
+  check(!good.fallbackShown, 'and a valid comparison shows no fallback at all');
+  check(good.cols === 2, 'rendering exactly the gyms it names', `${good.cols} columns`);
+}
+
 console.log('\nTab-awareness (real bundle, real query string)');
 
 const CMP_URL = 'https://austingymprices.com/compare';
