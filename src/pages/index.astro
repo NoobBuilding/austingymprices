@@ -490,11 +490,49 @@ const description =
 
   @media (max-width: 560px) {
     .hero {
-      padding: 40px 18px 0;
+      padding: 24px 18px 0;
     }
 
     .list-wrap {
       padding: 0 18px 60px;
+    }
+
+    /* ── The fold ──────────────────────────────────────────────────────────
+       At 390px the preamble a reader has to get past — H1, subhead, tabs,
+       search, region chips, filter row, count — ran to 848px and put the first
+       gym tile off the bottom of the screen entirely. A price site whose first
+       screen contains no price is asking to be trusted before it has shown
+       anything, so the tile has to break the fold.
+       Spacing only: nothing is removed and no type size changes. The chip and
+       filter rows still wrap to three rows each and still cost ~240px between
+       them, which is where the remaining weight sits if this needs to go
+       further. */
+    .sub {
+      margin-top: 10px;
+    }
+
+    .tabs {
+      margin: 18px 0 10px;
+    }
+
+    .chip-row {
+      margin-top: 10px;
+    }
+
+    .filters {
+      margin-top: 12px;
+    }
+
+    .search {
+      padding: 12px 16px;
+    }
+
+    .split {
+      margin-top: 14px;
+    }
+
+    .count {
+      margin-bottom: 8px;
     }
   }
 </style>
