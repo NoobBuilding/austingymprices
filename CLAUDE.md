@@ -475,6 +475,17 @@ bottom of the Classes tab accordingly.
   vanished from the map would hide exactly the thing a map is for. Selecting a pin whose
   card is folded opens its chain, so a tap is still never swallowed.
 
+**A count describes GYMS, never rows.** Folding is a display convenience and must
+never change the truth of a sentence — the same principle that keeps the map unfolded
+while the list collapses. The result count once had folded siblings subtracted from it,
+so "10 gyms with showers" rendered as **"6"** the moment the YMCA's five branches sat
+behind one row and 24 Hour's two behind another. Where the two numbers differ, **both are
+stated** — "11 gyms (6 listings)" — because a bare gym count standing over fewer tiles
+reads wrong in the opposite direction. A control that counts rows may do so only if it
+does not call them gyms: the pagination button reveals listings and says **listings**.
+Asserted in `scripts/check-tabs.mjs` as drawn rows **plus** the ones folded behind a
+chain, filtered and unfiltered, so the invariant is pinned rather than the day's numbers.
+
 It creates **no roll-up page**: that is §10, a different product with its own SEO story.
 The field costs nothing now and means the harvest has somewhere to land — a new sibling
 row joins its chain with no code change.
@@ -756,6 +767,21 @@ OpenGraph tags. Gym pages are the long-tail acquisition strategy — treat them 
   alike. Any figure lifted from that page before walking the location selector belongs to
   a gym 1,400 miles away. Same class of error as pairing probe results by index: the page
   looked like it was about the club whose URL fetched it, and it was not.
+
+- **A source URL that names a location is making a claim, and the validator now checks
+  it.** The Gold's Venice trap has a second door: not the checkout shell, but the
+  `pricing_url` itself. **Perspire North Lamar pointed at `/locations/hutto`** and
+  **Restore South Lamar at `/locations/tx-round-rock-tx002`** — both pages self-identify
+  as the other town throughout, and both published *exactly* the figures those rows
+  carried. Two Austin rows were shipping another town's rate card. The check is offline
+  and structural, because the URL states the location itself: where a path segment
+  follows a location-ish parent (`/locations/`, `/tx/`, `/gyms/`…), at least one of its
+  meaningful tokens must appear in the row's own name, address, `sub_locality` or region.
+  A URL claiming no location (`/pricing`, `/join`) is not checked. **Uniformity remains a
+  finding, not an assumption** — the Gold's precedent cuts both ways, and a membership
+  being usable at every location nationwide says where you may spend it, not what it
+  costs to buy. Both rows fell back to the unpriced state rather than carrying a figure
+  read from another city.
 
 **Scope precedents — what counts as a gym.** Triage law, applied to every candidate
 before anything else is asked about it. These are the owner's rulings, recorded so a new

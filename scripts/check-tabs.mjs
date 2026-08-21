@@ -352,6 +352,77 @@ console.log('\nPool filter (gated, confirmed-only)');
   }
 }
 
+// ── Count truth under chain folding ──────────────────────────────────────
+// A count describes GYMS. Folding a chain to one row is a display convenience
+// and must never change the truth of a sentence — the same principle that keeps
+// the map unfolded while the list collapses. The regression this pins: the
+// result count had folded siblings subtracted from it, so "10 gyms with
+// showers" rendered as "6" the moment YMCA's five branches sat behind one row.
+console.log('\nResult count is gym-true under folding');
+{
+  clickTab('membership');
+  const countEl = window.document.getElementById('n');
+  const text = () => (countEl?.textContent ?? '').trim();
+  const gymsIn = (t) => Number((t.match(/^(\d+)\s+gyms?/) || [])[1]);
+  const listingsIn = (t) => {
+    const m = t.match(/\((\d+)\s+listings?\)/);
+    return m ? Number(m[1]) : gymsIn(t);
+  };
+
+  const rows = () => $('.card').filter((c) => !c.hidden).length;
+  // Every card that MATCHES, whether or not its row is drawn — chain siblings
+  // are hidden by the fold, not by the filter, and a gym is still a gym.
+  const folded = () => $('.card').filter(
+    (c) => c.hidden && c.closest('#cards') && c.dataset.chain
+      && $('.card').some((h) => !h.hidden && h.dataset.chain === c.dataset.chain),
+  ).length;
+
+  check(!!countEl, 'the result count renders');
+  const t0 = text();
+  check(/^\d+\s+gyms?/.test(t0), 'it leads with a gym count', t0);
+  check(
+    gymsIn(t0) === rows() + folded(),
+    'and that number counts GYMS — drawn rows plus the ones folded behind a chain',
+    `states ${gymsIn(t0)}, ${rows()} rows + ${folded()} folded = ${rows() + folded()}`,
+  );
+  check(
+    listingsIn(t0) === rows(),
+    'while the listing figure it states matches the tiles actually drawn',
+    `states ${listingsIn(t0)} listings, ${rows()} rows drawn`,
+  );
+  check(
+    gymsIn(t0) === listingsIn(t0) || /\(\d+ listings?\)/.test(t0),
+    'and where the two differ BOTH are stated — a bare gym count over fewer tiles reads wrong',
+    t0,
+  );
+
+  // The same must hold under a filter, which is where the bug was reported.
+  const chip = window.document.getElementById('showers');
+  if (chip) {
+    chip.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    const t1 = text();
+    check(
+      gymsIn(t1) === rows() + folded(),
+      'and it stays gym-true with a filter applied',
+      `states ${gymsIn(t1)}, ${rows()} rows + ${folded()} folded = ${rows() + folded()}`,
+    );
+    check(
+      listingsIn(t1) === rows(),
+      'and its listing figure still matches the tiles drawn',
+      `states ${listingsIn(t1)} listings, ${rows()} rows drawn`,
+    );
+    chip.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  }
+
+  // The pagination control counts what it reveals, and says so.
+  const showAll = window.document.getElementById('show-all');
+  check(
+    !/\bgyms?\b/.test(showAll?.textContent ?? ''),
+    'the "Show all" control does not call its row count gyms',
+    (showAll?.textContent ?? '').trim(),
+  );
+}
+
 // ── Showers chip ─────────────────────────────────────────────────────────
 // Same gate, same tri-state discipline as the pool chip. Asserted as the RULE
 // ("renders iff >= N sourced"), never as today's count — a chip that appears

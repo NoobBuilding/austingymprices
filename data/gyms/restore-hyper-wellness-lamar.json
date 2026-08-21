@@ -7,8 +7,8 @@
   "category": "recovery",
   "access_model": "facility",
   "eligibility": null,
-  "website": "https://www.restore.com/locations/tx-round-rock-tx002?utm_source=gmb&utm_medium=Yext&y_source=1_MzE2Mjk5MjQtNzE1LWxvY2F0aW9uLndlYnNpdGU%3D",
-  "pricing_url": "https://www.restore.com/locations/tx-round-rock-tx002?utm_source=gmb&utm_medium=Yext&y_source=1_MzE2Mjk5MjQtNzE1LWxvY2F0aW9uLndlYnNpdGU%3D",
+  "website": "https://www.restore.com",
+  "pricing_url": "https://www.restore.com",
   "address": "Lamar Union Plaza, 1100 S Lamar Blvd Ste 2114, Austin, TX 78704, USA",
   "lat": 30.2558492,
   "lng": -97.76192309999999,
@@ -24,38 +24,20 @@
   "listing_tier": "standard",
   "photo": null,
   "data_source": "scrape",
-  "verified_date": "2026-08-20",
+  "verified_date": null,
   "billing_period": "monthly",
-  "plans": [
-    {
-      "name": "Level Up",
-      "monthly": 190,
-      "enroll_fee": 0,
-      "annual_fee": 0,
-      "commit_months": 0,
-      "restricted": null,
-      "note": "Eight therapy credits a month at $23.75 a credit, usable at any Restore location nationwide.",
-      "is_default": true,
-      "classes_per_period": null,
-      "cancellation_fee": null,
-      "promo": null
-    }
-  ],
+  "plans": [],
   "class_packs": [],
   "day_pass": null,
   "day_pass_qualifier": null,
   "day_pass_terms": [],
   "day_pass_alternative": null,
-  "day_pass_detail": [
-    "Week pass $35 — 7 days with sauna and 24/7 key-tag access, against $70 for seven day passes",
-    "Military, police, fire and first responders: $45/mo + tax, in-person signup only",
-    "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
-  ],
-  "pricing_note": null,
+  "day_pass_detail": [],
+  "pricing_note": "Rates for this studio are not published on a page we can confirm. Restore prices each studio separately, so a figure from another location would not be this one. Contact the studio for its current rate.",
   "sourcing_notes": [
-    "Every plan here is month-to-month with a single published rate, and no enrollment or annual fee is stated anywhere on the page. Both fees are recorded as sourced zeros rather than as unknowns."
+    "The figure previously shown here — $190 a month for eight therapy credits, $23.75 a credit — was read from Restore’s ROUND ROCK location page (store code tx002), which the row’s own pricing URL pointed at. Round Rock is a separate city roughly 20 miles north, and that page identifies itself as Round Rock throughout. The rate was withdrawn rather than carried across: Restore prices per studio, and a membership being usable at any location nationwide says where you may spend it, not what it costs to buy. The real South Lamar page could not be reached — Restore’s locations index is JavaScript-rendered and the obvious URL patterns return 404. Pending a human read of the real page."
   ],
-  "unpriced_reason": null,
+  "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []
 }

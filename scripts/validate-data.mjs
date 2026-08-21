@@ -81,6 +81,51 @@ const HISTORY_FIELDS = new Set([
   'monthly', 'enroll_fee', 'annual_fee', 'commit_months', 'day_pass',
 ]);
 
+// ── The source-URL locality guard ─────────────────────────────────────────
+// A pricing URL that names a LOCATION is making a claim about which club it
+// describes, and that claim has to survive contact with the row's own address.
+// This is the Gold's Venice trap coming through the source-URL door: that
+// checkout shell rendered a club 1,400 miles away, and the page looked like it
+// was about the club whose URL fetched it. Two rows here failed the same way
+// and shipped another town's rate card as Austin's — Perspire North Lamar
+// pointed at /locations/hutto, and Restore South Lamar at
+// /locations/tx-round-rock-tx002. Both pages self-identify as the other town
+// and publish exactly the figures those rows carried.
+//
+// Offline and structural on purpose: the build gate cannot fetch, and it does
+// not need to. The URL states the location itself, which is how the defect was
+// spotted in the first place.
+//
+// The rule, not the inventory: where a path segment follows a location-ish
+// parent, at least ONE of its meaningful tokens must appear in the row's own
+// name, address, sub_locality or region. A URL with no location claim
+// (/pricing, /join, /buy) claims nothing and is not checked.
+const LOC_PARENT = new Set([
+  'location', 'locations', 'gyms', 'gym', 'clubs', 'club', 'studios', 'studio',
+  'yoga-studios', 'find', 'tx', 'texas',
+]);
+// Page words and state/store codes are not place names.
+const LOC_GENERIC = new Set([
+  'tx', 'texas', 'us', 'usa', 'membership', 'memberships', 'pricing', 'prices',
+  'price', 'rates', 'rate', 'join', 'buy', 'offers', 'offer', 'index', 'html',
+  'home', 'aspx', 'pages', 'clubhome', 'info',
+]);
+const locTokens = (v) => (v || '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+const isStoreCode = (t) => /^[a-z]{2}\d+$/.test(t) || /^\d+$/.test(t);
+
+/** The location a URL claims to describe, or null if it claims none. */
+function urlLocationClaim(url) {
+  let parsed;
+  try { parsed = new URL(url); } catch { return null; }
+  const segs = parsed.pathname.split('/').filter(Boolean)
+    .map((x) => x.replace(/\.(html?|aspx|php)$/i, ''));
+  const i = segs.findIndex((x) => LOC_PARENT.has(x.toLowerCase()));
+  if (i === -1) return null;
+  const toks = segs.slice(i + 1).flatMap(locTokens)
+    .filter((t) => !LOC_GENERIC.has(t) && !isStoreCode(t) && t.length > 2);
+  return toks.length ? toks : null;
+}
+
 const regions = new Set(
   JSON.parse(readFileSync('data/regions.json', 'utf8')).map((r) => r.id),
 );
@@ -205,6 +250,26 @@ for (const file of readdirSync(GYM_DIR).filter((f) => f.endsWith('.json')).sort(
 
   // The fine-print channel. Present on every gym so a new file cannot omit it;
   // an empty array is the norm and renders nothing.
+  // A source URL may not name a different place than the row it prices.
+  {
+    const identity = new Set([
+      ...locTokens(gym.name), ...locTokens(gym.address),
+      ...locTokens(gym.sub_locality), ...locTokens(gym.region),
+    ]);
+    for (const field of ['pricing_url', 'website']) {
+      const claim = urlLocationClaim(gym[field]);
+      if (!claim) continue;
+      if (!claim.some((t) => identity.has(t))) {
+        fail(
+          `${field} names a location this row does not — the URL claims ` +
+            `"${claim.join(' ')}" but the row is "${gym.name}" at ` +
+            `${gym.address ?? 'no address'}. A figure read from that page ` +
+            `belongs to another club.`,
+        );
+      }
+    }
+  }
+
   if (!Array.isArray(gym.sourcing_notes)) {
     fail('sourcing_notes must be an array (empty is fine)');
   } else if (gym.sourcing_notes.some((n) => typeof n !== 'string' || !n.trim())) {

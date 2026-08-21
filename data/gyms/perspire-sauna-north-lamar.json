@@ -7,8 +7,8 @@
   "category": "recovery",
   "access_model": "facility",
   "eligibility": null,
-  "website": "https://www.perspiresaunastudio.com/locations/hutto",
-  "pricing_url": "https://www.perspiresaunastudio.com/locations/hutto",
+  "website": "https://www.perspiresaunastudio.com",
+  "pricing_url": "https://www.perspiresaunastudio.com",
   "address": "4601 N Lamar Blvd #501, Austin, TX 78751, USA",
   "lat": 30.3151485,
   "lng": -97.7356655,
@@ -24,53 +24,20 @@
   "listing_tier": "standard",
   "photo": null,
   "data_source": "scrape",
-  "verified_date": "2026-08-20",
+  "verified_date": null,
   "billing_period": "monthly",
-  "plans": [
-    {
-      "name": "iRecover",
-      "monthly": 159,
-      "enroll_fee": 0,
-      "annual_fee": 0,
-      "commit_months": 0,
-      "restricted": null,
-      "note": "Eight sessions a month, month-to-month, access to all studio locations.",
-      "is_default": true,
-      "classes_per_period": null,
-      "cancellation_fee": null,
-      "promo": null
-    },
-    {
-      "name": "iRitual",
-      "monthly": 199,
-      "enroll_fee": 0,
-      "annual_fee": 0,
-      "commit_months": 0,
-      "restricted": null,
-      "note": "Unlimited sessions a month, access to all studio locations.",
-      "is_default": false,
-      "classes_per_period": null,
-      "cancellation_fee": null,
-      "promo": null
-    }
-  ],
+  "plans": [],
   "class_packs": [],
-  "day_pass": 25,
-  "day_pass_qualifier": "intro session",
-  "day_pass_terms": [
-    "First visit rate"
-  ],
+  "day_pass": null,
+  "day_pass_qualifier": null,
+  "day_pass_terms": [],
   "day_pass_alternative": null,
-  "day_pass_detail": [
-    "Week pass $35 — 7 days with sauna and 24/7 key-tag access, against $70 for seven day passes",
-    "Military, police, fire and first responders: $45/mo + tax, in-person signup only",
-    "Student 3-month paid in full: $135 + tax, valid student ID, in-person signup only"
-  ],
-  "pricing_note": null,
+  "day_pass_detail": [],
+  "pricing_note": "Rates for this studio are not published on a page we can confirm. Perspire prices each studio separately, so a figure from another location would not be this one. Contact the studio for its current rate.",
   "sourcing_notes": [
-    "Every plan here is month-to-month with a single published rate, and no enrollment or annual fee is stated anywhere on the page. Both fees are recorded as sourced zeros rather than as unknowns."
+    "The figures previously shown here — $159, $199 and a $25 intro session — were read from Perspire’s HUTTO location page, which the row’s own pricing URL pointed at. Hutto is a separate town roughly 25 miles north-east, and that page identifies itself as Hutto throughout. The rates were withdrawn rather than carried across: a chain’s locations are not assumed to share a rate card unless the chain publishes one, and Perspire publishes per studio. The Austin North Lamar page is JavaScript-rendered and served no price or location text to us, so it could not be read. Pending a human read of the real page."
   ],
-  "unpriced_reason": null,
+  "unpriced_reason": "not_published",
   "stale": false,
   "price_history": []
 }

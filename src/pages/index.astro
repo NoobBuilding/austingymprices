@@ -150,7 +150,7 @@ const description =
   <div class="split">
     <div class="list-wrap">
       <p class="count">
-        <span id="n">{gyms.length}</span> gyms — tap a gym for the full cost breakdown
+        <span id="n">{gyms.length} gyms</span> — tap a gym for the full cost breakdown
       </p>
       <div id="cards">
         {sorted.map((gym) => <GymCard gym={gym} compare />)}
@@ -159,7 +159,7 @@ const description =
           server-rendered, so with JS off the full list is simply there — this
           button never appears and nothing is hidden. */}
       <button type="button" class="show-all" id="show-all" hidden>
-        Show all <span id="show-all-n">{gyms.length}</span> gyms ↓
+        Show all <span id="show-all-n">{gyms.length}</span> listings ↓
       </button>
       <div class="empty" id="empty" hidden>
         <p>No gyms match those filters.</p>
@@ -621,6 +621,9 @@ const description =
       }
       if (showAllBtn) {
         showAllBtn.hidden = !paginate;
+        // Rows, deliberately: this control reveals LISTINGS, and its label
+        // says listings. A gym count on a button that renders tiles would be
+        // the same conflation from the other side.
         if (showAllCount) showAllCount.textContent = String(visible.length);
       }
     }
@@ -770,7 +773,13 @@ const description =
         }
       }
       const listed = visible.filter((c) => !c.hidden);
-      shown -= collapsed.length;
+      // `shown` counts GYMS and must keep counting gyms. It used to have the
+      // folded siblings subtracted from it, which quietly turned a gym count
+      // into a row count: five YMCA branches behind one row made "10 gyms with
+      // showers" render as "6". Chain collapse is a property of the LIST — the
+      // same reason the map is never folded (§9) — so it may change how many
+      // tiles are drawn and never what is true about the city.
+      const listingCount = listed.length;
 
       // Reorder ONLY when the order actually changed.
       //
@@ -794,7 +803,12 @@ const description =
         for (const card of listed) container.appendChild(card);
       }
 
-      if (countEl) countEl.textContent = String(shown);
+      if (countEl) {
+        countEl.textContent =
+          listingCount === shown
+            ? `${shown} ${shown === 1 ? 'gym' : 'gyms'}`
+            : `${shown} gyms (${listingCount} listing${listingCount === 1 ? '' : 's'})`;
+      }
       if (emptyEl) emptyEl.hidden = shown !== 0;
 
       applyPagination(listed);
