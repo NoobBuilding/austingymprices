@@ -32,7 +32,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "astro": "^7.2.3",
+    "astro": "^7.2.8",
     "leaflet": "^1.9.4"
   },
   "devDependencies": {
